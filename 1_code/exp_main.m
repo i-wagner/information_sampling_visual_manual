@@ -114,9 +114,7 @@ for t = 1:epar.trial.num
     epar = exp_trial_response(epar, el, t);
 
     % Adjust the timer after a participant placed its answer
-    epar.timer     = [];
-    epar.timer     = toc; % End the timer after participant gave answer; "tic" is in "epar_trial_show"
-    epar.timer_cum = epar.timer_cum + epar.timer;
+    epar.timer_cum = epar.timer_cum + (epar.time(3) - epar.time(2));
 
     % Stop data recording
     if epar.EL

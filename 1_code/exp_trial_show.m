@@ -64,10 +64,4 @@ function epar = exp_trial_show(epar, tn)
 % 
 %     end
 
-
-    %% Start timer
-    % Timer is started at stimulus onset and it counts until a participant 
-    % gives its response (toc is in "exp_main")
-    tic
-
 end
