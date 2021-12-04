@@ -2,7 +2,7 @@
 clear variables;
 close all;
 clc;
-addpath('_lib', '_lib\psignifit4', '_lib\palamedes1_10_3\Palamedes', '_lib\additionalInPolygonStuff', '_lib\coder\lib');
+addpath('_lib', '_lib\additionalInPolygonStuff', '_lib\coder\lib');
 
 
 %% General settings
