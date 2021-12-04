@@ -73,7 +73,7 @@ function epar = exp_mon_init(epar)
 
     %% Load stimuli, sort them in arrays and convert them to textures
     % Read-in the image files with the stimuli
-    cd '_stim/'
+    cd 'C:\src\ilja\_materials\informationSampling2022\_stim'
     dirStim = dir('*.png');
 
     % Loop through folder content and process image files
@@ -380,6 +380,6 @@ function epar = exp_mon_init(epar)
 
 
     %% Go back to root, when finished with everything
-    cd('../')
+    cd 'C:\src\ilja\informationSampling2022'
 
 end
