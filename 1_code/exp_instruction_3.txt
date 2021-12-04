@@ -1,0 +1,11 @@
+Zu Beginn jedes Durchgangs sehen Sie ein Fixationskreuz, welches Sie bitte betrachten. Wenn Sie bereit sind, drücken Sie bitte die Leertaste.
+
+Anschließend erscheinen auf dem Bildschirm eine Reihe von Kreisen (teilweise rot, teilweise blau), welche alle ein Rechteck in Ihrer Mitte haben. Eines der Rechtecke ist horizontal, eines vertikal und die übrigen diagonal ausgerichtet. Ihre Aufgabe ist es entweder das horizontale oder vertikale Rechteck zu finden und zu bestimmen, auf welcher Seite das Rechteck eine Öffnung besitzt.
+
+IN DIESEM EXPERIMENT SEHEN SIE IN JEDEM DURCHGANG EIN HORIZONTALES UND EIN VERTIKALES RECHTECK. Sie können frei entscheiden, welches der beiden Rechtecke Sie beurteilen wollen. 
+
+Ist die Öffnung auf der rechten Seite, drücken Sie bitte die rechte Pfeiltaste, ist sie oben, so drücken sie die obere Pfeiltaste, et cetera. Die Öffnung befindet sich IMMER an der langen Seite des Rechtecks: ist das Rechteck also vertikal ausgerichtet, kann die Öffnung links oder rechts sein. Ist es dagegen horizontal ausgerichtet, kann die Öffnung oben oder unten sein.
+
+Am Ende eines Durchgangs erhalten Sie Feedback (beispielsweise "+0.02 | 0.06 "). Für jede richtige Antwort erhalten Sie am Ende des Durchgangs Punkte ("+0.02"; linker Teil des Feedbacks), für jede falsche Antwort verlieren Sie einen Punkt ("-0.02"). Im rechten Teil des Feedbacks sehen Sie Ihre momentane Gesamtpunktzahl, die sptäter in Geld umgerechnet wird. Falls Sie zu Beginn des Durchgangs das Fixationskreuz nicht richtig fixiert haben, sehen Sie anstelle des Feedbacks die Meldung "Nicht fixiert!".
+
+Drücken Sie die Leertaste, um fortzufahren.

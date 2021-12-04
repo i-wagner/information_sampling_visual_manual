@@ -1,0 +1,5 @@
+coder.loadDeepLearningNetwork
+gpucoder.stridedMatrixMultiply
+gpucoder.stridedMatrixMultiplyAdd
+gpucoder.batchedMatrixMultiply
+gpucoder.batchedMatrixMultiplyAdd
