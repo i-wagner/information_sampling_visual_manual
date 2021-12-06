@@ -24,23 +24,23 @@ function epar = exp_trial_show(epar, tn)
     % Draw target(s)
     if epar.expNo == 2 
 
-        Screen('DrawTextures', epar.window, epar.stim.txt_disp(end), [], ...
+        Screen('DrawTextures', epar.window, epar.stim.txt_disp_mask(end), [], ...
                epar.tex_rect(:, end));
 
     elseif epar.expNo == 3
 
-        Screen('DrawTextures', epar.window, epar.stim.txt_disp(end-1:end), [], ...
+        Screen('DrawTextures', epar.window, epar.stim.txt_disp_mask(end-1:end), [], ...
                epar.tex_rect(:, end-1:end));
 
     end
 
     % Draw rest
-    epar.stim.txt_disp = epar.stim.txt_disp(~isnan(epar.stim.txt_disp));
+    epar.stim.txt_disp_mask = epar.stim.txt_disp_mask(~isnan(epar.stim.txt_disp_mask));
 
     % If at least one distractor has to be shown, draw the texture(s)
-    if size(epar.stim.txt_disp, 1) > epar.targ
+    if size(epar.stim.txt_disp_mask, 1) > epar.targ
 
-        Screen('DrawTextures', epar.window, epar.stim.txt_disp(1:epar.trials.dist_num(tn)), [], ...
+        Screen('DrawTextures', epar.window, epar.stim.txt_disp_mask(1:epar.trials.dist_num(tn)), [], ...
                epar.tex_rect(:, 1:epar.trials.dist_num(tn)));
 
     end

@@ -9,79 +9,33 @@ function epar = exp_trial_response(epar, el, tn)
     [xCircS_row, yCircS_row] = poly2cw_mr(xCircS_row, yCircS_row);
 
 
-    %% Get indices and maximum allowed dwell time of stimuli in trial
-    if epar.expNo == 2
-
-        % In experiment 2, we only show one type of stimulus per trial
-        if epar.trials.disBlocksRand(tn, 4) == 1 % Easy stimulus
-
-            idx_easyDis = [1:epar.trials.disBlocksRand(tn, 2) length(epar.stim.txt_disp)];
-            idx_hardDis = 0;
-
-            dispStim_maxDwellTime = repmat(epar.maxDwellTime, 1, length(idx_easyDis));
-
-        elseif epar.trials.disBlocksRand(tn, 4) == 2 % Hard stimulus
-
-            idx_easyDis = 0;
-            idx_hardDis = [1:epar.trials.disBlocksRand(tn, 3) length(epar.stim.txt_disp)];
-
-            dispStim_maxDwellTime = repmat(epar.maxDwellTime, 1, length(idx_hardDis));
-
-        end
-
-    elseif epar.expNo == 3
-
-        idx_easyDis = [1:epar.trials.disBlocksRand(tn, 2) 9];
-        if length(idx_easyDis) > 1
-
-            idx_hardDis = [idx_easyDis(end-1)+1:idx_easyDis(end-1)+epar.trials.disBlocksRand(tn, 3) 10];
-
-        else
-
-            idx_hardDis = [1:epar.trials.disBlocksRand(tn, 3) 10];
-
-        end
-
-        dispStim_maxDwellTime = repmat(epar.maxDwellTime, 1, 10);
-
-    end
-
-
-    %% Get indices for colors of easy/hard stimulus
-    % Odd subject numbers; easy is blue, hard is red
-    if ismember(epar.subject, epar.sub_blueE)
-
-        idx_easyStim = 2;
-        idx_hardStim = 1;
-
-    % Even subject numbers; easy is red, hard is blue
-    else
-
-        idx_easyStim = 1;
-        idx_hardStim = 2;
-
-    end
-
-
     %% Record a participant's response, time of the response and track dwell time
-    txt_disp_replace    = epar.stim.txt_disp;
-%     txt_rect_replace    = epar.tex_rect;
-%     bb                  = 1;
-    time_current        = NaN(5000, 1);
-    time_idx            = 1;
-    idx_lastFixatedAOI  = NaN;
+    dispStim_rectOn       = zeros(1, numel(epar.stim.txt_disp_mask));                     % Helper variable; track for which stimulus rectangle was turned on
+    dispStim_maskOn       = zeros(1, numel(epar.stim.txt_disp_mask));                     % Helper variable; track for which stimulus mask is shown definitely
+    dispStim_maxDwellTime = zeros(1, numel(epar.stim.txt_disp_mask)) + epar.maxDwellTime; % Helper variable; track how much viewing time is left for stimuli
+    txt_disp_replace      = epar.stim.txt_disp_mask;                                      % Helper variable; dynamically repalce stimuli with rectangle/mask
+%     bb                    = 1;
+    time_current          = NaN(5000, 1);
+    time_idx              = 1;
+    idx_lastFixatedAOI    = NaN;
+
     response_start_time = GetSecs;
     while 1
 
-        % Turn of stimuli after a max. allowed dwell time
-        [ex, ey] = exp_el_eye_pos(el); % Get current gaze position
+        % Get current gaze position
+        [ex, ey] = exp_el_eye_pos(el);
+
+        % Check what was fixated during trial: show rectangles if gaze is in
+        % AOI and some dwel time is left, otherwise show mask
         time_current(time_idx) = GetSecs;
         if ~isnan(ex)
 
             % Check if gaze is within any AOI
             ex = (ex - epar.x_center) .* epar.XPIX2DEG; % Transform gaze coordinates to deg
             ey = (ey - epar.y_center) .* epar.YPIX2DEG;
+
             [in, idx] = inpolygons(ex, ey, xCircS_row, yCircS_row);
+
             idx = cell2mat(idx);
             if iscell(in)
 
@@ -105,41 +59,54 @@ function epar = exp_trial_response(epar, el, tn)
                     % Calculate how long gaze is within AOI
                     time_dwellTime = time_current(time_idx) - time_arrivedInAOI;
 
-                    % Check if maximum allowed dwell time for currently
-                    % fixated stimulus is exceeded amd display a
-                    % placeholder if it is
+                    % Display rectangle if some dwell time for stimulus is
+                    % left, show mask otherwise
                     fixedStimDwellTime = dispStim_maxDwellTime(idx_lastFixatedAOI);
-                    if fixedStimDwellTime > 0 && time_dwellTime > fixedStimDwellTime
+                    if fixedStimDwellTime > 0 && time_dwellTime < fixedStimDwellTime % Dwell time left
 
-                        % Update remaining maximum dwell time of last fixated
-                        % stimulus
+                        % Update remaining maximum dwell time of last fixated stimulus
                         dispStim_maxDwellTime(idx_lastFixatedAOI) = ...
                             dispStim_maxDwellTime(idx_lastFixatedAOI) - ...
                                 (time_current(time_idx) - time_arrivedInAOI);
 
-                        % Check if fixated stimulus is easy/hard and
-                        % replace with empty stimulus of same color
-                        if ismember(idx_lastFixatedAOI, idx_easyDis) % Replace easy stimulus
+                        % Check if we are showing mask or rectangle
+                        if ~dispStim_rectOn(idx_lastFixatedAOI)
 
-                            txt_disp_replace(idx_lastFixatedAOI) = epar.stim.comp(idx_easyStim);
+                            txt_disp_replace(idx_lastFixatedAOI) = epar.stim.txt_disp(idx_lastFixatedAOI);
 
-                        elseif ismember(idx_lastFixatedAOI, idx_hardDis) % Replace hard stimulus
-
-                            txt_disp_replace(idx_lastFixatedAOI) = epar.stim.comp(idx_hardStim);
+                            exp_target_draw(epar.window, epar.x_center, epar.y_center, ...
+                                            epar.fixsize(2), epar.fixsize(1), epar.fixcol, epar.gray);
+                            Screen('DrawTextures', epar.window, ...
+                                   txt_disp_replace(1:length(txt_disp_replace)), [], ...
+                                   epar.tex_rect(:, 1:length(txt_disp_replace)), [], 0);
+                            Screen('Flip', epar.window);
+%                             if epar.EL
+% 
+%                                 Eyelink('Message', 'MAX_DWELL_EXC');
+% 
+%                             end
+                            
+                            dispStim_rectOn(idx_lastFixatedAOI) = 1;
 
                         end
-                        txt_rect_replace = epar.tex_rect;
+
+                    elseif fixedStimDwellTime <= 0 && ~dispStim_maskOn(idx_lastFixatedAOI) % No dwell time left
+
+                        txt_disp_replace(idx_lastFixatedAOI) = epar.stim.txt_disp_mask(idx_lastFixatedAOI);
+
                         exp_target_draw(epar.window, epar.x_center, epar.y_center, ...
                                         epar.fixsize(2), epar.fixsize(1), epar.fixcol, epar.gray);
                         Screen('DrawTextures', epar.window, ...
                                txt_disp_replace(1:length(txt_disp_replace)), [], ...
-                               txt_rect_replace(:, 1:length(txt_disp_replace)), [], 0);
+                               epar.tex_rect(:, 1:length(txt_disp_replace)), [], 0);
                         Screen('Flip', epar.window);
 %                         if epar.EL
 % 
 %                             Eyelink('Message', 'MAX_DWELL_EXC');
 % 
 %                         end
+
+                        dispStim_maskOn(idx_lastFixatedAOI) = 1;
 
                     end
 
@@ -156,11 +123,9 @@ function epar = exp_trial_response(epar, el, tn)
 
                 end
 
-            % If gaze landed outside of an AOI (i.e., the background),
-            % reset time of arrival in AOI as well as idx of fixated
-            % stimulus
-            elseif in == 0
+            elseif in == 0 % If gaze landed outside of an AOI (i.e., the background)
 
+                % Update dwell time for last fixated stimulus
                 if ~isnan(idx_lastFixatedAOI)
 
                     dispStim_maxDwellTime(idx_lastFixatedAOI) = ...
@@ -169,6 +134,7 @@ function epar = exp_trial_response(epar, el, tn)
 
                 end
 
+                % Reset time of arrival in AOI as well as idx of fixated stimulus
                 idx_lastFixatedAOI = NaN;
                 time_arrivedInAOI  = NaN;
 
@@ -177,8 +143,7 @@ function epar = exp_trial_response(epar, el, tn)
         end
         time_idx = time_idx + 1;
 
-
-        %% Record participants response
+        % Record participants response
         % In Experiment 2, only continue if the pressed key corresponds to
         % the stimulus orientation; i.e., if the stimulus is orientad vertically,
         % either the left or right key has to be preessed in order to proceed
@@ -264,7 +229,7 @@ function epar = exp_trial_response(epar, el, tn)
 %                         epar.fixsize(2), epar.fixsize(1), epar.fixcol, epar.gray);
 %         Screen('DrawTextures', epar.window, ...
 %                txt_disp_replace(1:length(txt_disp_replace)), [], ...
-%                txt_rect_replace(:, 1:length(txt_disp_replace)), [], 0);
+%                epar.tex_rect(:, 1:length(txt_disp_replace)), [], 0);
 %         [x, y] = exp_el_eye_pos (el);
 %         Screen ('FrameRect', epar.window, [0 0 0], [x-pixbound_x y-pixbound_y x+pixbound_x y+pixbound_y], []) 
 %         Screen('Flip', epar.window);
@@ -280,7 +245,6 @@ function epar = exp_trial_response(epar, el, tn)
 % 
 %         end
 %         bb=bb+1;
-
 
     end
     epar.time(3) = Screen('Flip', epar.window);

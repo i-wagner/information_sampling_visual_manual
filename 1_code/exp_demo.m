@@ -138,6 +138,7 @@ end
 
 %% Finish the experiment
 Screen('Close', epar.stim.txt_disp);
+Screen('Close', epar.stim.txt_disp_mask);
 exp_el_exit(epar);
 exp_mon_exit(epar);
 

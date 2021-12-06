@@ -21,6 +21,21 @@ epar.rewardD = 0.02; % Reward hard target
 % Participant numbers, for which the blue stimulus is the easy one
 epar.sub_blueE = 1:2:100;
 
+% Get indices for easy/difficult mask stimuli
+% Odd subject numbers: easy is blue, hard is red
+if ismember(epar.subject, epar.sub_blueE)
+
+    epar.stim.idx_easyStim = 2;
+    epar.stim.idx_hardStim = 1;
+
+% Even subject numbers: easy is red, hard is blue
+else
+
+    epar.stim.idx_easyStim = 1;
+    epar.stim.idx_hardStim = 2;
+
+end
+
 
 %% Visual stimuli (targets/distractors)
 epar.pic_size = 49;   % Stimulus size (in pixel)

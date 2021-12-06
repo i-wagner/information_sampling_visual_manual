@@ -52,10 +52,14 @@ function [epar, el] = exp_trial_init(epar, el, tn)
             epar.stim.targ_idx = epar.stim.targ_e(randperm(size(epar.stim.targ_e, 1), epar.targ), ...
                                                   epar.diff2);
 
+            id_targ = epar.stim.idx_easyStim;
+
         elseif epar.diff(tn) == 2 % Hard
 
             epar.stim.targ_idx = epar.stim.targ_d(randperm(size(epar.stim.targ_d, 1), epar.targ), ...
                                                   epar.diff3);
+
+            id_targ = epar.stim.idx_hardStim;
 
         end
 
@@ -64,6 +68,18 @@ function [epar, el] = exp_trial_init(epar, el, tn)
         epar.stim.txt_disp = [epar.stim.dist_e_idx; ...
                               epar.stim.dist_d_idx; ...
                               epar.stim.targ_idx];
+
+        % Generate array with IDs of masik stimulu, havin the same color as
+        % to-be-displayed stimuli in the current trial
+        no_eD = numel(epar.stim.dist_e_idx);
+        no_dD = numel(epar.stim.dist_d_idx);
+        no_t  = numel(epar.stim.targ_idx);
+
+        epar.stim.txt_disp_mask = [zeros(no_eD, 1) + epar.stim.comp(epar.stim.idx_easyStim); ...
+                                   zeros(no_dD, 1) + epar.stim.comp(epar.stim.idx_hardStim); ...
+                                   zeros(no_t, 1)  + epar.stim.comp(id_targ)];
+
+        epar.stim.txt_disp_mask(isnan(epar.stim.txt_disp)) = NaN;
 
     % In Experiment 3, we show both targets in each trial
     elseif epar.expNo == 3
@@ -92,6 +108,18 @@ function [epar, el] = exp_trial_init(epar, el, tn)
                               epar.stim.dist_d_idx; ...
                               epar.stim.targ_idx_e; ...
                               epar.stim.targ_idx_d];
+
+        % Generate array with IDs of masik stimulu, havin the same color as
+        % to-be-displayed stimuli in the current trial
+        no_eD = numel(epar.stim.dist_e_idx);
+        no_dD = numel(epar.stim.dist_d_idx);
+        no_tE = numel(epar.stim.targ_idx_e);
+        no_tD = numel(epar.stim.targ_idx_d);
+
+        epar.stim.txt_disp_mask = [zeros(no_eD, 1) + epar.stim.comp(epar.stim.idx_easyStim); ...
+                                   zeros(no_dD, 1) + epar.stim.comp(epar.stim.idx_hardStim); ...
+                                   zeros(no_tE, 1) + epar.stim.comp(epar.stim.idx_easyStim); ...
+                                   zeros(no_tD, 1) + epar.stim.comp(epar.stim.idx_hardStim)];
 
     end
 
