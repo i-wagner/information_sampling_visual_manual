@@ -8,7 +8,6 @@ epar.timer_cum = 0;     % Timer, tracking the overall passed time
 
 % Timing
 epar.feedback_dur = 1.5; % Display duration of feedback screen (in seconds)
-epar.overlap      = 0.2; % Overlap time between stimulus onset/fixation offset (in seconds)
 epar.maxDwellTime = 0.5; % Maximum dwell time per stimulus (in seconds)
 
 % Rewards
