@@ -35,6 +35,7 @@ function epar = exp_trial_show(epar, tn)
     end
 
     % Draw rest
+    epar.stim.txt_disp      = epar.stim.txt_disp(~isnan(epar.stim.txt_disp));
     epar.stim.txt_disp_mask = epar.stim.txt_disp_mask(~isnan(epar.stim.txt_disp_mask));
 
     % If at least one distractor has to be shown, draw the texture(s)

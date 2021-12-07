@@ -79,8 +79,6 @@ function [epar, el] = exp_trial_init(epar, el, tn)
                                    zeros(no_dD, 1) + epar.stim.comp(epar.stim.idx_hardStim); ...
                                    zeros(no_t, 1)  + epar.stim.comp(id_targ)];
 
-        epar.stim.txt_disp_mask(isnan(epar.stim.txt_disp)) = NaN;
-
     % In Experiment 3, we show both targets in each trial
     elseif epar.expNo == 3
 
@@ -122,6 +120,7 @@ function [epar, el] = exp_trial_init(epar, el, tn)
                                    zeros(no_tD, 1) + epar.stim.comp(epar.stim.idx_hardStim)];
 
     end
+    epar.stim.txt_disp_mask(isnan(epar.stim.txt_disp)) = NaN;
 
 
     %% Set rect for stimuli
