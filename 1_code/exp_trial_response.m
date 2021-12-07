@@ -15,7 +15,7 @@ function epar = exp_trial_response(epar, el, tn)
     dispStim_maxDwellTime = zeros(1, numel(epar.stim.txt_disp_mask)) + epar.maxDwellTime; % Helper variable; track how much viewing time is left for stimuli
     txt_disp_replace      = epar.stim.txt_disp_mask;                                      % Helper variable; dynamically repalce stimuli with rectangle/mask
 %     bb                    = 1;
-    time_current          = NaN(5000, 1);
+    time_current          = NaN(10000, 1);
     time_idx              = 1;
     idx_lastFixatedAOI    = NaN;
 
@@ -30,67 +30,51 @@ function epar = exp_trial_response(epar, el, tn)
         time_current(time_idx) = GetSecs;
         if ~isnan(ex)
 
-            % Check if gaze is within any AOI
-            ex = (ex - epar.x_center) .* epar.XPIX2DEG; % Transform gaze coordinates to deg
+            % Get current gaze position and converrt to deg visual angle
+            ex = (ex - epar.x_center) .* epar.XPIX2DEG;
             ey = (ey - epar.y_center) .* epar.YPIX2DEG;
 
+            % Check if gaze is in any AOI
             [in, idx] = inpolygons(ex, ey, xCircS_row, yCircS_row);
-
-            idx = cell2mat(idx);
+            idx       = cell2mat(idx);
             if iscell(in)
 
                 in = cell2mat(in);
 
             end
 
-            % If gaze is located within one of the AOIs, check if it landed
-            % in the AOI for the first time or if it dwelled within the AOI
-            % for a while already
-            if in == 1
+            if in == 1 % Gaze in any AOI
 
-                if isnan(idx_lastFixatedAOI) % Gaze arrived in AOI for first time
+                % If gaze is in any AOI, check if it landed in the AOI for
+                % the first time or if gaze is dwelling in the same AOI
+                if isnan(idx_lastFixatedAOI)                                                      % Gaze arrived in AOI for first time
 
                     % Save arrival time and idx of AOI, in which gaze landed
                     time_arrivedInAOI  = GetSecs; % Arrival time
                     idx_lastFixatedAOI = idx;     % Index
 
-                elseif idx == idx_lastFixatedAOI % Gaze stayed in AOI
+                elseif idx == idx_lastFixatedAOI && dispStim_maxDwellTime(idx_lastFixatedAOI) > 0 % Gaze is dwelling in an AOI & some dwell time for AOI is left
 
-                    % Calculate how long gaze is within AOI
-                    time_dwellTime = time_current(time_idx) - time_arrivedInAOI;
+                    % Get current and remaining dwell time for current AOI
+                    time_dwellTime     = time_current(time_idx) - time_arrivedInAOI;
+                    remainingDwellTime = dispStim_maxDwellTime(idx_lastFixatedAOI);
 
-                    % Display rectangle if some dwell time for stimulus is
-                    % left, show mask otherwise
-                    fixedStimDwellTime = dispStim_maxDwellTime(idx_lastFixatedAOI);
-                    if fixedStimDwellTime > 0 && time_dwellTime < fixedStimDwellTime % Dwell time left
+                    % Check if some dwell time is left for the current AOI
+                    % and if the rectangle/mask was not shown already
+                    if time_dwellTime <= remainingDwellTime && ~dispStim_rectOn(idx_lastFixatedAOI)   % Dwell time left & rectangle not already shown
 
-                        % Update remaining maximum dwell time of last fixated stimulus
-                        dispStim_maxDwellTime(idx_lastFixatedAOI) = ...
-                            dispStim_maxDwellTime(idx_lastFixatedAOI) - ...
-                                (time_current(time_idx) - time_arrivedInAOI);
+                        txt_disp_replace(idx_lastFixatedAOI) = epar.stim.txt_disp(idx_lastFixatedAOI);
 
-                        % Check if we are showing mask or rectangle
-                        if ~dispStim_rectOn(idx_lastFixatedAOI)
+                        exp_target_draw(epar.window, epar.x_center, epar.y_center, ...
+                                        epar.fixsize(2), epar.fixsize(1), epar.fixcol, epar.gray);
+                        Screen('DrawTextures', epar.window, ...
+                               txt_disp_replace(1:length(txt_disp_replace)), [], ...
+                               epar.tex_rect(:, 1:length(txt_disp_replace)), [], 0);
+                        Screen('Flip', epar.window);
 
-                            txt_disp_replace(idx_lastFixatedAOI) = epar.stim.txt_disp(idx_lastFixatedAOI);
+                        dispStim_rectOn(idx_lastFixatedAOI) = 1;
 
-                            exp_target_draw(epar.window, epar.x_center, epar.y_center, ...
-                                            epar.fixsize(2), epar.fixsize(1), epar.fixcol, epar.gray);
-                            Screen('DrawTextures', epar.window, ...
-                                   txt_disp_replace(1:length(txt_disp_replace)), [], ...
-                                   epar.tex_rect(:, 1:length(txt_disp_replace)), [], 0);
-                            Screen('Flip', epar.window);
-%                             if epar.EL
-% 
-%                                 Eyelink('Message', 'MAX_DWELL_EXC');
-% 
-%                             end
-                            
-                            dispStim_rectOn(idx_lastFixatedAOI) = 1;
-
-                        end
-
-                    elseif fixedStimDwellTime <= 0 && ~dispStim_maskOn(idx_lastFixatedAOI) % No dwell time left
+                    elseif time_dwellTime > epar.maxDwellTime && ~dispStim_maskOn(idx_lastFixatedAOI) % No dwell time left & mask not already shown
 
                         txt_disp_replace(idx_lastFixatedAOI) = epar.stim.txt_disp_mask(idx_lastFixatedAOI);
 
@@ -100,21 +84,30 @@ function epar = exp_trial_response(epar, el, tn)
                                txt_disp_replace(1:length(txt_disp_replace)), [], ...
                                epar.tex_rect(:, 1:length(txt_disp_replace)), [], 0);
                         Screen('Flip', epar.window);
-%                         if epar.EL
-% 
-%                             Eyelink('Message', 'MAX_DWELL_EXC');
-% 
-%                         end
 
                         dispStim_maskOn(idx_lastFixatedAOI) = 1;
 
                     end
 
-                elseif idx ~= idx_lastFixatedAOI % Gaze went on to new AOI
+                elseif idx ~= idx_lastFixatedAOI                                                  % Gaze went on to new AOI
 
                     dispStim_maxDwellTime(idx_lastFixatedAOI) = ...
                         dispStim_maxDwellTime(idx_lastFixatedAOI) - ...
                             (time_current(time_idx-1) - time_arrivedInAOI);
+                    if ~dispStim_maskOn(idx_lastFixatedAOI)
+
+                        txt_disp_replace(idx_lastFixatedAOI) = epar.stim.txt_disp_mask(idx_lastFixatedAOI);
+
+                        exp_target_draw(epar.window, epar.x_center, epar.y_center, ...
+                                        epar.fixsize(2), epar.fixsize(1), epar.fixcol, epar.gray);
+                        Screen('DrawTextures', epar.window, ...
+                               txt_disp_replace(1:length(txt_disp_replace)), [], ...
+                               epar.tex_rect(:, 1:length(txt_disp_replace)), [], 0);
+                        Screen('Flip', epar.window);
+
+                        dispStim_rectOn(idx_lastFixatedAOI) = 0;
+
+                    end
 
                     % Save arrival time and idx of the stimulus, on which
                     % gaze landed
@@ -131,6 +124,20 @@ function epar = exp_trial_response(epar, el, tn)
                     dispStim_maxDwellTime(idx_lastFixatedAOI) = ...
                         dispStim_maxDwellTime(idx_lastFixatedAOI) - ...
                             (time_current(time_idx-1) - time_arrivedInAOI);
+                    if ~dispStim_maskOn(idx_lastFixatedAOI)
+
+                        txt_disp_replace(idx_lastFixatedAOI) = epar.stim.txt_disp_mask(idx_lastFixatedAOI);
+
+                        exp_target_draw(epar.window, epar.x_center, epar.y_center, ...
+                                        epar.fixsize(2), epar.fixsize(1), epar.fixcol, epar.gray);
+                        Screen('DrawTextures', epar.window, ...
+                               txt_disp_replace(1:length(txt_disp_replace)), [], ...
+                               epar.tex_rect(:, 1:length(txt_disp_replace)), [], 0);
+                        Screen('Flip', epar.window);
+
+                        dispStim_rectOn(idx_lastFixatedAOI) = 0;
+
+                    end
 
                 end
 
