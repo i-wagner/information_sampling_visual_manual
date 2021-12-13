@@ -1,4 +1,4 @@
-function [ex, ey] = exp_el_eye_pos(el)
+function [ex, ey, flag_missingSample] = exp_el_eye_pos(el)
 
     eye_used = Eyelink('EyeAvailable'); % Get eye that's tracked
     if eye_used == el.BINOCULAR         % If both eyes are tracked
@@ -9,6 +9,8 @@ function [ex, ey] = exp_el_eye_pos(el)
 
 
     %% Get the sample in the form of an event structure
+    flag_missingSample = 0;
+
     ex = NaN;
     ey = NaN;
     if Eyelink('NewFloatSampleAvailable') > 0
@@ -25,6 +27,10 @@ function [ex, ey] = exp_el_eye_pos(el)
 
                 ex = x;
                 ey = y;
+
+            else
+
+                flag_missingSample = 1;
 
             end
 
