@@ -9,7 +9,7 @@ epar.timer_cum = 0;     % Timer, tracking the overall passed time
 % Timing
 epar.feedback_dur      = 1.50; % Display duration of feedback screen (in seconds)
 epar.maxDwellTime      = 0.50; % Maximum dwell time per stimulus (in seconds)
-epar.stimTurnOffOffset = 0.10; % Delay relative to time when an AOI was left, after which a stimulus is turned off
+epar.stimTurnOffOffset = 0.25; % Delay relative to time when an AOI was left, after which a stimulus is turned off
 
 % Rewards
 epar.score   = 0;    % Starting score
