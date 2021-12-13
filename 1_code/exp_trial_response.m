@@ -59,7 +59,7 @@ function epar = exp_trial_response(epar, el, tn)
     fixatedAoi_currently   = NaN;                                                          % Helper variable; tracks which AOI was fixated in last loop iteration
     fixatedAoi_arrivalTime = NaN(numel(epar.stim.txt_disp_mask), 1);                       % Helper variable; tracks time when gaze entered a new AOI
     fixatedAoi_departTime  = NaN(numel(epar.stim.txt_disp_mask), 1);                       % Helper variable; tracks when gaze left a ficated AOI
-
+% ShowCursor('Arrow');
     response_start_time = GetSecs;
     while 1
 
@@ -67,9 +67,10 @@ function epar = exp_trial_response(epar, el, tn)
         fixatedAoi_last = fixatedAoi_currently;
 
         % Gaze contigent display
-        [ex, ey] = exp_el_eye_pos(el);
-        ex       = (ex - epar.x_center) .* epar.XPIX2DEG;
-        ey       = (ey - epar.y_center) .* epar.YPIX2DEG;
+        [ex, ey, flag_missingSample] = exp_el_eye_pos(el);
+% [ex, ey] = GetMouse(epar.window);
+        ex                           = (ex - epar.x_center) .* epar.XPIX2DEG;
+        ey                           = (ey - epar.y_center) .* epar.YPIX2DEG;
         if ~isnan(ex)
 
             % Get which AOI is fixated during current check
@@ -163,7 +164,7 @@ function epar = exp_trial_response(epar, el, tn)
 
             end
 
-        else
+        elseif isnan(ex) & flag_missingSample
 
             % Update remaining dwell time
             if ~isnan(fixatedAoi_last)
