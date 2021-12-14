@@ -1,34 +1,31 @@
 function exp_instruction(epar)
 
-    %% Read instruction text
-    Screen('FillRect', epar.window, epar.gray);
-    fid = fopen(sprintf('exp_instruction_%d.txt', epar.expNo), 'rb');
-    instruction = fread(fid, [1, inf], 'char');
-    instruction = char(instruction);
-    fclose(fid);
+    %% Set instruction text
+    if ismember(epar.subject, epar.sub_blueE)
+
+        str_inst = 'Blaue hat ein groessere Luecke als Rot!';
+
+    else
+
+        str_inst = 'Rot hat ein groessere Luecke als Blau!';
+
+    end
 
 
-    %% Display the instruction text and the example stimuli
-    % Draw instruction text
-    DrawFormattedText(epar.window, sprintf(instruction), 'center', ...
-                      'center', epar.black, 100, [], [], 1.75);
-
-    % Randomly select if gap is left/right, up/down
+    %% Generate some example stimuli
     horStim = randperm(size(epar.targHor_idx, 2), 1);
     verStim = randperm(size(epar.targVert_idx, 2), 1);
 
     % Get indices of to-be-shown targets
-    epar.stim.targ_idxE = epar.stim.targ_e(epar.targHor_idx(1, horStim), ...
-                                           epar.diff2);
-    epar.stim.targ_idxD = epar.stim.targ_d(epar.targVert_idx(1, verStim), ...
-                                           epar.diff3);
+    epar.stim.targ_idxE = epar.stim.targ_e(epar.targHor_idx(1, horStim), epar.diff2);
+    epar.stim.targ_idxD = epar.stim.targ_d(epar.targVert_idx(1, verStim), epar.diff3);
 
     % Define screen coordinates
-    x1 = epar.x_center - 150;
-    x2 = epar.x_center + 150;
-    x3 = epar.x_center - 300;
-    x4 = epar.x_center + 300;
-    y  = epar.y_center + 450;
+    x1 = epar.x_center - 50;
+    x2 = epar.x_center + 50;
+    x3 = epar.x_center - 100;
+    x4 = epar.x_center + 100;
+    y  = epar.y_center + 50;
 
     % Define rect
     epar.texture.rect1 = CenterRectOnPoint([0 0 epar.pic_size epar.pic_size], x1, y);
@@ -36,18 +33,23 @@ function exp_instruction(epar)
     epar.texture.rect3 = CenterRectOnPoint([0 0 epar.pic_size epar.pic_size], x3, y);
     epar.texture.rect4 = CenterRectOnPoint([0 0 epar.pic_size epar.pic_size], x4, y);
 
-    % Draw stimuli
-    Screen('DrawTexture', epar.window, epar.stim.targ_idxE, [], epar.texture.rect1, [], 0); % Easy target
-    Screen('DrawTexture', epar.window, epar.stim.targ_idxD, [], epar.texture.rect2, [], 0); % Hard target
-    Screen('DrawTexture', epar.window, epar.stim.dist_e_br(epar.diff2), [], epar.texture.rect3, [], 0);
-    Screen('DrawTexture', epar.window, epar.stim.dist_d_tl(epar.diff3), [], epar.texture.rect4, [], 0);
+
+    %% Show instruction screen
+    Screen('FillRect', epar.window, epar.gray);
+    DrawFormattedText(epar.window, str_inst, 'center', ...
+                      'center', epar.black, 100, [], [], 1.75);                                         % Instruction text
+    Screen('DrawTexture', epar.window, epar.stim.targ_idxE, [], epar.texture.rect1, [], 0);             % Easy target
+    Screen('DrawTexture', epar.window, epar.stim.targ_idxD, [], epar.texture.rect2, [], 0);             % Difficult target
+    Screen('DrawTexture', epar.window, epar.stim.dist_e_br(epar.diff2), [], epar.texture.rect3, [], 0); % Easy distractor
+    Screen('DrawTexture', epar.window, epar.stim.dist_d_tl(epar.diff3), [], epar.texture.rect4, [], 0); % Difficult distractor
     Screen('Flip', epar.window);
 
-    % Wait for a buttonpress, before flipping to the next screen
+
+    %% Wait for a buttonpress, before flipping to the next screen
     while 1
 
         [~, keyCode] = KbWait([], 2);
-        if keyCode(KbName('Space'))
+        if keyCode(KbName('Return'))
 
             break
 
