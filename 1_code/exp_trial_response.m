@@ -196,7 +196,7 @@ function epar = exp_trial_response(epar, el, tn)
         % the stimulus orientation; i.e., if the stimulus is orientad vertically,
         % either the left or right key has to be preessed in order to proceed
         [~, ~, keyCode, ~] = KbCheck([]);
-        if keyCode(KbName('DownArrow'))
+        if keyCode(KbName('2'))
 
             response_end_time = GetSecs;
             epar.stim.gapResp(tn) = 1;
@@ -214,7 +214,7 @@ function epar = exp_trial_response(epar, el, tn)
 
             end
 
-        elseif keyCode(KbName('UpArrow'))
+        elseif keyCode(KbName('8'))
 
             response_end_time= GetSecs;
             epar.stim.gapResp(tn) = 2;
@@ -232,7 +232,7 @@ function epar = exp_trial_response(epar, el, tn)
 
             end
 
-        elseif keyCode(KbName('LeftArrow'))
+        elseif keyCode(KbName('4'))
 
             response_end_time = GetSecs;
             epar.stim.gapResp(tn) = 3;
@@ -250,7 +250,7 @@ function epar = exp_trial_response(epar, el, tn)
 
             end
 
-        elseif keyCode(KbName('RightArrow'))
+        elseif keyCode(KbName('6'))
 
             response_end_time = GetSecs;
             epar.stim.gapResp(tn) = 4;
