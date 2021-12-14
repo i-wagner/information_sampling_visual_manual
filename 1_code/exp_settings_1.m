@@ -71,7 +71,7 @@ end
 % Criteria for distance between neighbouring stimuli
 epar.distMin = 5;  % Min. distance between two stimuli (in deg)
 epar.distMax = 30; % Max. distance between two stimuli
-epar.spread  = 10; % Max. distance of a stimulus to the fixation cross 
+epar.spread  = 10; % Max. distance of a stimulus to the fixation cross
 
 % Generate grid with possible stimulus locations
 epar.x = (epar.spread - epar.spread * -1) .* rand(1000, 1) + epar.spread * -1;
@@ -115,10 +115,10 @@ elseif epar.expNo == 3
 
     % No. of targets per trial
     % In each trial of Experiment 3, both targets are shown
-    epar.trials.disBlocks(1:length(distractorNoS), 1) = 2; 
+    epar.trials.disBlocks(1:length(distractorNoS), 1) = 2;
 
     % No. of easy/hard distractors
-    % In each trial of Experiment 3, we show "maxNoOfStimuliInTrial - 
+    % In each trial of Experiment 3, we show "maxNoOfStimuliInTrial -
     % CurrentNoOfEasyDistractors" hard distractors
     epar.trials.disBlocks(:, 2) = distractorNoS';
     epar.trials.disBlocks(:, 3) = noOfStimInTrial - ...
@@ -135,7 +135,7 @@ for p = 1:1000
     disBlocks_idx = length(epar.trials.disBlocks);
 
     % Shuffle miniblock
-    disBlocks_idx = randperm(disBlocks_idx)'; 
+    disBlocks_idx = randperm(disBlocks_idx)';
 
     % Append the shuffled version to the empty array
     epar.trials.disBlocksRand = [epar.trials.disBlocksRand; ...
