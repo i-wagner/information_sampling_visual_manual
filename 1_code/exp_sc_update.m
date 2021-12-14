@@ -47,6 +47,7 @@ function epar = exp_sc_update(epar, tn)
 
         DrawFormattedText(epar.window, sprintf('Nicht fixiert!'), 'center', ...
                           'center', epar.black, [],[],[], 1.75);
+        Beeper(epar.fb_sound_freq, epar.fb_sound_vol, epar.fb_sound_dur);
 
     else % Everything's allright
 

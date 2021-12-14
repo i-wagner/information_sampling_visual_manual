@@ -8,6 +8,9 @@ epar.timer_cum = 0;     % Timer, tracking the overall passed time
 
 % Timing
 epar.feedback_dur      = 1.50; % Display duration of feedback screen (in seconds)
+epar.fb_sound_dur      = 0.50;
+epar.fb_sound_freq     = 1500;
+epar.fb_sound_vol      = 0.80;
 epar.maxDwellTime      = 0.50; % Maximum dwell time per stimulus (in seconds)
 epar.stimTurnOffOffset = 0.25; % Delay relative to time when an AOI was left, after which a stimulus is turned off
 
