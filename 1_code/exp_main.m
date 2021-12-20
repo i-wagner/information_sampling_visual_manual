@@ -146,4 +146,4 @@ save([epar.exp_path '/epar.mat'], 'epar');
 
 
 %% Display a subject's score in console
-strcat('This participants score is: ', num2str(epar.score))
+strcat('This participants score is: ', num2str(round(epar.score, 2)))
