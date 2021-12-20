@@ -29,8 +29,8 @@ epar.MONITOR_FREQ = 120;
 
 %% General Settings
 epar.CALIB_TRIALS = 0;
-epar.CALIB_X      = 10;                                 % Max. x position for calibration dot
-epar.CALIB_Y      = 10;                                 % Max. y position for calibration dot
+epar.CALIB_X      = 12;                                                   % Max. x position for calibration dot
+epar.CALIB_Y      = 12;                                                   % Max. y position for calibration dot
 epar.fixLoc       = [0 9.5];                                              % Onscreen location of fixation cross
 epar.fixLoc_px    = [(epar.fixLoc(1) / epar.XPIX2DEG) + epar.x_center ...
                      (epar.fixLoc(2) / epar.YPIX2DEG) + epar.y_center];   % Pixel location of fixation cross
