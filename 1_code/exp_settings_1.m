@@ -21,18 +21,17 @@ epar.rewardD = 0.02; % Reward hard target
 
 
 %% Balancing
-% Participant numbers, for which the blue stimulus is the easy one
-epar.sub_blueE = 1:2:100;
-
 % Get indices for easy/difficult mask stimuli
-% Odd subject numbers: easy is blue, hard is red
-if ismember(epar.subject, epar.sub_blueE)
+if mod(epar.subject, 2)         % Odd subject numbers: easy is blue, hard is red
+
+    epar.stim.diffFlag_blueEasy = 1;
 
     epar.stim.idx_easyStim = 2;
     epar.stim.idx_hardStim = 1;
 
-% Even subject numbers: easy is red, hard is blue
-else
+else                            % Even subject numbers: easy is red, hard is blue
+
+    epar.stim.diffFlag_blueEasy = 0;
 
     epar.stim.idx_easyStim = 1;
     epar.stim.idx_hardStim = 2;
