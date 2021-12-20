@@ -1,18 +1,18 @@
 function epar = exp_trial_response(epar, el, tn)
 
     %% DEBUG; show AOIs
-%     x_test = round((epar.x_pick(tn, :)./ epar.XPIX2DEG)+epar.x_center);
-%     y_test = round((epar.y_pick(tn, :)./ epar.YPIX2DEG)+epar.y_center);
+%     x_test = round((epar.x_pick(tn, :)./ epar.XPIX2DEG)+epar.fixLoc_px(1));
+%     y_test = round((epar.y_pick(tn, :)./ epar.YPIX2DEG)+epar.fixLoc_px(2));
 % 
 %     centeredRect = NaN(4, numel(x_test));
 %     for i = 1:numel(x_test)
 % 
-%         baseRect           = [0 0 5/epar.XPIX2DEG 5/epar.XPIX2DEG];
+%         baseRect           = [0 0 epar.aoiSize/epar.XPIX2DEG epar.aoiSize/epar.XPIX2DEG];
 %         centeredRect(:, i) = CenterRectOnPoint(baseRect, x_test(i), y_test(i))';
 % 
 %     end
 % 
-%     exp_target_draw(epar.window, epar.x_center, epar.y_center, ...
+%     exp_target_draw(epar.window, epar.fixLoc_px(1), epar.fixLoc_px(2), ...
 %                     epar.fixsize(2), epar.fixsize(1), epar.fixcol, epar.gray);
 %     if epar.expNo == 2 
 % 
@@ -69,8 +69,8 @@ function epar = exp_trial_response(epar, el, tn)
         % Gaze contigent display
         [ex, ey, flag_missingSample] = exp_el_eye_pos(el);
 % [ex, ey] = GetMouse(epar.window);
-        ex                           = (ex - epar.x_center) .* epar.XPIX2DEG;
-        ey                           = (ey - epar.y_center) .* epar.YPIX2DEG;
+        ex                           = (ex - epar.fixLoc_px(1)) .* epar.XPIX2DEG;
+        ey                           = (ey - epar.fixLoc_px(2)) .* epar.YPIX2DEG;
         if ~isnan(ex)
 
             % Get which AOI is fixated during current check
@@ -111,7 +111,7 @@ function epar = exp_trial_response(epar, el, tn)
 
                 stimToShow(fixatedAoi_currently) = epar.stim.txt_disp(fixatedAoi_currently);
 
-                exp_target_draw(epar.window, epar.x_center, epar.y_center, ...
+                exp_target_draw(epar.window, epar.fixLoc_px(1), epar.fixLoc_px(2), ...
                                 epar.fixsize(2), epar.fixsize(1), epar.fixcol, epar.gray);
 % Screen('FrameOval', epar.window, epar.black, centeredRect);
                 Screen('DrawTextures', epar.window, ...
@@ -132,7 +132,7 @@ function epar = exp_trial_response(epar, el, tn)
                 stimToShow(fixatedAoi_currently)        = epar.stim.txt_disp_mask(fixatedAoi_currently);
                 fixatedAoi_dwellExceed(fixatedAoi_last) = 1;
 
-                exp_target_draw(epar.window, epar.x_center, epar.y_center, ...
+                exp_target_draw(epar.window, epar.fixLoc_px(1), epar.fixLoc_px(2), ...
                                 epar.fixsize(2), epar.fixsize(1), epar.fixcol, epar.gray);
 % Screen('FrameOval', epar.window, epar.black, centeredRect);
                 Screen('DrawTextures', epar.window, ...
@@ -154,7 +154,7 @@ function epar = exp_trial_response(epar, el, tn)
                 stimToShow(li_turnOff)            = epar.stim.txt_disp_mask(li_turnOff);
                 fixatedAoi_departTime(li_turnOff) = NaN;
 
-                exp_target_draw(epar.window, epar.x_center, epar.y_center, ...
+                exp_target_draw(epar.window, epar.fixLoc_px(1), epar.fixLoc_px(2), ...
                                 epar.fixsize(2), epar.fixsize(1), epar.fixcol, epar.gray);
 % Screen('FrameOval', epar.window, epar.black, centeredRect);
                 Screen('DrawTextures', epar.window, ...
@@ -177,7 +177,7 @@ function epar = exp_trial_response(epar, el, tn)
             % Show masks when gaze signal is lost
             stimToShow = epar.stim.txt_disp_mask;
 
-            exp_target_draw(epar.window, epar.x_center, epar.y_center, ...
+            exp_target_draw(epar.window, epar.fixLoc_px(1), epar.fixLoc_px(2), ...
                             epar.fixsize(2), epar.fixsize(1), epar.fixcol, epar.gray);
 % Screen('FrameOval', epar.window, epar.black, centeredRect);
             Screen('DrawTextures', epar.window, ...
@@ -273,7 +273,7 @@ function epar = exp_trial_response(epar, el, tn)
         % Visualize gaze position
 %         pixbound_x= 0.5/epar.XPIX2DEG;
 %         pixbound_y= 0.5/epar.YPIX2DEG;
-%         exp_target_draw(epar.window, epar.x_center, epar.y_center, ...
+%         exp_target_draw(epar.window, epar.fixLoc_px(1), epar.fixLoc_px(2), ...
 %                         epar.fixsize(2), epar.fixsize(1), epar.fixcol, epar.gray);
 %         Screen('DrawTextures', epar.window, ...
 %                stimToShow(1:length(stimToShow)), [], ...

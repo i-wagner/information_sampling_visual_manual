@@ -6,7 +6,7 @@ function epar = exp_trial_show(epar, tn)
 
 
     %% Present fixation target
-    exp_target_draw(epar.window, epar.x_center, epar.y_center, ...
+    exp_target_draw(epar.window, epar.fixLoc_px(1), epar.fixLoc_px(2), ...
                     epar.fixsize(2), epar.fixsize(1), epar.fixcol, epar.gray);
     epar.time(1) = Screen('Flip', epar.window);
     if epar.EL
@@ -38,8 +38,8 @@ function epar = exp_trial_show(epar, tn)
     epar.stim.txt_disp      = epar.stim.txt_disp(~isnan(epar.stim.txt_disp));
     epar.stim.txt_disp_mask = epar.stim.txt_disp_mask(~isnan(epar.stim.txt_disp_mask));
 
-    % If at least one distractor has to be shown, draw the texture(s)
-    if size(epar.stim.txt_disp_mask, 1) > epar.targ
+    exp_target_draw(epar.window, epar.fixLoc_px(1), epar.fixLoc_px(2), ...
+                    epar.fixsize(2), epar.fixsize(1), epar.fixcol, epar.gray);
 
         Screen('DrawTextures', epar.window, epar.stim.txt_disp_mask(1:epar.trials.dist_num(tn)), [], ...
                epar.tex_rect(:, 1:epar.trials.dist_num(tn)));

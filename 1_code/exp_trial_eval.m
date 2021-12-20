@@ -30,8 +30,8 @@ function epar = exp_trial_eval(epar)
 
         % Check if the gaze was at the screen center, when the target(s) appeared
         fix_time          = data(display(4)-20:display(4)+80, col.x:col.y);
-        fix_time(:, 1)    = fix_time(:, 1) - epar.x_center; 
-        fix_time(:, 2)    = fix_time(:, 2) - epar.y_center;
+        fix_time(:, 1)    = fix_time(:, 1) - epar.fixLoc_px(1); 
+        fix_time(:, 2)    = fix_time(:, 2) - epar.fixLoc_px(2);
         fix_deviate_frame = sum(sum(abs(fix_time) > epar.fix_tol));
 
         if fix_deviate_frame > 0
