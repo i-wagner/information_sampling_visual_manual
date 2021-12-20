@@ -1,7 +1,7 @@
 function exp_instruction(epar)
 
     %% Set instruction text
-    if ismember(epar.subject, epar.sub_blueE)
+    if epar.stim.diffFlag_blueEasy
 
         str_inst = 'Blaue hat ein groessere Luecke als Rot!';
 
@@ -10,6 +10,7 @@ function exp_instruction(epar)
         str_inst = 'Rot hat ein groessere Luecke als Blau!';
 
     end
+    str_inst = [str_inst '\nNutzen Sie Ihre NICHT-DOMINANTE Hand fuer Tastatureingaben!'];
 
 
     %% Generate some example stimuli
@@ -25,7 +26,7 @@ function exp_instruction(epar)
     x2 = epar.x_center + 50;
     x3 = epar.x_center - 100;
     x4 = epar.x_center + 100;
-    y  = epar.y_center + 50;
+    y  = epar.y_center + 125;
 
     % Define rect
     epar.texture.rect1 = CenterRectOnPoint([0 0 epar.pic_size epar.pic_size], x1, y);
