@@ -77,66 +77,78 @@ function epar = exp_mon_init(epar)
     dirStim = dir('*.png');
 
     % Loop through folder content and process image files
-    epar.stim.cueR = [];
-    epar.stim.cueB = [];
-    for n = 1:length(dirStim)
+    epar.stim.targ_e_b  = [];
+    epar.stim.targ_e_l  = [];
+    epar.stim.targ_e_r  = [];
+    epar.stim.targ_e_t  = [];
+    epar.stim.targ_d_b  = [];
+    epar.stim.targ_d_l  = [];
+    epar.stim.targ_d_r  = [];
+    epar.stim.targ_d_t  = [];
+    epar.stim.dist_e_bl = [];
+    epar.stim.dist_e_br = [];
+    epar.stim.dist_e_tl = [];
+    epar.stim.dist_e_tr = [];
+    epar.stim.dist_d_bl = [];
+    epar.stim.dist_d_br = [];
+    epar.stim.dist_d_tl = [];
+    epar.stim.dist_d_tr = [];
+    epar.stim.cueR      = [];
+    epar.stim.cueB      = [];
+    for n = 1:numel(dirStim)
 
         img = imread(dirStim(n).name);
         img = preprocessStimuli(img, epar.stimCont); % Preprocess stimulus
 
         % Create texture
-        epar.stim.txt(n) = Screen('MakeTexture', epar.window, img);
+        stim_txt = Screen('MakeTexture', epar.window, img);
 
         % Sort stimuli as targets and distractors
         % Targets are defined by a "t" at the start of their filename
         if strncmpi(dirStim(n).name, 't', 1)
 
-            epar.stim.targ(n) = epar.stim.txt(n);
-
             % Sort targets by difficulty
             if ~isempty(strfind(dirStim(n).name, 'blue')) % Blue targets
 
-                if ismember(epar.subject, epar.sub_blueE) % Blue is easy for half of participants
+                if epar.stim.diffFlag_blueEasy % Blue is easy for half of participants
 
-                    epar.stim.targ_e(n) = epar.stim.txt(n);
                     if ~isempty(strfind(dirStim(n).name, '-s-')) % Seperate targets by gap position
                                                                  % Gap position is defined by the
                                                                  % abbrivation of a cardinal point in its filename
 
-                        epar.stim.targ_e_b(n) = epar.stim.txt(n);
+                        epar.stim.targ_e_b = [epar.stim.targ_e_b stim_txt];
 
                     elseif ~isempty(strfind(dirStim(n).name, '-w-'))
 
-                        epar.stim.targ_e_l(n) = epar.stim.txt(n);
+                        epar.stim.targ_e_l = [epar.stim.targ_e_l stim_txt];
 
                     elseif ~isempty(strfind(dirStim(n).name, '-e-'))
 
-                        epar.stim.targ_e_r(n) = epar.stim.txt(n);
+                        epar.stim.targ_e_r = [epar.stim.targ_e_r stim_txt];
 
                     elseif ~isempty(strfind(dirStim(n).name, '-n-'))
 
-                        epar.stim.targ_e_t(n) = epar.stim.txt(n);
+                        epar.stim.targ_e_t = [epar.stim.targ_e_t stim_txt];
 
                     end
 
                 else % Blue is hard for other half of participants
 
-                    epar.stim.targ_d(n) = epar.stim.txt(n);
                     if ~isempty(strfind(dirStim(n).name, '-s-'))
 
-                        epar.stim.targ_d_b(n) = epar.stim.txt(n);
+                        epar.stim.targ_d_b = [epar.stim.targ_d_b stim_txt];
 
                     elseif ~isempty(strfind(dirStim(n).name, '-w-'))
 
-                        epar.stim.targ_d_l(n) = epar.stim.txt(n);
+                        epar.stim.targ_d_l = [epar.stim.targ_d_l stim_txt];
 
                     elseif ~isempty(strfind(dirStim(n).name, '-e-'))
 
-                        epar.stim.targ_d_r(n) = epar.stim.txt(n);
+                        epar.stim.targ_d_r = [epar.stim.targ_d_r stim_txt];
 
                     elseif ~isempty(strfind(dirStim(n).name, '-n-'))
 
-                        epar.stim.targ_d_t(n) = epar.stim.txt(n);
+                        epar.stim.targ_d_t = [epar.stim.targ_d_t stim_txt];
 
                     end
 
@@ -144,45 +156,43 @@ function epar = exp_mon_init(epar)
 
             else % Red targets
 
-                if ismember(epar.subject, epar.sub_blueE) % Red is hard for half of participants
+                if epar.stim.diffFlag_blueEasy % Red is hard for half of participants
 
-                    epar.stim.targ_d(n) = epar.stim.txt(n);
                     if ~isempty(strfind(dirStim(n).name, '-s-'))
 
-                        epar.stim.targ_d_b(n) = epar.stim.txt(n);
+                        epar.stim.targ_d_b = [epar.stim.targ_d_b stim_txt];
 
                     elseif ~isempty(strfind(dirStim(n).name, '-w-'))
 
-                        epar.stim.targ_d_l(n) = epar.stim.txt(n);
+                        epar.stim.targ_d_l = [epar.stim.targ_d_l stim_txt];
 
                     elseif ~isempty(strfind(dirStim(n).name, '-e-'))
 
-                        epar.stim.targ_d_r(n) = epar.stim.txt(n);
+                        epar.stim.targ_d_r = [epar.stim.targ_d_r stim_txt];
 
                     elseif ~isempty(strfind(dirStim(n).name, '-n-'))
 
-                        epar.stim.targ_d_t(n) = epar.stim.txt(n);
+                        epar.stim.targ_d_t = [epar.stim.targ_d_t stim_txt];
 
                     end
 
                 else % Red is easy for other half of participants
 
-                    epar.stim.targ_e(n) = epar.stim.txt(n);
                     if ~isempty(strfind(dirStim(n).name, '-s-'))
 
-                        epar.stim.targ_e_b(n) = epar.stim.txt(n);
+                        epar.stim.targ_e_b = [epar.stim.targ_e_b stim_txt];
 
                     elseif ~isempty(strfind(dirStim(n).name, '-w-'))
 
-                        epar.stim.targ_e_l(n) = epar.stim.txt(n);
+                        epar.stim.targ_e_l = [epar.stim.targ_e_l stim_txt];
 
                     elseif ~isempty(strfind(dirStim(n).name, '-e-'))
 
-                        epar.stim.targ_e_r(n) = epar.stim.txt(n);
+                        epar.stim.targ_e_r = [epar.stim.targ_e_r stim_txt];
 
                     elseif ~isempty(strfind(dirStim(n).name, '-n-'))
 
-                        epar.stim.targ_e_t(n) = epar.stim.txt(n);
+                        epar.stim.targ_e_t = [epar.stim.targ_e_t stim_txt];
 
                     end
 
@@ -192,48 +202,45 @@ function epar = exp_mon_init(epar)
 
         else % If a stimulus is not a target, it's a distractor
 
-            epar.stim.dist(n) = epar.stim.txt(n);
             if ~isempty(strfind(dirStim(n).name, 'blue'))
 
-                if ismember(epar.subject, epar.sub_blueE)
+                if epar.stim.diffFlag_blueEasy
 
-                    epar.stim.dist_e(n) = epar.stim.txt(n);
                     if ~isempty(strfind(dirStim(n).name, '-sw-'))
 
-                        epar.stim.dist_e_bl(n) = epar.stim.txt(n);
+                        epar.stim.dist_e_bl = [epar.stim.dist_e_bl stim_txt];
 
                     elseif ~isempty(strfind(dirStim(n).name, '-se-'))
 
-                        epar.stim.dist_e_br(n) = epar.stim.txt(n);
+                        epar.stim.dist_e_br = [epar.stim.dist_e_br stim_txt];
 
                     elseif ~isempty(strfind(dirStim(n).name, '-nw-'))
 
-                        epar.stim.dist_e_tl(n) = epar.stim.txt(n);
+                        epar.stim.dist_e_tl = [epar.stim.dist_e_tl stim_txt];
 
                     elseif ~isempty(strfind(dirStim(n).name, '-ne-'))
 
-                        epar.stim.dist_e_tr(n) = epar.stim.txt(n);
+                        epar.stim.dist_e_tr = [epar.stim.dist_e_tr stim_txt];
 
                     end
 
                 else
 
-                    epar.stim.dist_d(n) = epar.stim.txt(n);
                     if ~isempty(strfind(dirStim(n).name, '-sw-'))
 
-                        epar.stim.dist_d_bl(n) = epar.stim.txt(n);
+                        epar.stim.dist_d_bl = [epar.stim.dist_d_bl stim_txt];
 
                     elseif ~isempty(strfind(dirStim(n).name, '-se-'))
 
-                        epar.stim.dist_d_br(n) = epar.stim.txt(n);
+                        epar.stim.dist_d_br = [epar.stim.dist_d_br stim_txt];
 
                     elseif ~isempty(strfind(dirStim(n).name, '-nw-'))
 
-                        epar.stim.dist_d_tl(n) = epar.stim.txt(n);
+                        epar.stim.dist_d_tl = [epar.stim.dist_d_tl stim_txt];
 
                     elseif ~isempty(strfind(dirStim(n).name, '-ne-'))
 
-                        epar.stim.dist_d_tr(n) = epar.stim.txt(n);
+                        epar.stim.dist_d_tr = [epar.stim.dist_d_tr stim_txt];
 
                     end
 
@@ -241,45 +248,43 @@ function epar = exp_mon_init(epar)
 
             else
 
-                if ismember(epar.subject, epar.sub_blueE)
+                if epar.stim.diffFlag_blueEasy
 
-                    epar.stim.dist_d(n) = epar.stim.txt(n);
                     if ~isempty(strfind(dirStim(n).name, '-sw-'))
 
-                        epar.stim.dist_d_bl(n) = epar.stim.txt(n);
+                        epar.stim.dist_d_bl = [epar.stim.dist_d_bl stim_txt];
 
                     elseif ~isempty(strfind(dirStim(n).name, '-se-'))
 
-                        epar.stim.dist_d_br(n) = epar.stim.txt(n);
+                        epar.stim.dist_d_br = [epar.stim.dist_d_br stim_txt];
 
                     elseif ~isempty(strfind(dirStim(n).name, '-nw-'))
 
-                        epar.stim.dist_d_tl(n) = epar.stim.txt(n);
+                        epar.stim.dist_d_tl = [epar.stim.dist_d_tl stim_txt];
 
                     elseif ~isempty(strfind(dirStim(n).name, '-ne-'))
 
-                        epar.stim.dist_d_tr(n) = epar.stim.txt(n);
+                        epar.stim.dist_d_tr = [epar.stim.dist_d_tr stim_txt];
 
                     end
 
                 else
 
-                    epar.stim.dist_e(n) = epar.stim.txt(n);
                     if ~isempty(strfind(dirStim(n).name, '-sw-'))
 
-                        epar.stim.dist_e_bl(n) = epar.stim.txt(n);
+                        epar.stim.dist_e_bl = [epar.stim.dist_e_bl stim_txt];
 
                     elseif ~isempty(strfind(dirStim(n).name, '-se-'))
 
-                        epar.stim.dist_e_br(n) = epar.stim.txt(n);
+                        epar.stim.dist_e_br = [epar.stim.dist_e_br stim_txt];
 
                     elseif ~isempty(strfind(dirStim(n).name, '-nw-'))
 
-                        epar.stim.dist_e_tl(n) = epar.stim.txt(n);
+                        epar.stim.dist_e_tl = [epar.stim.dist_e_tl stim_txt];
 
                     elseif ~isempty(strfind(dirStim(n).name, '-ne-'))
 
-                        epar.stim.dist_e_tr(n) = epar.stim.txt(n);
+                        epar.stim.dist_e_tr = [epar.stim.dist_e_tr stim_txt];
 
                     end
 
@@ -336,36 +341,6 @@ function epar = exp_mon_init(epar)
 
 
     %% Create variables with easy/hard targets/distractors
-    % Remove empty entries from the texture variable. Those were created in
-    % the loop, because I am an idiot and indexed instead of just
-    % concatenating
-    % Targets
-    epar.stim.txt      = epar.stim.txt(epar.stim.txt ~= 0);
-    epar.stim.targ     = epar.stim.targ(epar.stim.targ  ~= 0);
-    epar.stim.targ_e   = epar.stim.targ_e(epar.stim.targ_e ~= 0);
-    epar.stim.targ_e_b = epar.stim.targ_e_b(epar.stim.targ_e_b ~= 0);
-    epar.stim.targ_e_l = epar.stim.targ_e_l(epar.stim.targ_e_l ~= 0);
-    epar.stim.targ_e_r = epar.stim.targ_e_r(epar.stim.targ_e_r ~= 0);
-    epar.stim.targ_e_t = epar.stim.targ_e_t(epar.stim.targ_e_t ~= 0);
-    epar.stim.targ_d   = epar.stim.targ_d(epar.stim.targ_d ~= 0);
-    epar.stim.targ_d_b = epar.stim.targ_d_b(epar.stim.targ_d_b ~= 0);
-    epar.stim.targ_d_l = epar.stim.targ_d_l(epar.stim.targ_d_l ~= 0);
-    epar.stim.targ_d_r = epar.stim.targ_d_r(epar.stim.targ_d_r ~= 0);
-    epar.stim.targ_d_t = epar.stim.targ_d_t(epar.stim.targ_d_t ~= 0);
-
-    % Distractors
-    epar.stim.dist      = epar.stim.dist(epar.stim.dist ~= 0);
-    epar.stim.dist_e    = epar.stim.dist_e(epar.stim.dist_e ~= 0);
-    epar.stim.dist_e_bl = epar.stim.dist_e_bl(epar.stim.dist_e_bl ~= 0);
-    epar.stim.dist_e_br = epar.stim.dist_e_br(epar.stim.dist_e_br ~= 0);
-    epar.stim.dist_e_tl = epar.stim.dist_e_tl(epar.stim.dist_e_tl ~= 0);
-    epar.stim.dist_e_tr = epar.stim.dist_e_tr(epar.stim.dist_e_tr ~= 0);
-    epar.stim.dist_d    = epar.stim.dist_d(epar.stim.dist_d ~= 0);
-    epar.stim.dist_d_bl = epar.stim.dist_d_bl(epar.stim.dist_d_bl ~= 0);
-    epar.stim.dist_d_br = epar.stim.dist_d_br(epar.stim.dist_d_br ~= 0);
-    epar.stim.dist_d_tl = epar.stim.dist_d_tl(epar.stim.dist_d_tl ~= 0);
-    epar.stim.dist_d_tr = epar.stim.dist_d_tr(epar.stim.dist_d_tr ~= 0);
-
     % Columns represent different difficulty levels (1-16), rows represent
     % different positions of the gap (1 == bottom, 2 == left, 3 == right,
     % 4 == top)
