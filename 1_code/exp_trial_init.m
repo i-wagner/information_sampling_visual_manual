@@ -130,24 +130,19 @@ function [epar, el] = exp_trial_init(epar, el, tn)
     epar.trials.dist_num(tn) = epar.trials.disBlocksRand(tn, 2) + ... % Overall
                                epar.trials.disBlocksRand(tn, 3);
 
+    % Determine the center of the stimulus area
+    stim_area_xCenter = epar.fixLoc(1);
+    stim_area_yCenter= min(epar.y) + ((max(epar.y) - min(epar.y)) / 2);
+
     % Randomly pick x grid locations for the to-be-shown stimuli
+    x_pick  = stim_area_xCenter;
+    y_pick  = stim_area_yCenter;
     counter = 2;
     while 1
 
-        % Pick the first position, which is zero
-        % This location will be removed later, but has to be included
-        % in the beginning to make sure each picked stimulus location
-        % has a given distance to the screen center/fixation cross
-        if counter == 2
-
-            x_pick = 0;
-            y_pick = 0;
-
-        end
-
         % Randomly draw one x-/y-position
-        thisX = epar.x(randi(length(epar.x), 1));
-        thisY = epar.y(randi(length(epar.y), 1));
+        thisX = epar.x(randi(numel(epar.x), 1));
+        thisY = epar.y(randi(numel(epar.y), 1));
 
         x_pick(counter) = thisX;
         y_pick(counter) = thisY;
@@ -158,9 +153,7 @@ function [epar, el] = exp_trial_init(epar, el, tn)
         distancesVec = [x_pick' y_pick'];
         distances    = pdistq(distancesVec);
         minDistance  = min(distances);
-        maxDistance  = max(distances);
-
-        if minDistance >= epar.distMin && maxDistance <= epar.distMax
+        if minDistance >= epar.distMin
 
             counter = counter + 1;
 
@@ -171,59 +164,54 @@ function [epar, el] = exp_trial_init(epar, el, tn)
 
         end
 
-        % We seek to shown an equal number of stimuli left, right, 
-        % above, below the fixation cross
-        if mod(epar.targ+epar.trials.dist_num(tn), 2) ~= 0
+        % If we have an odd number of stimuli to-be-shown in the
+        % current trial, we remove one position from the drawn
+        % distribution, check if the remaining positions are
+        % distributed evenly across the screen, and add the removed
+        % position back into the distribution
+        if mod(epar.targ + epar.trials.dist_num, 2) ~= 0 && ...
+           numel(x_pick(2:end)) == epar.targ + epar.trials.dist_num
 
-            % If we have an odd number of stimuli to-be-shown in the
-            % current trial, we remove one position from the drawn
-            % distribution, check if the remaining positions are
-            % distributed evenly across the screen, and add the removed
-            % position back into the distribution
-            if size(x_pick(2:end), 2) == epar.targ+epar.trials.dist_num(tn)
+            % Put the last position into a new array, and delete it
+            % from the main array
+            x_pick4     = x_pick(end);
+            y_pick4     = y_pick(end);
+            x_pick(end) = [];
+            y_pick(end) = [];
 
-                % Put the last position into a new array, and delete it
-                % from the main array
-                x_pick4     = x_pick(end);
-                y_pick4     = y_pick(end);
-                x_pick(end) = [];
-                y_pick(end) = [];
+            % Compare if there is an equal number of stimuli
+            % above, below, left and right of the stimulus area
+            if numel(x_pick(x_pick > stim_area_xCenter)) == numel(x_pick(x_pick < stim_area_xCenter)) && ...
+               numel(y_pick(y_pick > stim_area_yCenter)) == numel(y_pick(y_pick < stim_area_yCenter))
 
-                % Compare if there is an equal number of stimuli
-                % above, below, left and right of the fixation cross
-                if length(x_pick(x_pick > 0)) == length(x_pick(x_pick < 0)) && ...
-                   length(y_pick(y_pick > 0)) == length(y_pick(y_pick < 0))
+                % If so, put the deleted position in its place again 
+                x_pick(end+1) = x_pick4;
+                y_pick(end+1) = y_pick4;
 
-                    % If so, put the deleted position in its place again 
-                    x_pick(end+1) = x_pick4;
-                    y_pick(end+1) = y_pick4;
+                % And get rid of the zero coordiantes
+                x_pick = x_pick(2:end);
+                y_pick = y_pick(2:end);
+                break
 
-                    % And get rid of the zero coordiantes
-                    x_pick = x_pick(2:end);
-                    y_pick = y_pick(2:end);
-                    break
+            % Break the loop if there are enough positions, and those 
+            % are evenly distributed across the screen; otherwise,
+            % clean the drawn positions and keep drawing until the 
+            % criteria are met 
+            else
 
-                % Break the loop if there are enough positions, and those 
-                % are evenly distributed across the screen; otherwise,
-                % clean the drawn positions and keep drawing until the 
-                % criteria are met 
-                else
-
-                    counter = 2;
-                    x_pick  = [];
-                    y_pick  = [];
-
-                end
+                counter = 2;
+                x_pick  = stim_area_xCenter;
+                y_pick  = stim_area_yCenter;
 
             end
 
         % If we are showing an even number of stimuli, we just check if
         % the drawn positions are distributed evenly across the screen
-        elseif mod(epar.targ+epar.trials.dist_num(tn), 2) == 0
+        elseif mod(epar.targ + epar.trials.dist_num, 2) == 0 && ...
+               numel(x_pick(2:end)) == epar.targ + epar.trials.dist_num
 
-            if size(x_pick(2:end), 2) == epar.targ+epar.trials.dist_num(tn) && ...
-               length(x_pick(x_pick > 0)) == length(x_pick(x_pick < 0)) && ...
-               length(y_pick(y_pick > 0)) == length(y_pick(y_pick < 0))
+            if numel(x_pick(x_pick > stim_area_xCenter)) == numel(x_pick(x_pick < stim_area_xCenter)) && ...
+               numel(y_pick(y_pick > stim_area_yCenter)) == numel(y_pick(y_pick < stim_area_yCenter))
 
                 x_pick = x_pick(2:end);
                 y_pick = y_pick(2:end);
@@ -233,8 +221,8 @@ function [epar, el] = exp_trial_init(epar, el, tn)
             elseif size(x_pick(2:end), 2) == epar.targ+epar.trials.dist_num(tn)
 
                 counter = 2;
-                x_pick  = [];
-                y_pick  = [];
+                x_pick  = stim_area_xCenter;
+                y_pick  = stim_area_yCenter;
 
             end
 
@@ -244,26 +232,24 @@ function [epar, el] = exp_trial_init(epar, el, tn)
 
     % Put the drawn stimuli positions in a new array; set the columns of
     % the stimuli, which will not be displayed, NaN
-    epar.x_pick(tn, 1:length(x_pick))    = x_pick';
-    epar.x_pick(tn, length(x_pick)+1:10) = NaN;
-    epar.y_pick(tn, 1:length(y_pick))    = y_pick';
-    epar.y_pick(tn, length(y_pick)+1:10) = NaN;
+    epar.x_pick(tn, :) = [x_pick NaN(1, 10-(length(x_pick)+1))];
+    epar.y_pick(tn, :) = [y_pick NaN(1, 10-(length(x_pick)+1))];
 
     % Convert drawn positions to pixel
-    x = x_pick ./ epar.XPIX2DEG;
-    y = y_pick ./ epar.YPIX2DEG;
+    x = epar.fixLoc_px(2) + (x_pick ./ epar.XPIX2DEG);
+    y = epar.fixLoc_px(2) - (y_pick ./ epar.YPIX2DEG);
 
     % Generate position matrix
-    PositionMatrix = [reshape(x(1, 1:epar.trials.dist_num(tn)+epar.targ), 1, epar.trials.dist_num(tn)+epar.targ); ...
-                      reshape(y(1, 1:epar.trials.dist_num(tn)+epar.targ), 1, epar.trials.dist_num(tn)+epar.targ)];
+    PositionMatrix = [reshape(x(1, 1:epar.trials.dist_num(tn) + epar.targ), 1, epar.trials.dist_num(tn) + epar.targ); ...
+                      reshape(y(1, 1:epar.trials.dist_num(tn) + epar.targ), 1, epar.trials.dist_num(tn) + epar.targ)];
 
     % Create rect for targets/distractors
     epar.tex_rect = [];
     for i = 1:epar.trials.dist_num(tn)+epar.targ
 
         epar.tex_rect(:, i) = CenterRectOnPoint([0 0 epar.pic_size epar.pic_size], ...
-                                                epar.x_center + PositionMatrix(1, i), ...
-                                                epar.y_center + PositionMatrix(2, i));
+                                                PositionMatrix(1, i), ...
+                                                PositionMatrix(2, i));
 
     end
 

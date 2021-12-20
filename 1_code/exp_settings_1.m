@@ -2,7 +2,7 @@
 % Experiment
 epar.trialNo   = 10000; % Trial number; the experiment runs a certain time,
                         % thus, we choose a high trial number to keep it
-                        % running until the time runs out
+epar.aoiSize   = 3;   % Size of AOI around stimuli (deg)
 epar.duration  = 390;   % Duration of experiment (in seconds)
 epar.timer_cum = 0;     % Timer, tracking the overall passed time
 
@@ -72,16 +72,21 @@ end
 
 
 %% On-screen locations of stimuli
-% Criteria for distance between neighbouring stimuli
-epar.distMin = 5;  % Min. distance between two stimuli (in deg)
-epar.distMax = 30; % Max. distance between two stimuli
-epar.spread  = 10; % Max. distance of a stimulus to the fixation cross
+epar.distMin = 4; % Min. distance between two neighboring stimuli (in deg)
+epar.spread  = 8; % Max. distance of a stimulus to the fixation cross
+epar.fixOff  = 4; % Min.distance of stimuli to fixation cross
 
 % Generate grid with possible stimulus locations
+% For x-positions, we just draw some position on both sides of the
+% horizontal screen center. For y-positions, we only draw positions above
+% the fixation cross; since here, stimuli are only distributed on one side
+% of fixation, we take twice the spread to draw locations, in order to get
+% a square stimulus area. Additionally, we shift the dawn y-positions by a
+% little bit, to account for the minimum distance to the fixation we intend
+% to implement. The latter is necessary so that the fixation check area as
+% well as the AOIs of stimuli do not overlap
 epar.x = (epar.spread - epar.spread * -1) .* rand(1000, 1) + epar.spread * -1;
-epar.y = (epar.spread - epar.spread * -1) .* rand(1000, 1) + epar.spread * -1;
-epar.x = epar.x';
-epar.y = epar.y';
+epar.y = ((2 * epar.spread) .* rand(1000, 1)) + epar.fixOff;
 
 
 %% Generate series of shuffled miniblocks

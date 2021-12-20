@@ -43,7 +43,8 @@ function epar = exp_trial_response(epar, el, tn)
 
 
     %% Get AOIs in trial (returns AOI area in deg)
-    [xCircS, yCircS] = defineAOIs(epar.x_pick(tn, :), epar.y_pick(tn, :), 5, epar.pic_size, epar.XPIX2DEG);
+    [xCircS, yCircS] = defineAOIs(epar.x_pick(tn, :), epar.y_pick(tn, :), ...
+                                  epar.aoiSize, epar.pic_size, epar.XPIX2DEG);
 
     % Reshape AOI coordinates into a row vector and prepare for "inpolygons"
     xCircS_row = reshape(xCircS.', 1, []);
