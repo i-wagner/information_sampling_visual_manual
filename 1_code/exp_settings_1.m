@@ -1,10 +1,8 @@
 %% General settings
 % Experiment
-epar.trialNo   = 10000; % Trial number; the experiment runs a certain time,
-                        % thus, we choose a high trial number to keep it
+epar.duration  = 390; % Duration of experiment (in seconds)
+epar.timer_cum = 0;   % Timer, tracking the overall passed time
 epar.aoiSize   = 3;   % Size of AOI around stimuli (deg)
-epar.duration  = 390;   % Duration of experiment (in seconds)
-epar.timer_cum = 0;     % Timer, tracking the overall passed time
 
 % Timing
 epar.feedback_dur      = 1.50; % Display duration of feedback screen (in seconds)
@@ -132,12 +130,15 @@ elseif epar.expNo == 3
     epar.trials.disBlocks(:, 3) = noOfStimInTrial - ...
                                   epar.trials.disBlocks(:, 1) - ...
                                   epar.trials.disBlocks(:, 2);
+    epar.trials.disBlocks(:, 4) = NaN;
 
 end
 
 % Generate an arbitrary number shuffled miniblocks
+no_miniblocks = 1000;
+
 epar.trials.disBlocksRand = [];
-for p = 1:1000
+for p = 1:no_miniblocks
 
     % Set how many combinations easy/hard distractor no. we have
     disBlocks_idx = length(epar.trials.disBlocks);
@@ -153,21 +154,9 @@ end
 
 
 %% Misc. settings
-% Set trial number
-epar.trial.num  = epar.trialNo;
+no_trials = size(epar.trials.disBlocksRand, 1);
 
-% Set which stimulus (easy/hard) will be shown in a given trial
-% In Experiment 3, both targets are shown in each trial
-if epar.expNo == 2
-
-    epar.diff = epar.trials.disBlocksRand(:, 4);
-
-elseif epar.expNo == 3
-
-    epar.diff = NaN(epar.trialNo, 1);
-
-end
-
-epar.trials.targ(1:epar.trial.num)          = epar.targ;  % No. of targets per trial
-epar.trials.stairSteps(1:epar.trial.num, 1) = epar.diff2; % Difficulty (easy target)
-epar.trials.stairSteps(1:epar.trial.num, 2) = epar.diff3; % Difficulty (hard target)
+epar.diff              = epar.trials.disBlocksRand(:, 4);      % Target in trial
+epar.trials.targ       = zeros(no_trials, 1) + epar.targ;      % No. of targets per trial
+epar.trials.stairSteps = [zeros(no_trials, 1) + epar.diff2 ...
+                          zeros(no_trials, 1) + epar.diff3];   % Difficulty

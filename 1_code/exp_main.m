@@ -88,14 +88,7 @@ end
 
 %% Present trials
 epar = exp_self_start(epar);
-for t = 1:epar.trial.num
-
-    % End the experiment after the time limit is exceeded
-    if epar.timer_cum > epar.duration
-
-        break
-
-    end
+while epar.timer_cum > epar.duration
 
     % Generate trial
     [epar, el] = exp_trial_init(epar, el, t);
