@@ -312,7 +312,7 @@ function epar = exp_mon_init(epar)
             % Images, we will use for composite
             imgNames = {'distractor_blue-ne-level01.png'; 'distractor_blue-nw-level01.png'; ...
                         'target_blue-e-level01.png';      'target_blue-n-level01.png'};
-            
+
             % Create composite image
             % We do this in two steps: first, we combine all orientations,
             % second, we recude the contrast of the composite images.

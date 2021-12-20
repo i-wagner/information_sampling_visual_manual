@@ -8,11 +8,11 @@ epar.timer_cum = 0;     % Timer, tracking the overall passed time
 
 % Timing
 epar.feedback_dur      = 1.50; % Display duration of feedback screen (in seconds)
-epar.fb_sound_dur      = 0.50;
-epar.fb_sound_freq     = 1500;
-epar.fb_sound_vol      = 0.80;
 epar.maxDwellTime      = 0.50; % Maximum dwell time per stimulus (in seconds)
 epar.stimTurnOffOffset = 0.25; % Delay relative to time when an AOI was left, after which a stimulus is turned off
+epar.fb_sound_dur      = 0.50; % Duration of feedback sound
+epar.fb_sound_freq     = 1500; % Pitch of feedback sound
+epar.fb_sound_vol      = 0.80; % Volume of feedback sound
 
 % Rewards
 epar.score   = 0;    % Starting score
@@ -44,6 +44,7 @@ end
 epar.pic_size = 49;   % Stimulus size (in pixel)
 epar.stimCont = 0.15; % Factor, by which we adjust the contrast of the
                       % rectangular element within the stimulus
+                      % 0 == invisible; 1 == fully visible
 
 % Indices for the rows in which we store the locations of gap within the
 % rectangular part of the stimulus
@@ -53,8 +54,8 @@ epar.targHor_idx  = [1 4]; % Horizontal
 epar.targVert_idx = [2 3]; % Vertical
 
 % Stimulus difficulty
-epar.targDiff_easy = 10; % Easy target
-epar.targDiff_hard = 9;  % Hard target
+epar.targDiff_easy = 10;                 % Easy target
+epar.targDiff_hard = 9;                  % Hard target
 epar.diff2         = epar.targDiff_easy; % Gap size of the easy target
 epar.diff3         = epar.targDiff_hard; % Gap size of the difficult target
 

@@ -216,7 +216,7 @@ function epar = exp_trial_response(epar, el, tn)
 
         elseif keyCode(KbName('8'))
 
-            response_end_time= GetSecs;
+            response_end_time = GetSecs;
             epar.stim.gapResp(tn) = 2;
             if epar.expNo == 2
 

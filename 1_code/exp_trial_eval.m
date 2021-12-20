@@ -33,7 +33,6 @@ function epar = exp_trial_eval(epar)
         fix_time(:, 1)    = fix_time(:, 1) - epar.fixLoc_px(1); 
         fix_time(:, 2)    = fix_time(:, 2) - epar.fixLoc_px(2);
         fix_deviate_frame = sum(sum(abs(fix_time) > epar.fix_tol));
-
         if fix_deviate_frame > 0
 
             epar.fix_error = 1;

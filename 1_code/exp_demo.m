@@ -78,13 +78,11 @@ exp_instruction(epar);
 if epar.EL
 
     result = EyelinkDoTrackerSetup(el);
-
     if result == el.TERMINATE_KEY
 
         return
 
     end
-
     Eyelink('message', 'Block_Start');
     Eyelink('WaitForModeReady', 500);
 

@@ -124,12 +124,10 @@ function [epar, el] = exp_trial_init(epar, el, tn)
 
 
     %% Set rect for stimuli
-    % No. of easy/hard distractors
-    epar.trials.dist_e(tn) = epar.trials.disBlocksRand(tn, 2); % Easy
-    epar.trials.dist_d(tn) = epar.trials.disBlocksRand(tn, 3); % Hard
-
-    % Overall no. of distractors
-    epar.trials.dist_num(tn) = epar.trials.disBlocksRand(tn, 2) + ...
+    % # of easy/hard distractors
+    epar.trials.dist_e(tn) = epar.trials.disBlocksRand(tn, 2);        % Easy
+    epar.trials.dist_d(tn) = epar.trials.disBlocksRand(tn, 3);        % Hard
+    epar.trials.dist_num(tn) = epar.trials.disBlocksRand(tn, 2) + ... % Overall
                                epar.trials.disBlocksRand(tn, 3);
 
     % Randomly pick x grid locations for the to-be-shown stimuli

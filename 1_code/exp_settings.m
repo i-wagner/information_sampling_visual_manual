@@ -5,7 +5,7 @@ epar.GAMMA_TABLE = 'C:\SRC\lut\01065_propixx_pc11485_hscon'; % Big lab
 
 
 %% Data storage settings (save path, running path)
-epar.EXPNAME      = 'informationSampling';
+epar.EXPNAME      = 'informationSampling2022';
 epar.save_path    = ('./data/');
 epar.running_path = ('.');
 
@@ -34,7 +34,10 @@ epar.CALIB_Y      = 10;                                 % Max. y position for ca
 epar.fixLoc       = [0 9.5];                                              % Onscreen location of fixation cross
 epar.fixLoc_px    = [(epar.fixLoc(1) / epar.XPIX2DEG) + epar.x_center ...
                      (epar.fixLoc(2) / epar.YPIX2DEG) + epar.y_center];   % Pixel location of fixation cross
-epar.fix_tol      = 2 ./ epar.XPIX2DEG;                 % Tolerance threshold for fixation
+epar.fixsize      = round([0.15 0.6] ./ epar.XPIX2DEG);                   % Size of the fixation-cross
+epar.fix_min      = 0.5;                                                  % Minimum fixation interval duration
+epar.fix_max      = 1;                                                    % Maximum fixation interval duration
+epar.fix_tol      = 2 ./ epar.XPIX2DEG;                                   % Tolerance threshold for fixation
 
 
 %% Unify key names for Mac OS and Windows
