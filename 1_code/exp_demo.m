@@ -99,7 +99,7 @@ for t = 1:epar.trial.num
     % Start data recording
     if epar.EL
 
-        exp_el_start(el, t, epar.fixLoc_px(1), epar.fixLoc_px(1));
+        exp_el_start(el, t, epar.fixLoc_px(1), epar.fixLoc_px(2));
 
     end
 
