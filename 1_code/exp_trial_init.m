@@ -125,14 +125,14 @@ function [epar, el] = exp_trial_init(epar, el, tn)
 
     %% Set rect for stimuli
     % # of easy/hard distractors
-    epar.trials.dist_e(tn) = epar.trials.disBlocksRand(tn, 2);        % Easy
-    epar.trials.dist_d(tn) = epar.trials.disBlocksRand(tn, 3);        % Hard
+    epar.trials.dist_e(tn)   = epar.trials.disBlocksRand(tn, 2);        % Easy
+    epar.trials.dist_d(tn)   = epar.trials.disBlocksRand(tn, 3);        % Hard
     epar.trials.dist_num(tn) = epar.trials.disBlocksRand(tn, 2) + ... % Overall
                                epar.trials.disBlocksRand(tn, 3);
 
     % Determine the center of the stimulus area
     stim_area_xCenter = epar.fixLoc(1);
-    stim_area_yCenter= min(epar.y) + ((max(epar.y) - min(epar.y)) / 2);
+    stim_area_yCenter = min(epar.y) + ((max(epar.y) - min(epar.y)) / 2);
 
     % Randomly pick x grid locations for the to-be-shown stimuli
     x_pick  = stim_area_xCenter;
@@ -239,17 +239,12 @@ function [epar, el] = exp_trial_init(epar, el, tn)
     x = epar.fixLoc_px(1) + (x_pick ./ epar.XPIX2DEG);
     y = epar.fixLoc_px(2) - (y_pick ./ epar.YPIX2DEG);
 
-    % Generate position matrix
-    PositionMatrix = [reshape(x(1, 1:epar.trials.dist_num(tn) + epar.targ), 1, epar.trials.dist_num(tn) + epar.targ); ...
-                      reshape(y(1, 1:epar.trials.dist_num(tn) + epar.targ), 1, epar.trials.dist_num(tn) + epar.targ)];
-
     % Create rect for targets/distractors
     epar.tex_rect = [];
     for i = 1:epar.trials.dist_num(tn)+epar.targ
 
         epar.tex_rect(:, i) = CenterRectOnPoint([0 0 epar.pic_size epar.pic_size], ...
-                                                PositionMatrix(1, i), ...
-                                                PositionMatrix(2, i));
+                                                x(i), y(i));
 
     end
 
