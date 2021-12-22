@@ -88,7 +88,8 @@ end
 
 %% Present trials
 epar = exp_self_start(epar);
-while epar.timer_cum > epar.duration
+t    = 1;
+while epar.timer_cum < epar.duration
 
     % Generate trial
     [epar, el] = exp_trial_init(epar, el, t);
@@ -130,6 +131,9 @@ while epar.timer_cum > epar.duration
 
     % Update log file
     exp_trial_save(epar, t);
+
+    % Update trial number
+    t = t + 1;
 
 end
 
