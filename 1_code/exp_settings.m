@@ -29,15 +29,15 @@ epar.MONITOR_FREQ = 120;
 
 %% General Settings
 epar.CALIB_TRIALS = 0;
-epar.CALIB_X      = 12;                                                   % Max. x position for calibration dot
-epar.CALIB_Y      = 12;                                                   % Max. y position for calibration dot
-epar.fixLoc       = [0 9.5];                                              % Onscreen location of fixation cross
-epar.fixLoc_px    = [(epar.fixLoc(1) / epar.XPIX2DEG) + epar.x_center ...
-                     (epar.fixLoc(2) / epar.YPIX2DEG) + epar.y_center];   % Pixel location of fixation cross
-epar.fixsize      = round([0.15 0.6] ./ epar.XPIX2DEG);                   % Size of the fixation-cross
-epar.fix_min      = 0.5;                                                  % Minimum fixation interval duration
-epar.fix_max      = 1;                                                    % Maximum fixation interval duration
-epar.fix_tol      = 2 ./ epar.XPIX2DEG;                                   % Tolerance threshold for fixation
+epar.CALIB_X      = 12;                                                         % Max. x position for calibration dot
+epar.CALIB_Y      = 12;                                                         % Max. y position for calibration dot
+epar.fixLoc       = [0 9.5];                                                    % Onscreen location of fixation cross
+epar.fixLoc_px    = round([(epar.fixLoc(1) / epar.XPIX2DEG) + epar.x_center ... 
+                           (epar.fixLoc(2) / epar.YPIX2DEG) + epar.y_center]);  % Pixel location of fixation cross
+epar.fixsize      = round([0.15 0.6] ./ epar.XPIX2DEG);                         % Size of the fixation-cross
+epar.fix_min      = 0.5;                                                        % Minimum fixation interval duration
+epar.fix_max      = 1;                                                          % Maximum fixation interval duration
+epar.fix_tol      = 2 ./ epar.XPIX2DEG;                                         % Tolerance threshold for fixation
 
 
 %% Unify key names for Mac OS and Windows
