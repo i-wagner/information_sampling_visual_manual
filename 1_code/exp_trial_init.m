@@ -169,8 +169,8 @@ function [epar, el] = exp_trial_init(epar, el, tn)
         % distribution, check if the remaining positions are
         % distributed evenly across the screen, and add the removed
         % position back into the distribution
-        if mod(epar.targ + epar.trials.dist_num, 2) ~= 0 && ...
-           numel(x_pick(2:end)) == epar.targ + epar.trials.dist_num
+        if mod(epar.targ + epar.trials.dist_num(tn), 2) ~= 0 && ...
+           numel(x_pick(2:end)) == epar.targ + epar.trials.dist_num(tn)
 
             % Put the last position into a new array, and delete it
             % from the main array
@@ -207,8 +207,8 @@ function [epar, el] = exp_trial_init(epar, el, tn)
 
         % If we are showing an even number of stimuli, we just check if
         % the drawn positions are distributed evenly across the screen
-        elseif mod(epar.targ + epar.trials.dist_num, 2) == 0 && ...
-               numel(x_pick(2:end)) == epar.targ + epar.trials.dist_num
+        elseif mod(epar.targ + epar.trials.dist_num(tn), 2) == 0 && ...
+               numel(x_pick(2:end)) == epar.targ + epar.trials.dist_num(tn)
 
             if numel(x_pick(x_pick > stim_area_xCenter)) == numel(x_pick(x_pick < stim_area_xCenter)) && ...
                numel(y_pick(y_pick > stim_area_yCenter)) == numel(y_pick(y_pick < stim_area_yCenter))
@@ -236,7 +236,7 @@ function [epar, el] = exp_trial_init(epar, el, tn)
     epar.y_pick(tn, :) = [y_pick NaN(1, 10-(length(x_pick)+1))];
 
     % Convert drawn positions to pixel
-    x = epar.fixLoc_px(2) + (x_pick ./ epar.XPIX2DEG);
+    x = epar.fixLoc_px(1) + (x_pick ./ epar.XPIX2DEG);
     y = epar.fixLoc_px(2) - (y_pick ./ epar.YPIX2DEG);
 
     % Generate position matrix
