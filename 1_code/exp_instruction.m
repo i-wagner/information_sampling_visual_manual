@@ -26,7 +26,7 @@ function exp_instruction(epar)
     x2 = epar.x_center + 50;
     x3 = epar.x_center - 100;
     x4 = epar.x_center + 100;
-    y  = epar.y_center + 125;
+    y  = epar.y_center + 50;
 
     % Define rect
     epar.texture.rect1 = CenterRectOnPoint([0 0 epar.pic_size epar.pic_size], x1, y);
