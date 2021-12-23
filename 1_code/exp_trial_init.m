@@ -27,12 +27,8 @@ function [epar, el] = exp_trial_init(epar, el, tn)
     epar.dist_d = epar.trials.disBlocksRand(tn, 3); % Hard
 
     % Randomly select some gap-positions for the distractors
-    epar.stim.dist_e_idx = epar.stim.dist_e(randi(size(epar.stim.dist_e, 1), epar.dist_e, 1), ...
-                                            epar.diff2); % Easy
-    epar.stim.dist_d_idx = epar.stim.dist_d(randi(size(epar.stim.dist_d, 1), epar.dist_d, 1), ...
-                                            epar.diff3); % Hard
-
-    % If there is no distractor of a given type, set IDX NaN
+    epar.stim.dist_e_idx = epar.stim.dist_e(randi(size(epar.stim.dist_e, 1), epar.dist_e, 1), epar.targDiff_easy); % Easy
+    epar.stim.dist_d_idx = epar.stim.dist_d(randi(size(epar.stim.dist_d, 1), epar.dist_d, 1), epar.targDiff_hard); % Hard
     if isempty(epar.stim.dist_e_idx)
 
         epar.stim.dist_e_idx = NaN;
@@ -49,15 +45,13 @@ function [epar, el] = exp_trial_init(epar, el, tn)
         % Randomly select the orientation of the two targets
         if epar.diff(tn) == 1 % Easy
 
-            epar.stim.targ_idx = epar.stim.targ_e(randperm(size(epar.stim.targ_e, 1), epar.targ), ...
-                                                  epar.diff2);
+            epar.stim.targ_idx = epar.stim.targ_e(randperm(size(epar.stim.targ_e, 1), epar.targ), epar.targDiff_easy);
 
             id_targ = epar.stim.idx_easyStim;
 
         elseif epar.diff(tn) == 2 % Hard
 
-            epar.stim.targ_idx = epar.stim.targ_d(randperm(size(epar.stim.targ_d, 1), epar.targ), ...
-                                                  epar.diff3);
+            epar.stim.targ_idx = epar.stim.targ_d(randperm(size(epar.stim.targ_d, 1), epar.targ), epar.targDiff_hard);
 
             id_targ = epar.stim.idx_hardStim;
 
@@ -69,7 +63,7 @@ function [epar, el] = exp_trial_init(epar, el, tn)
                               epar.stim.dist_d_idx; ...
                               epar.stim.targ_idx];
 
-        % Generate array with IDs of masik stimulu, havin the same color as
+        % Generate array with IDs of mask stimuli, having the same color as
         % to-be-displayed stimuli in the current trial
         no_eD = numel(epar.stim.dist_e_idx);
         no_dD = numel(epar.stim.dist_d_idx);
@@ -98,8 +92,8 @@ function [epar, el] = exp_trial_init(epar, el, tn)
                 epar.targVert_idx(randperm(size(epar.targVert_idx, 2), epar.targ-1));
 
         end
-        epar.stim.targ_idx_e = epar.stim.targ_e(orientIDX_easy, epar.diff2);
-        epar.stim.targ_idx_d = epar.stim.targ_d(orientIDX_difficult, epar.diff3);
+        epar.stim.targ_idx_e = epar.stim.targ_e(orientIDX_easy, epar.targDiff_easy);
+        epar.stim.targ_idx_d = epar.stim.targ_d(orientIDX_difficult, epar.targDiff_hard);
 
         % Generate an array with the to-be-displayed stimuli
         epar.stim.txt_disp = [epar.stim.dist_e_idx; ...
@@ -232,8 +226,8 @@ function [epar, el] = exp_trial_init(epar, el, tn)
 
     % Put the drawn stimuli positions in a new array; set the columns of
     % the stimuli, which will not be displayed, NaN
-    epar.x_pick(tn, :) = [x_pick NaN(1, 10-(length(x_pick)+1))];
-    epar.y_pick(tn, :) = [y_pick NaN(1, 10-(length(x_pick)+1))];
+    epar.x_pick(tn, :) = [x_pick NaN(1, 10-(numel(x_pick)))];
+    epar.y_pick(tn, :) = [y_pick NaN(1, 10-(numel(y_pick)))];
 
     % Convert drawn positions to pixel
     x = epar.fixLoc_px(1) + (x_pick ./ epar.XPIX2DEG);
@@ -241,10 +235,10 @@ function [epar, el] = exp_trial_init(epar, el, tn)
 
     % Create rect for targets/distractors
     epar.tex_rect = [];
-    for i = 1:epar.trials.dist_num(tn)+epar.targ
+    for s = 1:epar.trials.dist_num(tn)+epar.targ % Stimulus
 
-        epar.tex_rect(:, i) = CenterRectOnPoint([0 0 epar.pic_size epar.pic_size], ...
-                                                x(i), y(i));
+        epar.tex_rect(:, s) = CenterRectOnPoint([0 0 epar.pic_size epar.pic_size], ...
+                                                x(s), y(s));
 
     end
 

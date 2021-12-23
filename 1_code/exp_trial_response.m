@@ -11,32 +11,15 @@ function epar = exp_trial_response(epar, el, tn)
 %     y_test = round(epar.fixLoc_px(2) - (epar.y_pick(tn, :) ./ epar.YPIX2DEG));
 % 
 %     centeredRect = NaN(4, numel(x_test));
-%     for i = 1:numel(x_test)
+%     for r = 1:numel(x_test) % Stimulus rect
 % 
 %         baseRect           = [0 0 epar.aoiSize/epar.XPIX2DEG epar.aoiSize/epar.XPIX2DEG];
-%         centeredRect(:, i) = CenterRectOnPoint(baseRect, x_test(i), y_test(i))';
+%         centeredRect(:, r) = CenterRectOnPoint(baseRect, x_test(r), y_test(r))';
 % 
 %     end
-% 
 %     exp_target_draw(epar.window, epar.fixLoc_px(1), epar.fixLoc_px(2), ...
 %                     epar.fixsize(2), epar.fixsize(1), epar.fixcol, epar.gray);
-%     if epar.expNo == 2 
-% 
-%         Screen('DrawTextures', epar.window, epar.stim.txt_disp_mask(end), [], ...
-%                epar.tex_rect(:, end));
-% 
-%     elseif epar.expNo == 3
-% 
-%         Screen('DrawTextures', epar.window, epar.stim.txt_disp_mask(end-1:end), [], ...
-%                epar.tex_rect(:, end-1:end));
-% 
-%     end
-%     if size(epar.stim.txt_disp_mask, 1) > epar.targ
-% 
-%         Screen('DrawTextures', epar.window, epar.stim.txt_disp_mask(1:epar.trials.dist_num(tn)), [], ...
-%                epar.tex_rect(:, 1:epar.trials.dist_num(tn)));
-% 
-%     end
+%     Screen('DrawTextures', epar.window, epar.stim.txt_disp_mask, [], epar.tex_rect);
 %     Screen('FrameOval', epar.window, epar.black, centeredRect);
 %     Screen('Flip', epar.window);
 
@@ -338,15 +321,7 @@ function epar = exp_trial_response(epar, el, tn)
 
     %% Calculate how long it took to respond and save remaining dwell time per stimulus
     epar.response_time(tn) = response_end_time - response_start_time;
-    if length(remainingDwellTime) < 10
-
-        epar.stim.maxDwellTime(tn, :) = [remainingDwellTime NaN(1, 10-length(remainingDwellTime))];
-
-    else
-
-        epar.stim.maxDwellTime(tn, :) = remainingDwellTime;
-
-    end
+    epar.stim.maxDwellTime(tn, :) = [remainingDwellTime NaN(1, 10-numel(remainingDwellTime))];
     
 
     %% Set script priority back to initial level

@@ -15,9 +15,7 @@ epar.block   = 99;
 epar.subject = input('Subject:');
 epar.expNo   = input('Experiment:'); % 2 == One target, variable distractors
                                      % 3 == Two targets, variable distractors
-
-% Throw an error if Experiment 1 was started accidentally
-if epar.expNo == 1
+if epar.expNo == 1 % Throw an error if Experiment 1 was started accidentally
 
     error('We are not doing Experiment 1 anymore; please proceed with Experiment 2!');
 
@@ -139,7 +137,3 @@ Screen('Close', epar.stim.txt_disp);
 Screen('Close', epar.stim.txt_disp_mask);
 exp_el_exit(epar);
 exp_mon_exit(epar);
-
-
-%% Display a subject's score in console
-strcat('This participants score is: ', num2str(round(epar.score, 2)))

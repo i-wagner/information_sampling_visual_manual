@@ -32,8 +32,8 @@ function [xCircS, yCircS] = defineAOIs(stimulusLocationOnX, stimulusLocationOnY,
 
         % We add a "NaN" at the end of the vector, so we can later separate
         % between the coordinates of different stimuli (necessary for "inpolygons")
-        xCircS(ss, :) = [cos(stim_angles) .* stim_radiusAOI + stimulusLocationOnX(1, ss) NaN];
-        yCircS(ss, :) = [sin(stim_angles) .* stim_radiusAOI + stimulusLocationOnY(1, ss) NaN];
+        xCircS(ss, :) = [cos(stim_angles) .* stim_radiusAOI + stimulusLocationOnX(ss) NaN];
+        yCircS(ss, :) = [sin(stim_angles) .* stim_radiusAOI + stimulusLocationOnY(ss) NaN];
 
     end
 

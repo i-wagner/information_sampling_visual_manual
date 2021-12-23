@@ -15,9 +15,7 @@ epar.block   = 1;
 epar.subject = input('Subject:');
 epar.expNo   = input('Experiment:'); % 2 == One target, variable distractors
                                      % 3 == Two targets, variable distractors
-
-% Throw an error if Experiment 1 was started accidentally
-if epar.expNo == 1
+if epar.expNo == 1 % Throw an error if Experiment 1 was started accidentally
 
     error('We are not doing Experiment 1 anymore; please proceed with Experiment 2!');
 
@@ -73,13 +71,11 @@ exp_instruction(epar);
 if epar.EL
 
     result = EyelinkDoTrackerSetup(el);
-
     if result == el.TERMINATE_KEY
 
         return
 
     end
-
     Eyelink('message', 'Block_Start');
     Eyelink('WaitForModeReady', 500);
 
@@ -88,7 +84,8 @@ end
 
 %% Present trials
 epar = exp_self_start(epar);
-t    = 1;
+
+t = 1; % Initialise trial counter
 while epar.timer_cum < epar.duration
 
     % Generate trial
@@ -150,4 +147,4 @@ save([epar.exp_path '/epar.mat'], 'epar');
 
 
 %% Display a subject's score in console
-strcat('This participants score is: ', num2str(round(epar.score, 2)))
+disp(['This participants score is: ', num2str(round(epar.score, 2))]);

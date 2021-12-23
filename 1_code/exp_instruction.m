@@ -14,12 +14,12 @@ function exp_instruction(epar)
 
 
     %% Generate some example stimuli
-    horStim = randperm(size(epar.targHor_idx, 2), 1);
-    verStim = randperm(size(epar.targVert_idx, 2), 1);
+    idx_horStim = randperm(numel(epar.targHor_idx), 1);
+    idx_verStim = randperm(numel(epar.targVert_idx), 1);
 
     % Get indices of to-be-shown targets
-    epar.stim.targ_idxE = epar.stim.targ_e(epar.targHor_idx(1, horStim), epar.diff2);
-    epar.stim.targ_idxD = epar.stim.targ_d(epar.targVert_idx(1, verStim), epar.diff3);
+    targ_easy = epar.stim.targ_e(epar.targHor_idx(idx_horStim), epar.targDiff_easy);
+    targ_hard = epar.stim.targ_d(epar.targVert_idx(idx_verStim), epar.targDiff_hard);
 
     % Define screen coordinates
     x1 = epar.x_center - 50;
@@ -36,13 +36,12 @@ function exp_instruction(epar)
 
 
     %% Show instruction screen
-    Screen('FillRect', epar.window, epar.gray);
-    DrawFormattedText(epar.window, str_inst, 'center', ...
-                      'center', epar.black, 100, [], [], 1.75);                                         % Instruction text
-    Screen('DrawTexture', epar.window, epar.stim.targ_idxE, [], epar.texture.rect1, [], 0);             % Easy target
-    Screen('DrawTexture', epar.window, epar.stim.targ_idxD, [], epar.texture.rect2, [], 0);             % Difficult target
-    Screen('DrawTexture', epar.window, epar.stim.dist_e_br(epar.diff2), [], epar.texture.rect3, [], 0); % Easy distractor
-    Screen('DrawTexture', epar.window, epar.stim.dist_d_tl(epar.diff3), [], epar.texture.rect4, [], 0); % Difficult distractor
+    DrawFormattedText(epar.window, str_inst, ...
+                      'center', 'center', epar.black, 100, [], [], 1.75);                                       % Instruction text
+    Screen('DrawTexture', epar.window, targ_easy, [], epar.texture.rect1, [], 0);                               % Easy target
+    Screen('DrawTexture', epar.window, targ_hard, [], epar.texture.rect2, [], 0);                               % Difficult target
+    Screen('DrawTexture', epar.window, epar.stim.dist_e_bl(epar.targDiff_easy), [], epar.texture.rect3, [], 0); % Easy distractor
+    Screen('DrawTexture', epar.window, epar.stim.dist_d_tl(epar.targDiff_hard), [], epar.texture.rect4, [], 0); % Difficult distractor
     Screen('Flip', epar.window);
 
 
@@ -52,12 +51,12 @@ function exp_instruction(epar)
         [~, keyCode] = KbWait([], 2);
         if keyCode(KbName('Return'))
 
+            Screen('FillRect', epar.window, epar.gray);
+            Screen('Flip', epar.window);
             break
 
         end
 
     end
-    Screen('FillRect', epar.window, epar.gray);
-    Screen('Flip', epar.window);
 
 end
