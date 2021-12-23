@@ -166,23 +166,15 @@ function [epar, el] = exp_trial_init(epar, el, tn)
         if mod(epar.targ + epar.trials.dist_num(tn), 2) ~= 0 && ...
            numel(x_pick(2:end)) == epar.targ + epar.trials.dist_num(tn)
 
-            % Put the last position into a new array, and delete it
-            % from the main array
-            x_pick4     = x_pick(end);
-            y_pick4     = y_pick(end);
-            x_pick(end) = [];
-            y_pick(end) = [];
+            % Compare if there is an equal number of stimuli above, below, 
+            % left and right of the stimulus area; do this for all stimuli,
+            % except the last one. Since we have an odd number of stimuli,
+            % we have ti make sure the majority of them is distributed
+            % equally, and the last stimulus can just appear in some other
+            % random quadrant
+            if sum(x_pick(2:end-1) > stim_area_xCenter) == sum(x_pick(2:end-1) < stim_area_xCenter) && ...
+               sum(y_pick(2:end-1) > stim_area_yCenter) == sum(y_pick(2:end-1) < stim_area_yCenter)
 
-            % Compare if there is an equal number of stimuli
-            % above, below, left and right of the stimulus area
-            if numel(x_pick(x_pick > stim_area_xCenter)) == numel(x_pick(x_pick < stim_area_xCenter)) && ...
-               numel(y_pick(y_pick > stim_area_yCenter)) == numel(y_pick(y_pick < stim_area_yCenter))
-
-                % If so, put the deleted position in its place again 
-                x_pick(end+1) = x_pick4;
-                y_pick(end+1) = y_pick4;
-
-                % And get rid of the zero coordiantes
                 x_pick = x_pick(2:end);
                 y_pick = y_pick(2:end);
                 break
