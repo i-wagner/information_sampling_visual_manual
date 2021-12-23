@@ -129,8 +129,8 @@ function [epar, el] = exp_trial_init(epar, el, tn)
     stim_area_yCenter = min(epar.y) + ((max(epar.y) - min(epar.y)) / 2);
 
     % Randomly pick x grid locations for the to-be-shown stimuli
-    x_pick  = stim_area_xCenter;
-    y_pick  = stim_area_yCenter;
+    x_pick  = epar.fixLoc(1);
+    y_pick  = epar.fixLoc(2);
     counter = 2;
     while 1
 
@@ -194,8 +194,8 @@ function [epar, el] = exp_trial_init(epar, el, tn)
             else
 
                 counter = 2;
-                x_pick  = stim_area_xCenter;
-                y_pick  = stim_area_yCenter;
+                x_pick  = epar.fixLoc(1);
+                y_pick  = epar.fixLoc(2);
 
             end
 
@@ -211,12 +211,11 @@ function [epar, el] = exp_trial_init(epar, el, tn)
                 y_pick = y_pick(2:end);
                 break
 
-            % Draw new positions of criterium is not fulfilled
-            elseif size(x_pick(2:end), 2) == epar.targ+epar.trials.dist_num(tn)
+            else % Re-draw locations if criterion is not fulfilled
 
                 counter = 2;
-                x_pick  = stim_area_xCenter;
-                y_pick  = stim_area_yCenter;
+                x_pick  = epar.fixLoc(1);
+                y_pick  = epar.fixLoc(2);
 
             end
 
