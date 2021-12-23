@@ -1,7 +1,7 @@
 function epar = exp_self_start(epar)
 
     %% Draw text
-    DrawFormattedText(epar.window,sprintf('Press any key to start experiment.'), ...
+    DrawFormattedText(epar.window,sprintf('Press Enter to start experiment.'), ...
                       'center', epar.fixLoc_px(2), epar.black, 80, [], [], 1.75);
     Screen('Flip', epar.window);
     WaitSecs(0.2);
@@ -10,9 +10,11 @@ function epar = exp_self_start(epar)
     %% Proceed after button press
     while 1
 
-        [epar.keyIsDown, ~, ~, ~] = KbCheck([]);
-        if epar.keyIsDown
+        [~, keyCode] = KbWait([], 2);
+        if keyCode(KbName('Return'))
 
+            Screen('FillRect', epar.window, epar.gray);
+            Screen('Flip', epar.window);
             break
 
         end
