@@ -196,8 +196,8 @@ function [epar, el] = exp_trial_init(epar, el, tn)
         elseif mod(epar.targ + epar.trials.dist_num(tn), 2) == 0 && ...
                numel(x_pick(2:end)) == epar.targ + epar.trials.dist_num(tn)
 
-            if numel(x_pick(x_pick > stim_area_xCenter)) == numel(x_pick(x_pick < stim_area_xCenter)) && ...
-               numel(y_pick(y_pick > stim_area_yCenter)) == numel(y_pick(y_pick < stim_area_yCenter))
+            if sum(x_pick(2:end) > stim_area_xCenter) == sum(x_pick(2:end) < stim_area_xCenter) && ...
+               sum(y_pick(2:end) > stim_area_yCenter) == sum(y_pick(2:end) < stim_area_yCenter)
 
                 x_pick = x_pick(2:end);
                 y_pick = y_pick(2:end);
