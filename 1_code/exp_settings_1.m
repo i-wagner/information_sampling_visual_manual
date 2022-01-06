@@ -1,3 +1,7 @@
+%% DEBUGING
+epar.DEBUG.aois = 0; % Show AOIs around stimuli and tolerance area around fixation
+
+
 %% Timing related settings
 epar.duration          = 390;  % Duration of experiment (seconds)
 epar.timer_cum         = 0;    % Timer, tracking how much time passed during experiment
