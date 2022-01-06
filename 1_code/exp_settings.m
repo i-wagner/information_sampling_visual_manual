@@ -37,7 +37,7 @@ epar.fixLoc_px    = round([(epar.fixLoc(1) / epar.XPIX2DEG) + epar.x_center ...
 epar.fixsize      = round([0.15 0.60] ./ epar.XPIX2DEG);                        % Size of the fixation-cross
 epar.fix_min      = 0.50;                                                       % Minimum fixation interval duration
 epar.fix_max      = 1;                                                          % Maximum fixation interval duration
-epar.fix_tol      = 2 / epar.XPIX2DEG;                                          % Tolerance threshold for fixation
+epar.fix_tol      = 1.5 / epar.XPIX2DEG;                                        % Tolerance threshold for fixation
 
 
 %% Unify key names for Mac OS and Windows
