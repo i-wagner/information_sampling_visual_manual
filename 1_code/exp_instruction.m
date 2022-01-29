@@ -10,7 +10,7 @@ function exp_instruction(epar)
         str_inst = 'Rot hat ein groessere Luecke als Blau!';
 
     end
-    str_inst = [str_inst '\nNutzen Sie Ihre NICHT-DOMINANTE Hand fuer Tastatureingaben!'];
+    str_inst = [str_inst '\nNutzen Sie Ihre NICHT-DOMINANTE Hand zum antworten!'];
 
 
     %% Generate some example stimuli
@@ -49,7 +49,7 @@ function exp_instruction(epar)
     while 1
 
         [~, keyCode] = KbWait([], 2);
-        if keyCode(KbName('Return'))
+        if keyCode(KbName('Return')) | keyCode(KbName('Space'))
 
             Screen('FillRect', epar.window, epar.gray);
             Screen('Flip', epar.window);
