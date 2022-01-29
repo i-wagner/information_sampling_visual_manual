@@ -51,7 +51,7 @@ function epar = exp_sc_update(epar, tn)
 
     else % Everything's allright
 
-        DrawFormattedText(epar.window, sprintf('%.2f | %.2f', round(epar.perf.hit(tn)/50 .* 2 - 0.02, 2), round(epar.score, 2)), ... Score
+        DrawFormattedText(epar.window, sprintf('%.2f€ | %.2f€', round(epar.perf.hit(tn)/50 .* 2 - 0.02, 2), round(epar.score, 2)), ... Score
                           'center', epar.fixLoc_px(2), epar.black, [],[],[], 1.75);
         DrawFormattedText(epar.window, sprintf('%s', duration([0, 0, epar.duration]) - duration([0, 0, epar.timer_cum])), ...        Remaining time
                           'center', epar.fixLoc_px(2)+35, epar.black, [],[],[], 1.75);
