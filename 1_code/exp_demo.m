@@ -47,7 +47,7 @@ epar.log_file = sprintf('%s/e%dv%db%d.log', epar.exp_path, epar.expNo, ...
 
 
 %% Number of demo trials
-epar.trial.num = 10;
+epar.trial.num = 10%;36;
 
 
 %% Monitor settings
