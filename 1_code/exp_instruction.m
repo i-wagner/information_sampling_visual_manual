@@ -3,7 +3,7 @@ function exp_instruction(epar)
     %% Set instruction text
     if epar.stim.diffFlag_blueEasy
 
-        str_inst = 'Blaue hat ein groessere Luecke als Rot!';
+        str_inst = 'Blau hat ein groessere Luecke als Rot!';
 
     else
 
