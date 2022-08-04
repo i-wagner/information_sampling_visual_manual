@@ -1,7 +1,7 @@
 %% Eye link settings
 epar.EL          = 1; % 1: Eye link active; 0: No eye link
 epar.GAMMA       = 1; % 1: Gamma correction; 0: No correction
-epar.GAMMA_TABLE = 'C:\SRC\lut\01065_propixx_pc11485_hscon'; % Big lab
+epar.GAMMA_TABLE = 'C:\SRC\lut\01065_triplepixx_pc11485'; % Big lab
 
 
 %% Data storage settings (save path, running path)
