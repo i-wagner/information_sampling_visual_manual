@@ -11,10 +11,10 @@ rng('default');
 rng('shuffle');
 
 % Set experiment, task and subject number
-epar.block   = 1;
 epar.subject = input('Subject:');
 epar.expNo   = input('Experiment:'); % 2 == One target, variable distractors
                                      % 3 == Two targets, variable distractors
+epar.block   = input('Block:');
 if epar.expNo == 1 % Throw an error if Experiment 1 was started accidentally
 
     error('We are not doing Experiment 1 anymore; please proceed with Experiment 2!');
