@@ -2,7 +2,7 @@ close all; clear all; clc;
 
 
 %% Go to folder with data
-exper.name.root = '/Users/ilja/Dropbox/12_work/mr_informationSamplingVisualManual/3_analysis';
+exper.name.root = '/Users/ilja/Dropbox/12_work/mr_informationSamplingVisualManual';
 exper.name.analysis = strcat(exper.name.root, '/', '3_analysis');
 exper.name.data = strcat(exper.name.root, '/', '2_data');
 exper.name.plt = strcat(exper.name.root, '/', '4_figures');
