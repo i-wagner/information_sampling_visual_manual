@@ -1,27 +1,11 @@
 close all; clear all; clc;
 
 
-%% Toggle wich version of the experiment to analse
-% 1: Version without tablet
-% 2: Version with tablet
-exp_version = 1;
-
-
 %% Go to folder with data
-if exp_version == 1
-
-    exper.name.root     = '/Users/ilja/Dropbox/12_work/mr_informationSamplingVisualManual/3_analysis';
-    exper.name.analysis = strcat(exper.name.root, '/', '3_analysis');
-
-elseif exp_version == 2
-
-    exper.name.root     = '/Users/i/Dropbox/3_dissertation/7_informationSampling2022';
-    exper.name.analysis = strcat('/Users/i/Dropbox/3_dissertation/2_informationSampling/1_hostedOnGit', ...
-                                 '/', '3_analysis');
-
-end
+exper.name.root = '/Users/ilja/Dropbox/12_work/mr_informationSamplingVisualManual/3_analysis';
+exper.name.analysis = strcat(exper.name.root, '/', '3_analysis');
 exper.name.data = strcat(exper.name.root, '/', '2_data');
-exper.name.plt  = strcat(exper.name.root, '/', '4_figures');
+exper.name.plt = strcat(exper.name.root, '/', '4_figures');
 
 addpath(exper.name.analysis, strcat(exper.name.analysis, '/_model'));
 cd(exper.name.data);
@@ -68,24 +52,11 @@ exper.crit.minDur = 5;  % Minimum gaze shift duration; used for gaze shift detec
 
 
 %% Settings of screen, on which data was recorded
-screen        = screenBig;
-screen.fixTol = 2;
-if exp_version == 2 % Tolerance area around fixation (deg)
-
-    screen.fixTol = 1.5;
-
-end
+screen = screenBig;
+screen.fixTol = 1.5;
 
 % Define position of fixation cross
-if exp_version == 1
-
-    exper.fixLoc.deg = [0 0];
-
-elseif exp_version == 2
-
-    exper.fixLoc.deg = [0 9.5];
-
-end
+exper.fixLoc.deg = [0, 9.5];
 exper.fixLoc.px = round([(exper.fixLoc.deg(1) / screen.xPIX2DEG) + screen.x_center ... 
                          (exper.fixLoc.deg(2) / screen.yPIX2DEG) + screen.y_center]);
 
@@ -93,18 +64,10 @@ exper.fixLoc.px = round([(exper.fixLoc.deg(1) / screen.xPIX2DEG) + screen.x_cent
 %% Stimulus settings
 % We define our AOI as a circular area, with a diameter of 5deg, around the
 % center of each stimulus
-stim.diameter.px     = 49;                                 % Stimulus diameter (pixel)
-stim.diameter.deg    = stim.diameter.px * screen.xPIX2DEG; % Stimulus diameter (deg)
-if exp_version == 1
-
-    stim.diameterAOI.deg = 5;                              % AOI diameter (deg)
-
-elseif exp_version == 2
-
-    stim.diameterAOI.deg = 3;
-
-end
-stim.radiusAOI.deg   = stim.diameterAOI.deg / 2;           % AOI radius (deg)
+stim.diameter.px = 49;                                 % Stimulus diameter (pixel)
+stim.diameter.deg = stim.diameter.px * screen.xPIX2DEG; % Stimulus diameter (deg)
+stim.diameterAOI.deg = 3;
+stim.radiusAOI.deg = stim.diameterAOI.deg / 2;           % AOI radius (deg)
 
 % Identifier for easy (:, 1) and hard (:, 2) targets (1, :) and distractors (2, :)
 stim.identifier    = [1 2; 3 4];
@@ -171,19 +134,6 @@ for c = 1:exper.num.condNo % Condition
 
         end
         clear dirName_sub
-
-        % Subject in manual search version of the experiment had problems
-        % with maintaining fixation at trial start; to make things easier,
-        % fixation tolerance was increased for this subject
-        if exp_version == 2 && curr_sub == 1 && curr_cond < 4
-
-            screen.fixTol = 2;
-
-        elseif exp_version == 2 && curr_cond < 4
-
-            screen.fixTol = 1.5;
-
-        end
 
         % Load .log file of single subject and extract relevant data from it
         fileName_log = sprintf('e%dv%db1.log', curr_cond, curr_sub);
@@ -324,13 +274,8 @@ for c = 1:exper.num.condNo % Condition
             % WE ALSO FLIP THE Y-COORDINATES OF THE STIMULUS LOCATIONS
             inp_x_loc = log.file(t, log.col.stimPosX); % Stimulus locations
             inp_y_loc = log.file(t, log.col.stimPosY);
-            if exp_version == 1 && curr_cond < 4
-
-                inp_y_loc = inp_y_loc .* -1;
-
-            end
-            inp_no_ed   = log.file(t, log.col.noDisEasy); % # easy distractors
-            inp_no_dd   = log.file(t, log.col.noDisHard); % # difficult distractors
+            inp_no_ed = log.file(t, log.col.noDisEasy); % # easy distractors
+            inp_no_dd = log.file(t, log.col.noDisHard); % # difficult distractors
             inp_no_targ = log.file(t, log.col.noTargets); % Number targets in condition
             if mod(curr_cond, 2) == 0
 
@@ -352,21 +297,12 @@ for c = 1:exper.num.condNo % Condition
             % Gaze shifts are all saccades and blinks, detected in a trial
             if curr_cond < 4
 
-                inp_gazeTrace   = trial.gazeTrace(trial.events.all(4):trial.events.all(5), :); % Gaze trace between stimulus on- and offset
-                inp_ts_stimOn   = trial.events.stim_onOff(t, 1);                               % Timestampe stimulus onset
-                inp_minDur_sacc = exper.crit.minDur;                                           % Minimum duration of gaze shifts [ms]; everything beneath is flagged
-                inp_screen_x    = (screen.x_pix - exper.fixLoc.px(1)) * screen.xPIX2DEG;       % Most extrem gaze position possible, given the display size
-                if exp_version == 1
-
-                    inp_screen_y = (screen.y_pix - exper.fixLoc.px(2)) * screen.yPIX2DEG;
-                    inp_screen_y = [inp_screen_y inp_screen_y*-1];
-
-                elseif exp_version == 2
-
-                    inp_screen_y    = [exper.fixLoc.px(2) * screen.yPIX2DEG ...
-                                       (screen.y_pix - exper.fixLoc.px(2)) * screen.yPIX2DEG*-1];
-
-                end
+                inp_gazeTrace = trial.gazeTrace(trial.events.all(4):trial.events.all(5), :); % Gaze trace between stimulus on- and offset
+                inp_ts_stimOn = trial.events.stim_onOff(t, 1); % Timestampe stimulus onset
+                inp_minDur_sacc = exper.crit.minDur; % Minimum duration of gaze shifts [ms]; everything beneath is flagged
+                inp_screen_x = (screen.x_pix - exper.fixLoc.px(1)) * screen.xPIX2DEG; % Most extrem gaze position possible, given the display size
+                inp_screen_y= [exper.fixLoc.px(2) * screen.yPIX2DEG ...
+                               (screen.y_pix - exper.fixLoc.px(2)) * screen.yPIX2DEG*-1];
 
                 gazeShifts_singleTrial = ...
                     infSampling_getGazeShifts(inp_gazeTrace, inp_ts_stimOn, ...
@@ -402,10 +338,10 @@ for c = 1:exper.num.condNo % Condition
             % was fixated or not
             inp_endpoints_x = gazeShifts_singleTrial(:, 13); % Mean gaze position after gaze shift
             inp_endpoints_y = gazeShifts_singleTrial(:, 15);
-            inp_stimLoc_x   = stim_locations(:, :, 1);       % Stimulus locations
+            inp_stimLoc_x   = stim_locations(:, :, 1); % Stimulus locations
             inp_stimLoc_y   = stim_locations(:, :, 2);
-            inp_aoi_radius  = stim.radiusAOI.deg;            % Desired AOI size
-            inp_debug_plot  = [0 exp_version];               % Plot stimulus locations and gaze shift endpoints
+            inp_aoi_radius  = stim.radiusAOI.deg; % Desired AOI size
+            inp_debug_plot  = 0; % Plot stimulus locations and gaze shift endpoints
 
             gazeShifts_singleTrial(:, end+1) = ...
                 infSampling_getFixatedAOI(inp_endpoints_x, inp_endpoints_y, ...
@@ -790,14 +726,6 @@ clear c curr_cond
 
 % Exclude subjects based on defined criteria
 idx_excld = logical(sum(isnan(exper.trialNo), 2));
-if exp_version == 1
-
-     % Hardcode exclusion of participant 2; this one is excluded because of
-     % an excessive search time, which, however, is only calculated
-     % further down in the pipeline
-     idx_excld(2) = 1;
-
-end
 
 exper.events.stim_onOff(idx_excld, :)   = {[]};
 sacc.time.planning(idx_excld, :)        = {[]};
@@ -1541,17 +1469,8 @@ for c = 1:exper.num.condNo % Condition
     if exper.flag.export == 1
 
         % Save as .txt file
-        if exp_version == 1
-
-            savePath_txt = strcat(exper.name.analysis, '/_model/', dat_filenames{1, c});
-            savePath_xls = strcat(exper.name.analysis, '/_model/', dat_filenames{2, c});
-
-        elseif exp_version == 2
-
-            savePath_txt = strcat(exper.name.root, '/3_analysis/_model/', dat_filenames{1, c});
-            savePath_xls = strcat(exper.name.root, '/3_analysis/_model/', dat_filenames{2, c});
-
-        end
+        savePath_txt = strcat(exper.name.analysis, '/_model/', dat_filenames{1, c});
+        savePath_xls = strcat(exper.name.analysis, '/_model/', dat_filenames{2, c});
         dlmwrite(savePath_txt, container_dat, 'delimiter', '\t')
 
         % Save as .xls file
@@ -1570,21 +1489,13 @@ clear c container_dat_label dat_filenames
 
 
 %% Fit model with perfect fixation distribution
-if exp_version == 1
-
-    cd(strcat(exper.name.analysis, '/_model'))
-
-elseif exp_version == 2
-
-    cd(strcat(exper.name.root, '/3_analysis/_model'))
-
-end
-model_io              = [];
-model_io.containerDat = container_dat_mod;        % Get data from .xls files
-model_io              = get_params(model_io);
-model_io              = read_data(model_io);
-model_io              = fit_model(model_io);      % Fit model and plot results
-model_io              = fit_regression(model_io); % Fit regression and plot results
+cd(strcat(exper.name.analysis, '/_model'))
+model_io = [];
+model_io.containerDat = container_dat_mod; % Get data from .xls files
+model_io = get_params(model_io);
+model_io = read_data(model_io);
+model_io = fit_model(model_io); % Fit model and plot results
+model_io = fit_regression(model_io); % Fit regression and plot results
 clear container_dat_mod
 
 
@@ -1717,15 +1628,7 @@ clear prop_choices_easy prop_choices_easy_fit slopesIntercepts
 
 % Figure 5
 % Proportion gaze shifts on different stimuli over the course of trials
-if exp_version == 1
-
-    inp_minSub = exper.avg.minSub;
-
-elseif exp_version == 2
-
-    inp_minSub = 1;
-
-end
+inp_minSub = exper.avg.minSub;
 inp_dat    = [sacc.propGs.onChosen_trialBegin(:, 2) ...
               sacc.propGs.onEasy_trialBegin(:, 2) ...
               sacc.propGs.onSmaller_trialBegin(:, 2) ...
