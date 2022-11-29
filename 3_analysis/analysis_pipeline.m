@@ -13,7 +13,7 @@ cd(exper.name.data);
 
 %% Experiment structure
 exper.num.conds  = [2; 3]; % 2 == single-target, 3 == double-target
-exper.num.subs   = (1:21)';
+exper.num.subs   = (1:8)';
 exper.num.subNo  = numel(exper.num.subs);
 exper.num.condNo = numel(exper.num.conds);
 
@@ -46,7 +46,7 @@ clear show_figs
 
 
 %% Miscellaneous settings
-exper.avg.minSub  = 10; % Minimum number of subjects required to calculate mean
+exper.avg.minSub  = 1; % Minimum number of subjects required to calculate mean
 exper.flag.export = 1;  % Export data for model
 exper.crit.minDur = 5;  % Minimum gaze shift duration; used for gaze shift detection
 
@@ -64,13 +64,13 @@ exper.fixLoc.px = round([(exper.fixLoc.deg(1) / screen.xPIX2DEG) + screen.x_cent
 %% Stimulus settings
 % We define our AOI as a circular area, with a diameter of 5deg, around the
 % center of each stimulus
-stim.diameter.px = 49;                                 % Stimulus diameter (pixel)
-stim.diameter.deg = stim.diameter.px * screen.xPIX2DEG; % Stimulus diameter (deg)
+stim.diameter.px = 49; % Stimulus diameter (pixel)
+stim.diameter.deg = stim.diameter.px*screen.xPIX2DEG; % Stimulus diameter (deg)
 stim.diameterAOI.deg = 3;
-stim.radiusAOI.deg = stim.diameterAOI.deg / 2;           % AOI radius (deg)
+stim.radiusAOI.deg = stim.diameterAOI.deg/2; % AOI radius (deg)
 
 % Identifier for easy (:, 1) and hard (:, 2) targets (1, :) and distractors (2, :)
-stim.identifier    = [1 2; 3 4];
+stim.identifier = [1, 2; 3, 4];
 stim.identifier_bg = 666;
 
 
