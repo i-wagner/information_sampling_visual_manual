@@ -713,20 +713,20 @@ for c = 1:exper.num.condNo % Condition
     clear s curr_sub
 
     % Plot proportion trials where responded on and last fixated target correspond
-    if curr_cond == 3 % Only doube-target condition
-
-        corr_dat = exper.prop.correspond_trials;
-        lat_dat  = vertcat(sacc.time.resp_bg{:, c});
-
-        fig.h = figure;
-        infSampling_plt_propCorresponding(corr_dat, lat_dat, plt)
-        opt.imgname = strcat(plt.name.aggr(1:end-2), 'trial_congruency');
-        opt.size    = [45 20];
-        opt.save    = plt.save;
-        prepareFigure(fig.h, opt)
-        close; clear fig opt plt_dat lat_dat corr_dat
-
-    end
+%     if curr_cond == 3 % Only doube-target condition
+% 
+%         corr_dat = exper.prop.correspond_trials;
+%         lat_dat  = vertcat(sacc.time.resp_bg{:, c});
+% 
+%         fig.h = figure;
+%         infSampling_plt_propCorresponding(corr_dat, lat_dat, plt)
+%         opt.imgname = strcat(plt.name.aggr(1:end-2), 'trial_congruency');
+%         opt.size    = [45 20];
+%         opt.save    = plt.save;
+%         prepareFigure(fig.h, opt)
+%         close; clear fig opt plt_dat lat_dat corr_dat
+% 
+%     end
 
 end
 clear c curr_cond
@@ -877,17 +877,17 @@ for c = 2:exper.num.condNo % Condition
     clear s
 
     % Plot proportion gaze shifts on easy set against proportion choice for easy target
-    if curr_cond == 3 % Double-target condition
-
-        % Unpack data
-        prop_choiceEasy = stim.propChoice.easy(:, :, c);
-        prop_saccEasy   = sacc.propGs.onEasy_noLock_indSs(:, :, c);
-        dat             = [prop_choiceEasy(:) prop_saccEasy(:)];
-
-        infSampling_plt_corrChoiceEasyPropGsEasy(dat, plt)
-        clear dat prop_choiceEasy prop_saccEasy
-
-    end
+%     if curr_cond == 3 % Double-target condition
+% 
+%         % Unpack data
+%         prop_choiceEasy = stim.propChoice.easy(:, :, c);
+%         prop_saccEasy   = sacc.propGs.onEasy_noLock_indSs(:, :, c);
+%         dat             = [prop_choiceEasy(:) prop_saccEasy(:)];
+% 
+%         infSampling_plt_corrChoiceEasyPropGsEasy(dat, plt)
+%         clear dat prop_choiceEasy prop_saccEasy
+% 
+%     end
 
 end
 clear c curr_cond
