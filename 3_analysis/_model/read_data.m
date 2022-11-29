@@ -1,11 +1,9 @@
 function [all] = read_data(all)
 %READ_DATA Summary of this function goes here
 %   Detailed explanation goes here
-% single_data = dlmread('dataSingleTarget.txt');
-% double_data = dlmread('dataDoubleTarget.txt');
+
 single_data = all.containerDat(:, :, 1);
 double_data = all.containerDat(:, :, 2);
-[~, column_data] = xlsread('labels.xlsx');
 all.params.n = size(single_data,1);
 
 all.data.single.accuracy(:,1) = single_data(:,3);
@@ -64,8 +62,6 @@ else
     all.data.pred.non_search_time = all.data.double.non_search_time;
     all.data.pred.search_time = all.data.double.search_time;
 end
-% all.data.pred.accuracy(all.data.pred.accuracy<0.5) = 0.5;
-
 
 for ne = 1:9
     all.data.double.choices(:,ne) = double_data(:,78+ne);        
