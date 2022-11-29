@@ -535,11 +535,11 @@ for c = 1:exper.num.condNo % Condition
             % and std of gaze between AOI visits
             no_gs = size(gazeShifts_singleTrial, 1);
             gapLocChosen = NaN(no_gs, 2);
-            if curr_cond == 2
+            if mod(curr_cond, 2) == 0
 
                 gapLocChosen(:, choice_target(t)) = log.file(t, log.col.gapPosEasy);
 
-            elseif curr_cond == 3
+            elseif mod(curr_cond, 2) == 1
 
                 gapLocChosen = repmat([log.file(t, log.col.gapPosEasy), log.file(t, log.col.gapPosHard)], ...
                                        no_gs, 1);
