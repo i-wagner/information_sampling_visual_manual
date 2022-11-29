@@ -16,6 +16,11 @@ exper.num.conds  = [2; 3]; % 2 == single-target, 3 == double-target
 exper.num.subs   = (1:8)';
 exper.num.subNo  = numel(exper.num.subs);
 exper.num.condNo = numel(exper.num.conds);
+if numel(exper.num.conds) < 2 || diff(exper.num.conds) ~= 1
+
+    error('Run analysis with data from both single- and double-target condition')
+
+end
 
 
 %% Plot settings
@@ -46,9 +51,11 @@ clear show_figs
 
 
 %% Miscellaneous settings
-exper.avg.minSub  = 1; % Minimum number of subjects required to calculate mean
-exper.flag.export = 1;  % Export data for model
-exper.crit.minDur = 5;  % Minimum gaze shift duration; used for gaze shift detection
+exper.avg.minSub = 1; % Minimum number of subjects required to calculate mean
+exper.flag.export = 1; % Export data for model
+exper.crit.minDur = 5; % Minimum gaze shift duration; used for gaze shift detection
+exper.name.export = [{'dataSingleTargetEye',    'dataDoubleTargetEye'}; ...
+                     {'dataSingleTargetTablet', 'dataDoubleTargetTablet'}];
 
 
 %% Settings of screen, on which data was recorded
@@ -1436,8 +1443,8 @@ clear c
 % into my framework
 container_dat_mod   = NaN(exper.num.subNo, 100, 2);
 container_dat_label = infSampling_colNames;
-dat_filenames       = {'dataSingleTarget.txt'  'dataDoubleTarget.txt'; ...
-                       'dataSingleTarget.xlsx' 'dataDoubleTarget.xlsx'};
+dat_filenames       = {[exper.name.export{exper.num.conds(1)-1, 1}, '.txt'],  [exper.name.export{exper.num.conds(1)-1, 2}, '.txt']; ...
+                       [exper.name.export{exper.num.conds(1)-1, 1}, '.xlsx'], [exper.name.export{exper.num.conds(1)-1, 2}, '.xlsx']};
 for c = 1:exper.num.condNo % Condition
 
     % Gather data to export
