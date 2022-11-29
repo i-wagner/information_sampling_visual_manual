@@ -10,8 +10,7 @@ exp_version = 1;
 %% Go to folder with data
 if exp_version == 1
 
-%     exper.name.root     = '/Users/i/Dropbox/3_dissertation/2_informationSampling/1_hostedOnGit';
-    exper.name.root     = '/Users/ilja/Dropbox/3_dissertation/2_informationSampling/1_hostedOnGit';
+    exper.name.root     = '/Users/ilja/Dropbox/12_work/mr_informationSamplingVisualManual/3_analysis';
     exper.name.analysis = strcat(exper.name.root, '/', '3_analysis');
 
 elseif exp_version == 2
@@ -176,11 +175,11 @@ for c = 1:exper.num.condNo % Condition
         % Subject in manual search version of the experiment had problems
         % with maintaining fixation at trial start; to make things easier,
         % fixation tolerance was increased for this subject
-        if exp_version == 2 && curr_sub == 1
+        if exp_version == 2 && curr_sub == 1 && curr_cond < 4
 
             screen.fixTol = 2;
 
-        elseif exp_version == 2
+        elseif exp_version == 2 && curr_cond < 4
 
             screen.fixTol = 1.5;
 
@@ -188,8 +187,13 @@ for c = 1:exper.num.condNo % Condition
 
         % Load .log file of single subject and extract relevant data from it
         fileName_log = sprintf('e%dv%db1.log', curr_cond, curr_sub);
-        log.file     = load(fileName_log);
-        if curr_cond == 2 % Single-target condition
+        log.file     = readmatrix(fileName_log);
+        if log.file(1, 4) > 1 % Recode trial #
+
+            log.file(:, 4) = log.file(:, 4) - min(log.file(:, 4)) + 1;
+
+        end
+        if mod(curr_cond, 2) == 0 % Single-target condition
 
             % For the single-target condition, trials in which the easy
             % target was shown without distractors and trials in which the
@@ -238,54 +242,76 @@ for c = 1:exper.num.condNo % Condition
         for t = 1:no_trials_singleSub % Trial
 
             % Get gaze trace in trial and preprocess data
-            flip_yAxis = 1;
+            if curr_cond < 4
 
-            [gTrace, flag_dataLoss]        = loadDat(t, screen.x_pix, screen.y_pix);
-            exper.excl_trials{curr_sub, c} = [exper.excl_trials{curr_sub, c}; flag_dataLoss];
-            if ~isempty(flag_dataLoss)
+                flip_yAxis = 1;
 
-                log.file(t, log.col.fixErr) = 1;
+                [gTrace, flag_dataLoss]        = loadDat(t, screen.x_pix, screen.y_pix);
+                exper.excl_trials{curr_sub, c} = [exper.excl_trials{curr_sub, c}; flag_dataLoss];
+                if ~isempty(flag_dataLoss)
+    
+                    log.file(t, log.col.fixErr) = 1;
+    
+                end
+                [gTrace(:, 2), gTrace(:, 3)] = ...
+                    convertPix2Deg(gTrace(:, 2), gTrace(:, 3), ...
+                                   [exper.fixLoc.px(1) exper.fixLoc.px(2)], ...
+                                   [screen.xPIX2DEG  screen.yPIX2DEG], ...
+                                   flip_yAxis);
+
+                trial.gazeTrace = gTrace;
+                clear flip_yAxis gTrace flag_dataLoss
 
             end
-            [gTrace(:, 2), gTrace(:, 3)] = ...
-                convertPix2Deg(gTrace(:, 2), gTrace(:, 3), ...
-                               [exper.fixLoc.px(1) exper.fixLoc.px(2)], ...
-                               [screen.xPIX2DEG  screen.yPIX2DEG], ...
-                               flip_yAxis);
-
-            trial.gazeTrace = gTrace;
-            clear flip_yAxis gTrace flag_dataLoss
 
             % Get events in trial
             % We expect five events to happen in a trial:
             % trial begin, start recording, fixation onset, onset of stimuli
             % and offset of stimuli [i.e., response])
-            trial.events.all = find(bitget(trial.gazeTrace(:, 4), 3));
-            if numel(trial.events.all) ~= 5
+            if curr_cond < 4
 
-                % For one participant in the single-target condition, we
-                % miss a chunk of data right at trial start, which results
-                % in an event being missing. To stop the analysis from
-                % crashing, we add a placeholder so that the event vector
-                % has the appropriate length
-%                 keyboard
-                trial.events.all = [trial.events.all(1:2); NaN; trial.events.all(3:end)];
+                trial.events.all = find(bitget(trial.gazeTrace(:, 4), 3));
+                if numel(trial.events.all) ~= 5
+
+                    % For one participant in the single-target condition, we
+                    % miss a chunk of data right at trial start, which results
+                    % in an event being missing. To stop the analysis from
+                    % crashing, we add a placeholder so that the event vector
+                    % has the appropriate length
+    %                 keyboard
+                    trial.events.all = [trial.events.all(1:2); NaN; trial.events.all(3:end)];
+
+                end
+                trial.events.stim_onOff(t, 1) = trial.gazeTrace(trial.events.all(4), 1);                       % Timestamp stimulus onset
+                trial.events.stim_onOff(t, 2) = trial.gazeTrace(trial.events.all(5), 1);                       % Timestamp stimulus offset
+                time_trial(t)                 = trial.events.stim_onOff(t, 2) - trial.events.stim_onOff(t, 1); % Time spent on trial
+
+            elseif curr_cond > 3
+
+                fileName_events  = sprintf('e%dv%db1_events.csv', curr_cond, curr_sub);
+                temp             = readmatrix(fileName_events);
+                trial.events.all = temp(t, :)';
+
+                trial.events.stim_onOff(t, 1) = trial.events.all(4);                       % Timestamp stimulus onset
+                trial.events.stim_onOff(t, 2) = trial.events.all(5);                       % Timestamp stimulus offset
+                time_trial(t)                 = trial.events.stim_onOff(t, 2) - trial.events.stim_onOff(t, 1); % Time spent on trial
 
             end
-            trial.events.stim_onOff(t, 1) = trial.gazeTrace(trial.events.all(4), 1);                       % Timestamp stimulus onset
-            trial.events.stim_onOff(t, 2) = trial.gazeTrace(trial.events.all(5), 1);                       % Timestamp stimulus offset
-            time_trial(t)                 = trial.events.stim_onOff(t, 2) - trial.events.stim_onOff(t, 1); % Time spent on trial
 
             % Offline check for fixation errors (just to be sure)
-            fixPos_stimOn  = trial.gazeTrace(trial.events.all(4)-20:trial.events.all(4)+80, 2:3);
-            fixPos_deviate = sum(abs(fixPos_stimOn(:)) > screen.fixTol);
-            if fixPos_deviate > 0 && ~ismember(t, exper.excl_trials{curr_sub, c})
+            if curr_cond < 4
 
-                keyboard
-                exper.excl_trials{curr_sub, c} = [exper.excl_trials{curr_sub, c}; t];
+                fixPos_stimOn  = trial.gazeTrace(trial.events.all(4)-20:trial.events.all(4)+80, 2:3);
+                fixPos_deviate = sum(abs(fixPos_stimOn(:)) > screen.fixTol);
+                if fixPos_deviate > 0 && ~ismember(t, exper.excl_trials{curr_sub, c})
+
+                    keyboard
+                    exper.excl_trials{curr_sub, c} = [exper.excl_trials{curr_sub, c}; t];
+
+                end
+                clear fixPos_stimOn fixPos_deviate
 
             end
-            clear fixPos_stimOn fixPos_deviate
 
             % The stimulus locations, extracted from the .log-file, are not
             % ordered: because of this, different cells in the location
@@ -298,19 +324,19 @@ for c = 1:exper.num.condNo % Condition
             % WE ALSO FLIP THE Y-COORDINATES OF THE STIMULUS LOCATIONS
             inp_x_loc = log.file(t, log.col.stimPosX); % Stimulus locations
             inp_y_loc = log.file(t, log.col.stimPosY);
-            if exp_version == 1
+            if exp_version == 1 && curr_cond < 4
 
-                inp_y_loc   = inp_y_loc .* -1;
+                inp_y_loc = inp_y_loc .* -1;
 
             end
             inp_no_ed   = log.file(t, log.col.noDisEasy); % # easy distractors
             inp_no_dd   = log.file(t, log.col.noDisHard); % # difficult distractors
-            inp_no_targ = curr_cond-1;                    % Number targets in condition
-            if curr_cond == 2
+            inp_no_targ = log.file(t, log.col.noTargets); % Number targets in condition
+            if mod(curr_cond, 2) == 0
 
                 inp_shownTarg = log.file(t, log.col.targetDiff); % Target shown in trial
 
-            elseif curr_cond == 3 % In the double-target condition, both target were always shown
+            elseif mod(curr_cond, 2) % In the double-target condition, both target were always shown
 
                 inp_shownTarg = NaN;
                 
@@ -324,26 +350,42 @@ for c = 1:exper.num.condNo % Condition
 
             % Get gaze shifts in trial
             % Gaze shifts are all saccades and blinks, detected in a trial
-            inp_gazeTrace   = trial.gazeTrace(trial.events.all(4):trial.events.all(5), :); % Gaze trace between stimulus on- and offset
-            inp_ts_stimOn   = trial.events.stim_onOff(t, 1);                               % Timestampe stimulus onset
-            inp_minDur_sacc = exper.crit.minDur;                                           % Minimum duration of gaze shifts [ms]; everything beneath is flagged
-            inp_screen_x    = (screen.x_pix - exper.fixLoc.px(1)) * screen.xPIX2DEG;       % Most extrem gaze position possible, given the display size
-            if exp_version == 1
+            if curr_cond < 4
 
-                inp_screen_y = (screen.y_pix - exper.fixLoc.px(2)) * screen.yPIX2DEG;
-                inp_screen_y = [inp_screen_y inp_screen_y*-1];
+                inp_gazeTrace   = trial.gazeTrace(trial.events.all(4):trial.events.all(5), :); % Gaze trace between stimulus on- and offset
+                inp_ts_stimOn   = trial.events.stim_onOff(t, 1);                               % Timestampe stimulus onset
+                inp_minDur_sacc = exper.crit.minDur;                                           % Minimum duration of gaze shifts [ms]; everything beneath is flagged
+                inp_screen_x    = (screen.x_pix - exper.fixLoc.px(1)) * screen.xPIX2DEG;       % Most extrem gaze position possible, given the display size
+                if exp_version == 1
 
-            elseif exp_version == 2
+                    inp_screen_y = (screen.y_pix - exper.fixLoc.px(2)) * screen.yPIX2DEG;
+                    inp_screen_y = [inp_screen_y inp_screen_y*-1];
 
-                inp_screen_y    = [exper.fixLoc.px(2) * screen.yPIX2DEG ...
-                                   (screen.y_pix - exper.fixLoc.px(2)) * screen.yPIX2DEG*-1];
+                elseif exp_version == 2
+
+                    inp_screen_y    = [exper.fixLoc.px(2) * screen.yPIX2DEG ...
+                                       (screen.y_pix - exper.fixLoc.px(2)) * screen.yPIX2DEG*-1];
+
+                end
+
+                gazeShifts_singleTrial = ...
+                    infSampling_getGazeShifts(inp_gazeTrace, inp_ts_stimOn, ...
+                                              inp_minDur_sacc, inp_screen_x, inp_screen_y);
+                clear inp_gazeTrace inp_ts_stimOn inp_minDur_sacc inp_screen_x inp_screen_y
+
+            elseif curr_cond > 3
+
+                fileName_sacc  = sprintf('e%dv%db1_saccades.csv', curr_cond, curr_sub);
+                temp           = readmatrix(fileName_sacc);
+                if temp(1, 17) > 1
+
+                    temp(:, 17) = temp(:, 17) - min(temp(:, 17)) + 1;
+
+                end
+                gazeShifts_singleTrial = temp(temp(:, 17) == t, :);
+                gazeShifts_singleTrial = gazeShifts_singleTrial(:, 1:end-1);
 
             end
-
-            gazeShifts_singleTrial = ...
-                infSampling_getGazeShifts(inp_gazeTrace, inp_ts_stimOn, ...
-                                          inp_minDur_sacc, inp_screen_x, inp_screen_y);
-            clear inp_gazeTrace inp_ts_stimOn inp_minDur_sacc inp_screen_x inp_screen_y
 
             % Get fixated AOIs
             % If a gaze shift landed on either one of the stimuli, we
@@ -405,6 +447,8 @@ for c = 1:exper.num.condNo % Condition
             inp_stimOn     = trial.events.stim_onOff(t, 1);
             inp_stimOff    = trial.events.stim_onOff(t, 2);
 
+%             [time_planning(t), time_decision(t), time_inspection(t), gazeShifts_noConsec_singleTrial, time_respBg(t, :)] = ...
+%                 infSampling_getDwellTime(inp_gazeShifts, inp_stimOn, inp_stimOff, stim.identifier, stim.identifier_bg, curr_cond-2);
             [time_planning(t), time_decision(t), time_inspection(t), gazeShifts_noConsec_singleTrial, time_respBg(t, :)] = ...
                 infSampling_getDwellTime(inp_gazeShifts, inp_stimOn, inp_stimOff, stim.identifier, stim.identifier_bg, curr_cond);
             clear inp_gazeShifts inp_stimOn inp_stimOff
@@ -440,7 +484,7 @@ for c = 1:exper.num.condNo % Condition
 
             % Get chosen target in trial
             % 1 == easy target, 2 == hard target
-            if curr_cond == 3 % Double-target condition
+            if mod(curr_cond, 2) == 1 % Double-target condition
 
                 % Chosen target is the one a participant looked at last,
                 % before giving a response. If the last fixated AOI was the
@@ -459,7 +503,7 @@ for c = 1:exper.num.condNo % Condition
                                                 inp_flag_targ, inp_flag_dis, inp_flag_bg);
                 clear inp_gapLoc_easy inp_resp inp_fixAOI inp_flag_targ inp_flag_dis inp_flag_bg
 
-            elseif curr_cond == 2 % Single-target condition
+            elseif mod(curr_cond, 2) == 0 % Single-target condition
 
                 % Chosen target is the target shown in trial
                 choice_target(t) = log.file(t, log.col.targetDiff);
@@ -611,13 +655,13 @@ cd(exper.name.root);
 
 
 %% Export for Zenodo
-for c = 1:exper.num.condNo % Condition
-
-    temp = vertcat(sacc.gazeShifts_zen{:, c});
-    writematrix(temp, strcat('./dat_cond', num2str(c), '.csv'))
-
-end
-sacc = rmfield(sacc, 'gazeShifts_zen'); 
+% for c = 1:exper.num.condNo % Condition
+% 
+%     temp = vertcat(sacc.gazeShifts_zen{:, c});
+%     writematrix(temp, strcat('./dat_cond', num2str(c), '.csv'))
+% 
+% end
+% sacc = rmfield(sacc, 'gazeShifts_zen'); 
 
 
 %% Exclude invalid trials and check data quality
@@ -712,7 +756,7 @@ for c = 1:exper.num.condNo % Condition
 
         % Calculate proportion trials in which the last fixated and the
         % responded on target corresponded
-        if curr_cond == 3 % Only doube-target condition
+        if mod(curr_cond, 2) == 1 % Only doube-target condition
 
             no_correspond = sum(stim.choiceCorrespond{curr_sub, c} == 1); % # trials with correspondence
 
@@ -1545,7 +1589,6 @@ clear container_dat_mod
 
 
 %% Fit probabilistic model
-% cd('/Users/i/Dropbox/3_dissertation/2_informationSampling/1_hostedOnGit/3_analysis/_model/_recursiveModel_standalone');
 cd('/Users/ilja/Dropbox/3_dissertation/2_informationSampling/1_hostedOnGit/3_analysis/_model/_recursiveModel_standalone');
 % infSampling_generateLUT([(1:9)' (9:-1:1)'], [0 2], 4, 1)
 % model = infSampling_model_main(stim, sacc, model_io, perf, plt);
