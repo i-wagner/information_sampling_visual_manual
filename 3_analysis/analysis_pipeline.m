@@ -1321,12 +1321,16 @@ for c = 1:exper.num.condNo % Condition
     % Export data
     if exper.flag.export == 1
 
-        % Save as .txt file
+        % Define paths
         savePath_txt = strcat(exper.name.analysis, '/_model/', dat_filenames{1, c});
         savePath_xls = strcat(exper.name.analysis, '/_model/', dat_filenames{2, c});
-        dlmwrite(savePath_txt, container_dat, 'delimiter', '\t')
 
-        % Save as .xls file
+        % Delete old files to prevent weird bug that might occur due to
+        % overwriting existing files
+        delete(savePath_txt, savePath_xls);
+
+        % Save data as .txt and .xls
+        writematrix(container_dat, savePath_txt);
         container_dat_xls = num2cell(container_dat);
         container_dat_xls(isnan(container_dat)) = {'NaN'};
         dat_table = array2table(container_dat_xls, ...
