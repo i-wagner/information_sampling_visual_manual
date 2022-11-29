@@ -1,1 +1,0 @@
-Eye tracker had problems with tracking the eyes of this participant, so we killed the experiment and started it again with slightly different calibration settings (area of calibration). This is data from the cancelled block of trials
