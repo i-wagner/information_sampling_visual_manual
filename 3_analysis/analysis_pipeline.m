@@ -62,6 +62,10 @@ exper.name.export = [{'dataSingleTargetEye',    'dataDoubleTargetEye'}; ...
                      {'',                       ''}; ... Add an empty column for indexing to work
                      {'dataSingleTargetTablet', 'dataDoubleTargetTablet'}];
 
+% Run modelling
+exper.flag.runModel.eye = true;
+exper.flag.runModel.tablet = true;
+
 
 %% Settings of screen, on which data was recorded
 screen = screenBig;
@@ -1369,9 +1373,26 @@ clear container_dat_mod
 
 %% Fit probabilistic model
 cd('/Users/ilja/Dropbox/12_work/mr_informationSamplingVisualManual/3_analysis/_model/_recursiveModel_standalone');
+
+% Generate lookup tablet
 % infSampling_generateLUT([(1:9)' (9:-1:1)'], [0 2], 4, 1)
-% model = infSampling_model_main(stim, sacc, model_io, perf, plt);
-load('modelResults_propChoices_fixChosen.mat');
+
+% Run model
+if exper.num.conds(1) == 2
+    if exper.flag.runModel.eye
+        load('modelResults_eye_propChoices_fixChosen.mat');
+    else
+        model = infSampling_model_main(stim, sacc, model_io, perf, exper, plt);
+    end
+elseif exper.num.conds(1) == 4
+    if exper.flag.runModel.tablet
+        load('modelResults_tablet_propChoices_fixChosen.mat');
+    else
+        model = infSampling_model_main(stim, sacc, model_io, perf, exper, plt);
+    end
+end
+
+
 
 
 %% Statistics for paper 
