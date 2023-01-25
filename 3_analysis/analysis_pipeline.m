@@ -59,6 +59,7 @@ exper.avg.minSub = 1; % Minimum number of subjects required to calculate mean
 exper.flag.export = 1; % Export data for model
 exper.crit.minDur = 5; % Minimum gaze shift duration; used for gaze shift detection
 exper.name.export = [{'dataSingleTargetEye',    'dataDoubleTargetEye'}; ...
+                     {'',                       ''}; ... Add an empty column for indexing to work
                      {'dataSingleTargetTablet', 'dataDoubleTargetTablet'}];
 
 
