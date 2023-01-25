@@ -45,7 +45,9 @@ function dat_singleSub = infSampling_avgPropSacc(dat_input, min_sub)
         dat_type     = dat_input(:, dt);
         dat_type     = horzcat(dat_type{:});
         dat_type_pad = cellfun(@(x) x(:, :, 3), dat_type, 'UniformOutput', false); % Pad data with zeros, so each subject matrix has the same size
-        dat_type_pad = padCells(dat_type_pad, 20);
+        nGs = cell2mat(cellfun(@(x) size(x, 1), dat_type_pad, 'UniformOutput', false));
+        nGs = max(nGs(:));
+        dat_type_pad = padCells(dat_type_pad, nGs);
 
         % Extract data of single subjects and sort it by set-size group and
         % position in sequence
