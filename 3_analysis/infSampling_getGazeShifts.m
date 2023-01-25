@@ -195,7 +195,10 @@ function events_gs = infSampling_getGazeShifts(gazeTrace, ts_stimOnset, minDur_g
     %% Construct gaze shift matrix
     % Put all detected gaze shifts in one matrix and sort by their respective
     % onset time
-    events_gs = sortrows([sacc_onOff; blink_onOff], 1);
+    events_gs = double.empty(0,12);
+    if ~isempty(sacc_onOff) || ~isempty(blink_onOff)
+        events_gs = sortrows([sacc_onOff; blink_onOff], 1);
+    end
     clear sacc_onOff blink_onOff
 
     % DEBUG
@@ -239,8 +242,7 @@ function events_gs = infSampling_getGazeShifts(gazeTrace, ts_stimOnset, minDur_g
 %     % Sometimes, one gaze shifts ends th next one begins at the datapoint
 %     % immediately after. One could interpret those as different parts of
 %     % the same gaze shift and merge them together
-%     gs         = 1;
-%     events_gs2 = events_gs;
+%     gs         = 1;%     events_gs2 = events_gs;
 %     no_gs      = size(events_gs2, 1);
 %     while gs <= no_gs %for gs = 1:no_gs % Gaze shift
 % 

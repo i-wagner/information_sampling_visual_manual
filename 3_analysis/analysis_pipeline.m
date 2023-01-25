@@ -349,21 +349,19 @@ for c = 1:exper.num.condNo % Condition
             % position after each gaze shift we can circumvent those kind
             % of fluctuations and get more reliable estimate for if an AOI
             % was fixated or not
-            if ~isempty(gazeShifts_singleTrial)
-                inp_endpoints_x = gazeShifts_singleTrial(:, 13); % Mean gaze position after gaze shift
-                inp_endpoints_y = gazeShifts_singleTrial(:, 15);
-                inp_stimLoc_x   = stim_locations(:, :, 1); % Stimulus locations
-                inp_stimLoc_y   = stim_locations(:, :, 2);
-                inp_aoi_radius  = stim.radiusAOI.deg; % Desired AOI size
-                inp_debug_plot  = 0; % Plot stimulus locations and gaze shift endpoints
-    
-                gazeShifts_singleTrial(:, end+1) = ...
-                    infSampling_getFixatedAOI(inp_endpoints_x, inp_endpoints_y, ...
-                                              inp_stimLoc_x, inp_stimLoc_y, ...
-                                              inp_aoi_radius, stim.identifier_bg, ...
-                                              inp_debug_plot);
-                clear inp_endpoints_x inp_endpoints_y inp_stimLoc_x inp_stimLoc_y inp_aoi_radius inp_debug_plot
-            end
+            inp_endpoints_x = gazeShifts_singleTrial(:, 13); % Mean gaze position after gaze shift
+            inp_endpoints_y = gazeShifts_singleTrial(:, 15);
+            inp_stimLoc_x   = stim_locations(:, :, 1); % Stimulus locations
+            inp_stimLoc_y   = stim_locations(:, :, 2);
+            inp_aoi_radius  = stim.radiusAOI.deg; % Desired AOI size
+            inp_debug_plot  = 0; % Plot stimulus locations and gaze shift endpoints
+
+            gazeShifts_singleTrial(:, end+1) = ...
+                infSampling_getFixatedAOI(inp_endpoints_x, inp_endpoints_y, ...
+                inp_stimLoc_x, inp_stimLoc_y, ...
+                inp_aoi_radius, stim.identifier_bg, ...
+                inp_debug_plot);
+            clear inp_endpoints_x inp_endpoints_y inp_stimLoc_x inp_stimLoc_y inp_aoi_radius inp_debug_plot
 
             % Currently, each individual distractor has an unique identifier,
             % which corresponds to the distractors location in the position
@@ -394,21 +392,17 @@ for c = 1:exper.num.condNo % Condition
             %                  stimulus onset and offset of first gaze
             %                  shift. Response time can only be calculated
             %                  if the last gaze shift landed in a target
-            if ~isempty(gazeShifts_singleTrial)
-                inp_gazeShifts = gazeShifts_singleTrial;
-                inp_stimOn     = trial.events.stim_onOff(t, 1);
-                inp_stimOff    = trial.events.stim_onOff(t, 2);
-                if mod(curr_cond, 2) == 0
-                    expNo = 2;
-                elseif mod(curr_cond, 2) == 1
-                    expNo = 3;
-                end
-                [time_planning(t), time_decision(t), time_inspection(t), gazeShifts_noConsec_singleTrial, time_respBg(t, :)] = ...
-                    infSampling_getDwellTime(inp_gazeShifts, inp_stimOn, inp_stimOff, stim.identifier, stim.identifier_bg, expNo);
-                clear inp_gazeShifts inp_stimOn inp_stimOff expNo
-            else
-                gazeShifts_noConsec_singleTrial = gazeShifts_singleTrial;
+            inp_gazeShifts = gazeShifts_singleTrial;
+            inp_stimOn     = trial.events.stim_onOff(t, 1);
+            inp_stimOff    = trial.events.stim_onOff(t, 2);
+            if mod(curr_cond, 2) == 0
+                expNo = 2;
+            elseif mod(curr_cond, 2) == 1
+                expNo = 3;
             end
+            [time_planning(t), time_decision(t), time_inspection(t), gazeShifts_noConsec_singleTrial, time_respBg(t, :)] = ...
+                infSampling_getDwellTime(inp_gazeShifts, inp_stimOn, inp_stimOff, stim.identifier, stim.identifier_bg, expNo);
+            clear inp_gazeShifts inp_stimOn inp_stimOff expNo
 
             % Check if at least one gaze shift was made to any AOI
             if ~isempty(gazeShifts_noConsec_singleTrial) && ~all(gazeShifts_noConsec_singleTrial(:, 18) == stim.identifier_bg)
@@ -418,29 +412,26 @@ for c = 1:exper.num.condNo % Condition
             end
 
             % Check if gaze shifts went to closest stimulus
-            euc_dist = NaN;
-            if ~isempty(gazeShifts_noConsec_singleTrial)
-                inp_gsOn_x    = gazeShifts_noConsec_singleTrial(:, 5);  % Onset position of gaze shifts
-                inp_gsOn_y    = gazeShifts_noConsec_singleTrial(:, 6); 
-                inp_targAoi   = gazeShifts_noConsec_singleTrial(:, 17); % Index of gaze shift target
-                inp_flagBg    = stim.identifier_bg;                     % Flag, marking background as gaze shift target
-                inp_stimLoc_x = stim_locations(:, :, 1);                % Stimulus locations
-                inp_stimLoc_y = stim_locations(:, :, 2);
-    
-                [gazeShifts_noConsec_singleTrial(:, end+1), prop_gsClosest(t), prop_gsFurther(t)] = ...
-                    infSampling_distStim(inp_gsOn_x, inp_gsOn_y, inp_targAoi, ...
-                                         inp_stimLoc_x, inp_stimLoc_y, inp_flagBg);
-    
-                % Check distance between gaze while fixating and closest stimulus
-                inp_gsOn_x  = gazeShifts_noConsec_singleTrial(:, 13); % Onset position of gaze shifts
-                inp_gsOn_y  = gazeShifts_noConsec_singleTrial(:, 15);
-                inp_targAoi = NaN(size(inp_gsOn_x, 1), 1);            % Do not correct for currently fixated AOI
-    
-                [~, ~, ~, euc_dist] = ...
-                    infSampling_distStim(inp_gsOn_x, inp_gsOn_y, inp_targAoi, ...
-                                         inp_stimLoc_x, inp_stimLoc_y, inp_flagBg);
-                clear inp_gsOn_x inp_gsOn_y inp_targAoi inp_flagBg inp_stimLoc_x inp_stimLoc_y
-            end
+            inp_gsOn_x    = gazeShifts_noConsec_singleTrial(:, 5);  % Onset position of gaze shifts
+            inp_gsOn_y    = gazeShifts_noConsec_singleTrial(:, 6);
+            inp_targAoi   = gazeShifts_noConsec_singleTrial(:, 17); % Index of gaze shift target
+            inp_flagBg    = stim.identifier_bg;                     % Flag, marking background as gaze shift target
+            inp_stimLoc_x = stim_locations(:, :, 1);                % Stimulus locations
+            inp_stimLoc_y = stim_locations(:, :, 2);
+
+            [gazeShifts_noConsec_singleTrial(:, end+1), prop_gsClosest(t), prop_gsFurther(t)] = ...
+                infSampling_distStim(inp_gsOn_x, inp_gsOn_y, inp_targAoi, ...
+                inp_stimLoc_x, inp_stimLoc_y, inp_flagBg);
+
+            % Check distance between gaze while fixating and closest stimulus
+            inp_gsOn_x  = gazeShifts_noConsec_singleTrial(:, 13); % Onset position of gaze shifts
+            inp_gsOn_y  = gazeShifts_noConsec_singleTrial(:, 15);
+            inp_targAoi = NaN(size(inp_gsOn_x, 1), 1);            % Do not correct for currently fixated AOI
+
+            [~, ~, ~, euc_dist] = ...
+                infSampling_distStim(inp_gsOn_x, inp_gsOn_y, inp_targAoi, ...
+                inp_stimLoc_x, inp_stimLoc_y, inp_flagBg);
+            clear inp_gsOn_x inp_gsOn_y inp_targAoi inp_flagBg inp_stimLoc_x inp_stimLoc_y
 
             % Get chosen target in trial
             % 1 == easy target, 2 == hard target
@@ -453,7 +444,7 @@ for c = 1:exper.num.condNo % Condition
                 % chosen target can be identified
                 inp_gapLoc_easy = log.file(t, log.col.gapPosEasy);
                 inp_resp        = log.file(t, log.col.gapPosReport);
-                inp_fixAOI      = gazeShifts_noConsec_singleTrial(:, 18);
+                inp_fixAOI = gazeShifts_noConsec_singleTrial(:, 18);
                 inp_flag_targ   = stim.identifier(1, :);
                 inp_flag_dis    = stim.identifier(2, :);
                 inp_flag_bg     = stim.identifier_bg;
@@ -476,17 +467,15 @@ for c = 1:exper.num.condNo % Condition
             % distractors (of the chosen set) in a trial
             % If one and the same stimulus was fixated more than once, we
             % treat this as one fixation
-            if ~isempty(gazeShifts_noConsec_singleTrial)
-                inspectedElements_no(t, 1:3) = infSampling_getUniqueFixations(gazeShifts_noConsec_singleTrial(:, 17), ...
-                                                                              stim.identifier(1, :), ...
-                                                                              stim.identifier_bg, ...
-                                                                              curr_cond);
-                inspectedElements_no(t, 4) = time_trial(t);
-                if choice_target(t) == stim.identifier(1, 1) % Easy chosen
-                    inspectedElements_no(t, 5) = log.file(t, log.col.noDisEasy);
-                elseif choice_target(t) == stim.identifier(1, 2) % Difficult chosen
-                    inspectedElements_no(t, 5) = log.file(t, log.col.noDisHard);
-                end
+            inspectedElements_no(t, 1:3) = infSampling_getUniqueFixations(gazeShifts_noConsec_singleTrial(:, 17), ...
+                stim.identifier(1, :), ...
+                stim.identifier_bg, ...
+                curr_cond);
+            inspectedElements_no(t, 4) = time_trial(t);
+            if choice_target(t) == stim.identifier(1, 1) % Easy chosen
+                inspectedElements_no(t, 5) = log.file(t, log.col.noDisEasy);
+            elseif choice_target(t) == stim.identifier(1, 2) % Difficult chosen
+                inspectedElements_no(t, 5) = log.file(t, log.col.noDisHard);
             end
 
             % Create gaze shift matrix
@@ -524,23 +513,21 @@ for c = 1:exper.num.condNo % Condition
             % (:, 25):    # gaze shift before last gaze shift
             % (:, 26):    trial number, from which we extracted gaze shift
             % (:, 27):    distance between mean fixation position and closest stimulus
-            if ~isempty(gazeShifts_noConsec_singleTrial)
-                no_gs_ncs            = size(gazeShifts_noConsec_singleTrial, 1);
-                li_noBg              = gazeShifts_noConsec_singleTrial(:, 18) ~= stim.identifier_bg;
-                timelock             = NaN(no_gs_ncs, 2);
-                timelock(li_noBg, 1) = (1:sum(li_noBg))';
-                timelock(li_noBg, 2) = (sum(li_noBg)-1:-1:0)';
-    
-                gazeShifts_allTrials = [gazeShifts_allTrials; ...
-                                        gazeShifts_noConsec_singleTrial ...                    Gaze shifts in trial 
-                                        zeros(no_gs_ncs, 1)+log.file(t, log.col.noDisEasy) ... Number easy distractors
-                                        zeros(no_gs_ncs, 1)+choice_target(t) ...               Chosen target
-                                        timelock ...                                           Timelock to trial start/last gaze shift
-                                        zeros(no_gs_ncs, 1)+t, ...                             Trial number
-                                        euc_dist(:, end), ...                                  Distance to closest stimulus (includes the currently fixated stimulus)
-                                        zeros(no_gs_ncs, 1)+log.file(t, log.col.noDisHard) ... Number difficult distractors
-                                        zeros(no_gs_ncs, 1)+inspectedElements_no(t, 5)];     % Number distractors from chosen set
-            end
+            no_gs_ncs            = size(gazeShifts_noConsec_singleTrial, 1);
+            li_noBg              = gazeShifts_noConsec_singleTrial(:, 18) ~= stim.identifier_bg;
+            timelock             = NaN(no_gs_ncs, 2);
+            timelock(li_noBg, 1) = (1:sum(li_noBg))';
+            timelock(li_noBg, 2) = (sum(li_noBg)-1:-1:0)';
+
+            gazeShifts_allTrials = [gazeShifts_allTrials; ...
+                gazeShifts_noConsec_singleTrial ...                    Gaze shifts in trial
+                zeros(no_gs_ncs, 1)+log.file(t, log.col.noDisEasy) ... Number easy distractors
+                zeros(no_gs_ncs, 1)+choice_target(t) ...               Chosen target
+                timelock ...                                           Timelock to trial start/last gaze shift
+                zeros(no_gs_ncs, 1)+t, ...                             Trial number
+                euc_dist(:, end), ...                                  Distance to closest stimulus (includes the currently fixated stimulus)
+                zeros(no_gs_ncs, 1)+log.file(t, log.col.noDisHard) ... Number difficult distractors
+                zeros(no_gs_ncs, 1)+inspectedElements_no(t, 5)];     % Number distractors from chosen set
             clear no_gs_ncs gazeShifts_noConsec_singleTrial timelock li_noBg euc_dist
 
             % Gaze shift matrix, used for export to Zenodo
@@ -550,34 +537,32 @@ for c = 1:exper.num.condNo % Condition
             % the gaze shifts, we export timestamps and coordinates of on-
             % and offset, type of gaze shift (saccade/blink) and mean
             % and std of gaze between AOI visits
-            if ~isempty(gazeShifts_singleTrial)
-                no_gs = size(gazeShifts_singleTrial, 1);
-                gapLocChosen = NaN(no_gs, 2);
-                if mod(curr_cond, 2) == 0
-                    gapLocChosen(:, choice_target(t)) = log.file(t, log.col.gapPosEasy);
-                elseif mod(curr_cond, 2) == 1
-                    gapLocChosen = repmat([log.file(t, log.col.gapPosEasy), log.file(t, log.col.gapPosHard)], ...
-                                           no_gs, 1);
-                end
-                gazeShifts_allTrials_zen = [gazeShifts_allTrials_zen; ...
-                                            zeros(no_gs, 1)+curr_cond-1, ...                        Condition number
-                                            zeros(no_gs, 1)+curr_sub, ...                           Subject number
-                                            gazeShifts_singleTrial(:, 1:2), ...                     Gaze shifts in trial
-                                            zeros(no_gs, 1)+log.file(t, log.col.fixErr), ...        Exclude trial?
-                                            gazeShifts_singleTrial(:, 3:16), ...
-                                            zeros(no_gs, 1)+log.file(t, log.col.targetDiff), ...    Shown target (only single-target)
-                                            zeros(no_gs, 1)+log.file(t, log.col.noDisEasy) ...      Number easy distractors
-                                            zeros(no_gs, 1)+log.file(t, log.col.noDisHard) ...      Number difficult distractors
-                                            zeros(no_gs, 1)+gapLocChosen(:, 1) ...                  Gap location on easy
-                                            zeros(no_gs, 1)+gapLocChosen(:, 2) ...                  Gap location on difficult
-                                            zeros(no_gs, 1)+log.file(t, log.col.gapPosReport) ...   Gap location reported
-                                            zeros(no_gs, 1)+log.file(t, log.col.hitMiss) ...        Hit/miss
-                                            zeros(no_gs, 1)+log.file(t, log.col.score) ...          Score after trial
-                                            zeros(no_gs, 2)+trial.events.stim_onOff(t, :) ...       Timestamps stimulus on-/offset
-                                            zeros(no_gs, 1)+t, ...                                  Trial number
-                                            zeros(no_gs, 18)+stim_locations(:, :, 1), ...           x/y coordinates of stimulus locations
-                                            zeros(no_gs, 18)+stim_locations(:, :, 2)];
+            no_gs = size(gazeShifts_singleTrial, 1);
+            gapLocChosen = NaN(no_gs, 2);
+            if mod(curr_cond, 2) == 0
+                gapLocChosen(:, choice_target(t)) = log.file(t, log.col.gapPosEasy);
+            elseif mod(curr_cond, 2) == 1
+                gapLocChosen = repmat([log.file(t, log.col.gapPosEasy), log.file(t, log.col.gapPosHard)], ...
+                    no_gs, 1);
             end
+            gazeShifts_allTrials_zen = [gazeShifts_allTrials_zen; ...
+                zeros(no_gs, 1)+curr_cond-1, ...                        Condition number
+                zeros(no_gs, 1)+curr_sub, ...                           Subject number
+                gazeShifts_singleTrial(:, 1:2), ...                     Gaze shifts in trial
+                zeros(no_gs, 1)+log.file(t, log.col.fixErr), ...        Exclude trial?
+                gazeShifts_singleTrial(:, 3:16), ...
+                zeros(no_gs, 1)+log.file(t, log.col.targetDiff), ...    Shown target (only single-target)
+                zeros(no_gs, 1)+log.file(t, log.col.noDisEasy) ...      Number easy distractors
+                zeros(no_gs, 1)+log.file(t, log.col.noDisHard) ...      Number difficult distractors
+                zeros(no_gs, 1)+gapLocChosen(:, 1) ...                  Gap location on easy
+                zeros(no_gs, 1)+gapLocChosen(:, 2) ...                  Gap location on difficult
+                zeros(no_gs, 1)+log.file(t, log.col.gapPosReport) ...   Gap location reported
+                zeros(no_gs, 1)+log.file(t, log.col.hitMiss) ...        Hit/miss
+                zeros(no_gs, 1)+log.file(t, log.col.score) ...          Score after trial
+                zeros(no_gs, 2)+trial.events.stim_onOff(t, :) ...       Timestamps stimulus on-/offset
+                zeros(no_gs, 1)+t, ...                                  Trial number
+                zeros(no_gs, 18)+stim_locations(:, :, 1), ...           x/y coordinates of stimulus locations
+                zeros(no_gs, 18)+stim_locations(:, :, 2)];
             clear no_gs gazeShifts_singleTrial stim_locations gapLocChosen
 
         end
