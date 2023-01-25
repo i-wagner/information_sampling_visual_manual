@@ -1368,7 +1368,7 @@ clear container_dat_mod
 
 
 %% Fit probabilistic model
-cd('/Users/ilja/Dropbox/3_dissertation/2_informationSampling/1_hostedOnGit/3_analysis/_model/_recursiveModel_standalone');
+cd('/Users/ilja/Dropbox/12_work/mr_informationSamplingVisualManual/3_analysis/_model/_recursiveModel_standalone');
 % infSampling_generateLUT([(1:9)' (9:-1:1)'], [0 2], 4, 1)
 % model = infSampling_model_main(stim, sacc, model_io, perf, plt);
 load('modelResults_propChoices_fixChosen.mat');
