@@ -637,16 +637,12 @@ for c = 1:exper.num.condNo % Condition
         stim.no_hardDis{curr_sub, c}(idx_excld, :)         = NaN;
         perf.hitMiss{curr_sub, c}(idx_excld, :)            = NaN;
 
-        gazeShifts     = sacc.gazeShifts{curr_sub, c};
-%         gazeShifts_zen = sacc.gazeShifts_zen{curr_sub, c};
+        gazeShifts = sacc.gazeShifts{curr_sub, c};
         if ~isempty(gazeShifts)
 
-            li_excld                         = ismember(gazeShifts(:, 26), idx_excld);
-%             li_excld_zen                     = ismember(gazeShifts_zen(:, 16), idx_excld);
-            gazeShifts(li_excld, :)          = NaN;
-%             gazeShifts_zen(li_excld, :)      = NaN;
-            sacc.gazeShifts{curr_sub, c}     = gazeShifts;
-%             sacc.gazeShifts_zen{curr_sub, c} = gazeShifts_zen;
+            li_excld = ismember(gazeShifts(:, 26), idx_excld);
+            gazeShifts(li_excld, :) = NaN;
+            sacc.gazeShifts{curr_sub, c} = gazeShifts;
 
         end
         clear gazeShifts gazeShifts_zen li_excld li_excld_zen
@@ -752,7 +748,6 @@ stim.no_easyDis(idx_excld, :)           = {[]};
 stim.no_hardDis(idx_excld, :)           = {[]};
 perf.hitMiss(idx_excld, :)              = {[]};
 sacc.gazeShifts(idx_excld, :)           = {[]};
-% sacc.gazeShifts_zen(idx_excld, :)       = {[]};
 exper.trialNo(idx_excld, :)             = NaN;
 exper.excl_trials(idx_excld, :)         = {[]};
 perf.score.final(idx_excld, :)          = NaN;
@@ -1414,10 +1409,6 @@ clc; disp([round(mean(exper.trialNo, 'omitnan')); ...                           
            min(exper.trialNo); ...
            max(exper.trialNo)]);
 clc; disp(round(mean(sacc.propGs.aoiFix_mean, 'omitnan') .* 100, 2));                                                           % Percentage trials with at least one fixated AOI
-clc; round(squeeze(mean(sacc.time.search_ss(2, :, :), 2))')                                                                  % Search time of extreme and remaining subjects
-clc; disp([round(squeeze(mean(mean(sacc.time.search_ss, 2), 'omitnan'))'); ...  
-           round(squeeze(mean(mean(sacc.time.search_ss, 2), 'omitnan'))'-ci_mean(squeeze(mean(sacc.time.search_ss, 2)))); ... 
-           round(squeeze(mean(mean(sacc.time.search_ss, 2), 'omitnan'))'+ci_mean(squeeze(mean(sacc.time.search_ss, 2))))])
 
 % Figure 3
 temp = squeeze(mean(sacc.propGs.onAOI_ss(:, :, :, 1), 2, 'omitnan'));
