@@ -1393,6 +1393,15 @@ elseif exper.num.conds(1) == 4
 end
 
 
+%% Write data to drive
+if exper.num.conds(1) == 2
+    filename = 'dataEye';
+elseif exper.num.conds(1) == 4
+    filename = 'dataTablet';
+end
+save([exper.name.data, '/', filename], ...
+     'exper', 'model', 'model_io', 'perf', 'plt', 'sacc', 'screen', 'stim');
+clear filename
 
 
 %% Statistics for paper 
