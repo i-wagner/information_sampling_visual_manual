@@ -354,7 +354,10 @@ for c = 1:exper.num.condNo % Condition
             inp_stimLoc_x   = stim_locations(:, :, 1); % Stimulus locations
             inp_stimLoc_y   = stim_locations(:, :, 2);
             inp_aoi_radius  = stim.radiusAOI.deg; % Desired AOI size
-            inp_debug_plot  = 0; % Plot stimulus locations and gaze shift endpoints
+            inp_debug_plot  = [0, 0]; % Plot stimulus locations and gaze shift endpoints
+            if curr_cond < 4 && inp_debug_plot(2)==1
+                inp_debug_plot(2) = 2;
+            end
 
             gazeShifts_singleTrial(:, end+1) = ...
                 infSampling_getFixatedAOI(inp_endpoints_x, inp_endpoints_y, ...
