@@ -206,43 +206,44 @@ function events_gs = infSampling_getGazeShifts(gazeTrace, ts_stimOnset, minDur_g
     % other. The hypothesis is that the clumsy detection algorithm for this
     % paper detects gaze shifts due top pure dataloss, whereas the good
     % algorithm misses those ones
-    test                         = getSaccades(gazeTrace, gazeTrace(1, 1));
-    test                         = [test(:, 1:10) test(:, 14) test(:, 3)+1];
-    test(:, 3)                   = 0;
-    test(isnan(test(:, 2)), 4:6) = gazeTrace(test(isnan(test(:, 2)), 1), 1:3);
-    test(isnan(test(:, 2)), 11)  = test(isnan(test(:, 2)), 4) - ts_stimOnset;
-    if all(size(test) == size(events_gs))
-
-        if ~all(all(test == events_gs)) && any(any(isnan(events_gs) ~= isnan(test))); keyboard; end
-
-    else
-
-        idx_missing = find(~ismember(events_gs(:, 1), test(:, 1)));
-        li_shit     = NaN(numel(idx_missing), 1);
-        for m = 1:numel(idx_missing)
-
-            if ~isnan(events_gs(idx_missing(m), 2))
-
-                li_shit(m) = all(bitget(gazeTrace(events_gs(idx_missing(m), 1):events_gs(idx_missing(m), 2), 4), 2));
-
-            else
-
-                li_shit(m) = all(bitget(gazeTrace(events_gs(idx_missing(m), 1):end, 4), 2));
-
-            end
-
-        end
-
-        if ~any(li_shit); keyboard; end
-
-    end
+%     test                         = getSaccades(gazeTrace, gazeTrace(1, 1));
+%     test                         = [test(:, 1:10) test(:, 14) test(:, 3)+1];
+%     test(:, 3)                   = 0;
+%     test(isnan(test(:, 2)), 4:6) = gazeTrace(test(isnan(test(:, 2)), 1), 1:3);
+%     test(isnan(test(:, 2)), 11)  = test(isnan(test(:, 2)), 4) - ts_stimOnset;
+%     if all(size(test) == size(events_gs))
+% 
+%         if ~all(all(test == events_gs)) && any(any(isnan(events_gs) ~= isnan(test))); keyboard; end
+% 
+%     else
+% 
+%         idx_missing = find(~ismember(events_gs(:, 1), test(:, 1)));
+%         li_shit     = NaN(numel(idx_missing), 1);
+%         for m = 1:numel(idx_missing)
+% 
+%             if ~isnan(events_gs(idx_missing(m), 2))
+% 
+%                 li_shit(m) = all(bitget(gazeTrace(events_gs(idx_missing(m), 1):events_gs(idx_missing(m), 2), 4), 2));
+% 
+%             else
+% 
+%                 li_shit(m) = all(bitget(gazeTrace(events_gs(idx_missing(m), 1):end, 4), 2));
+% 
+%             end
+% 
+%         end
+% 
+%         if ~any(li_shit); keyboard; end
+% 
+%     end
 
 
     %% Merge gaze shifts that are very close to each other in time
 %     % Sometimes, one gaze shifts ends th next one begins at the datapoint
 %     % immediately after. One could interpret those as different parts of
 %     % the same gaze shift and merge them together
-%     gs         = 1;%     events_gs2 = events_gs;
+%     gs         = 1;
+%     events_gs2 = events_gs;
 %     no_gs      = size(events_gs2, 1);
 %     while gs <= no_gs %for gs = 1:no_gs % Gaze shift
 % 
