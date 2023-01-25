@@ -1,4 +1,4 @@
-function model = infSampling_model_main(stim, sacc, all, perf, plt)
+function model = infSampling_model_main(stim, sacc, all, perf, exper, plt)
 
     % Fits simple and complex models and returns fitting results
     %
@@ -125,6 +125,20 @@ function model = infSampling_model_main(stim, sacc, all, perf, plt)
 
 
     %% Save fitting results
+    if exper.num.conds(1) == 2
+
+        expId = 'eye_';
+
+    elseif exper.num.conds(1) == 4
+
+        expId = 'tablet_';
+
+    else
+
+        error('Wrong condition numbers?');
+
+    end
+
     switch model.LOSSFUNCTION
 
         case 1
@@ -137,7 +151,7 @@ function model = infSampling_model_main(stim, sacc, all, perf, plt)
             name_sfx = 'propChoices_fixChosen_fixEasy';
 
     end
-    save(strcat('modelResults_', name_sfx, '.mat'), 'model');
+    save(strcat('modelResults_', expId, name_sfx, '.mat'), 'model');
     clear name_sfx
 
 end
