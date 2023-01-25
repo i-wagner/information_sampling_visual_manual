@@ -134,26 +134,21 @@ for c = 1:exper.num.condNo % Condition
 
         % Go to folder of single subject
         curr_sub    = exper.num.subs(s);
-        dirName_sub = sprintf('e%dv%db1', curr_cond, curr_sub);
-        if isfolder(dirName_sub)
-
+        dirName_sub = dir(strcat(sprintf('e%dv%db%d', curr_cond, curr_sub), '*'));
+        if ~isempty(dirName_sub)
+            dirName_sub = dirName_sub(end).name;
             cd(dirName_sub);
-
         else
-
             disp(['Skipping missing participant ', num2str(curr_sub)])
             continue
-
         end
-        clear dirName_sub
 
         % Load .log file of single subject and extract relevant data from it
-        fileName_log = sprintf('e%dv%db1.log', curr_cond, curr_sub);
+        fileName_log = [dirName_sub, '.log'];
         log.file     = readmatrix(fileName_log);
         if log.file(1, 4) > 1 % Recode trial #
-
+            keyboard
             log.file(:, 4) = log.file(:, 4) - min(log.file(:, 4)) + 1;
-
         end
         if mod(curr_cond, 2) == 0 % Single-target condition
 
@@ -174,7 +169,7 @@ for c = 1:exper.num.condNo % Condition
             clear li_choiceEasy li_choiceDifficult
 
         end
-        clear fileName_log
+        clear fileName_log dirName_sub
 
         exper.trialNo(curr_sub, c)     = max(log.file(:, log.col.trialNo));      % # completed trials
         exper.excl_trials{curr_sub, c} = find(log.file(:, log.col.fixErr) == 1); % Trials with fixation error
