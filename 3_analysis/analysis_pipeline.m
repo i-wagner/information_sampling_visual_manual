@@ -252,6 +252,7 @@ for c = 1:exper.num.condNo % Condition
                 trial.events.stim_onOff(t, 1) = trial.events.all(4);                       % Timestamp stimulus onset
                 trial.events.stim_onOff(t, 2) = trial.events.all(5);                       % Timestamp stimulus offset
                 time_trial(t)                 = trial.events.stim_onOff(t, 2) - trial.events.stim_onOff(t, 1); % Time spent on trial
+                clear fileName_events
 
             end
 
@@ -327,6 +328,7 @@ for c = 1:exper.num.condNo % Condition
                 end
                 gazeShifts_singleTrial = temp(temp(:, 17) == t, :);
                 gazeShifts_singleTrial = gazeShifts_singleTrial(:, 1:end-1);
+                clear fileName_sacc
 
             end
 
@@ -1040,7 +1042,7 @@ for c = 1:exper.num.condNo % Condition
                 clear temp ss
 
             end
-            clear t
+            clear t NOSS
 
         end
         clear curr_sub dat_noDis_sub dat_planTime_sub dat_inspTime_sub dat_decTime_sub dat_planTime_sub dat_chosenTarg_sub setSizes
@@ -1083,7 +1085,7 @@ for c = 1:exper.num.condNo % Condition
                 clear li_trials
 
             end
-            clear no_ss ss
+            clear no_ss ss noDis_sub
 
             % Regression over mean inspection time for different set sizes
             reg_predictor = (0:8)';
