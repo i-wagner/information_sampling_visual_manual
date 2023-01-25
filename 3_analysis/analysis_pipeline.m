@@ -1,16 +1,6 @@
 close all; clear all; clc;
 
 
-%% Go to folder with data
-exper.name.root = '/Users/ilja/Dropbox/12_work/mr_informationSamplingVisualManual';
-exper.name.analysis = strcat(exper.name.root, '/', '3_analysis');
-exper.name.data = strcat(exper.name.root, '/', '2_data');
-exper.name.plt = strcat(exper.name.root, '/', '4_figures');
-
-addpath(exper.name.analysis, strcat(exper.name.analysis, '/_model'));
-cd(exper.name.data);
-
-
 %% Experiment structure
 exper.num.conds  = [2; 3]; % 2 == single-target, 3 == double-target
 exper.num.subs   = (1:8)';
@@ -21,6 +11,20 @@ if numel(exper.num.conds) < 2 || diff(exper.num.conds) ~= 1
     error('Run analysis with data from both single- and double-target condition')
 
 end
+
+
+%% Go to folder with data
+exper.name.root = '/Users/ilja/Dropbox/12_work/mr_informationSamplingVisualManual';
+exper.name.analysis = strcat(exper.name.root, '/', '3_analysis');
+exper.name.data = strcat(exper.name.root, '/', '2_data');
+if exper.num.conds(1) == 2
+    exper.name.plt = strcat(exper.name.root, '/', '4_figures/eye');
+elseif exper.num.conds(1) == 4
+    exper.name.plt = strcat(exper.name.root, '/', '4_figures/tablet');
+end
+
+addpath(exper.name.analysis, strcat(exper.name.analysis, '/_model'));
+cd(exper.name.data);
 
 
 %% Plot settings
