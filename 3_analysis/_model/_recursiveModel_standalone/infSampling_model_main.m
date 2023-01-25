@@ -78,19 +78,19 @@ function model = infSampling_model_main(stim, sacc, all, perf, exper, plt)
         clear inp_acc inp_searchTime inp_nonSearchTime inp_noFix_overall
 
         % Plots
-        inp_predNoise_propChoicesEasy = all.model.choices(:, :, 3);
-        inp_emp_perf                  = all.data.double.perf;
-        inp_pred_perf                 = model.performance(:, m);
-        inp_predPerfect_perf          = all.model.perf_perfect(:, 3);
-        inp_pred_propFixChosenSet_ss  = model.propFixChosen(:, :, m);
-        inp_pred_propFixEasySet_ss    = NaN(size(model.propFixChosen(:, :, m)));
-
-        infSampling_model_plots(inp_emp_propChoicesEasy,     inp_propChoicesEasy,       inp_predNoise_propChoicesEasy, ...
-                                inp_emp_perf,                inp_pred_perf,             inp_predPerfect_perf, ...
-                                inp_emp_propFixChosenSet_ss, inp_emp_propFixEasySet_ss, inp_pred_propFixChosenSet_ss, ...
-                                inp_pred_propFixEasySet_ss,  inp_switch_simpleComplex,  plt)
-        clear inp_emp_propChoicesEasy inp_propChoicesEasy inp_emp_propFixChosenSet_ss inp_emp_propFixEasySet_ss inp_switch_simpleComplex
-        clear inp_predNoise_propChoicesEasy inp_emp_perf inp_pred_perf inp_predPerfect_perf inp_pred_propFixChosenSet_ss inp_pred_propFixEasySet_ss
+%         inp_predNoise_propChoicesEasy = all.model.choices(:, :, 3);
+%         inp_emp_perf                  = all.data.double.perf;
+%         inp_pred_perf                 = model.performance(:, m);
+%         inp_predPerfect_perf          = all.model.perf_perfect(:, 3);
+%         inp_pred_propFixChosenSet_ss  = model.propFixChosen(:, :, m);
+%         inp_pred_propFixEasySet_ss    = NaN(size(model.propFixChosen(:, :, m)));
+% 
+%         infSampling_model_plots(inp_emp_propChoicesEasy,     inp_propChoicesEasy,       inp_predNoise_propChoicesEasy, ...
+%                                 inp_emp_perf,                inp_pred_perf,             inp_predPerfect_perf, ...
+%                                 inp_emp_propFixChosenSet_ss, inp_emp_propFixEasySet_ss, inp_pred_propFixChosenSet_ss, ...
+%                                 inp_pred_propFixEasySet_ss,  inp_switch_simpleComplex,  plt)
+%         clear inp_emp_propChoicesEasy inp_propChoicesEasy inp_emp_propFixChosenSet_ss inp_emp_propFixEasySet_ss inp_switch_simpleComplex
+%         clear inp_predNoise_propChoicesEasy inp_emp_perf inp_pred_perf inp_predPerfect_perf inp_pred_propFixChosenSet_ss inp_pred_propFixEasySet_ss
 
     end
     clear m
