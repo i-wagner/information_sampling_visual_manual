@@ -86,17 +86,18 @@ function aoiVisit = infSampling_getFixatedAOI(endpoints_x, endpoints_y, stimLoc_
 
         % Compose vector with area, covered by screen, as well as locations
         % of stimuli in a trial
-        x_screen_aoi = [-24.5129, -24.5129, 24.5129,  24.5129,  -24.5129]; % Screen area
-        y_screen_aoi = [-13.7834,  13.7834, 13.7834, -13.78341, -13.7834];
-        FIXTOLAAREA  = 2;
-        if debug_plot(2) == 2
-
-            y_screen_aoi = [(-13.7834+9.5), 27.5668, 27.5668, (-13.7834+9.5), (-13.7834+9.5)];
-            FIXTOLAAREA  = 1.50;
-
-        end
+        x_screen_aoi = [-8, -8, 8, 8, -8];
+        y_screen_aoi = [(-9.5+4), -9.5+20, -9.5+20, (-9.5+4), (-9.5+4)];
+        FIXTOLAAREA  = 1.50;
+        fixLoc = [0, -9.5];
         x_screen_stim = [];
         y_screen_stim = [];
+
+        %
+        if debug_plot(2) == 2
+            stimLoc_y = stimLoc_y-9.5;
+            endpoints_y = endpoints_y-9.5;
+        end
 
         unitCircle = 0:0.01:2*pi;
         no_stim    = numel(stimLoc_x);
@@ -141,19 +142,21 @@ function aoiVisit = infSampling_getFixatedAOI(endpoints_x, endpoints_y, stimLoc_
               'FaceColor', [.9 .9 .9], ...
               'EdgeColor', 'none');
         hold on
+        plot(stimLoc_x(~isnan(stimLoc_x)), stimLoc_y(~isnan(stimLoc_y)), '*r')
         plot(x_screen_stim, y_screen_stim)                                      % Plot area, occupied by stimulus
         hold off
         daspect([1 1 1]);
 
         hold on
-        plot(0, 0, '+', 'MarkerSize', 15)                               % Plot fixation cross
-        plot(cos(unitCircle).*FIXTOLAAREA+0, ...
-             sin(unitCircle).*FIXTOLAAREA+0)                            % Plot fixation tolerance area
-        plot(endpoints_x(li_in),       endpoints_y(li_in), 'r.', ...    % Plot endpoints inside/outside any AOI
+        plot(fixLoc(1), fixLoc(2), '+', 'MarkerSize', 15)                       % Plot fixation cross
+        plot(cos(unitCircle).*FIXTOLAAREA+fixLoc(1), ...
+             sin(unitCircle).*FIXTOLAAREA+fixLoc(2))                            % Plot fixation tolerance area
+        plot(endpoints_x(li_in),       endpoints_y(li_in), 'r.', ...            % Plot endpoints inside/outside any AOI
              endpoints_x(~li_in),      endpoints_y(~li_in), 'b.');
-        plot(endpoints_x(idx_in == 1), endpoints_y(idx_in == 1), 'go'); % Plot corona around endpoints outside any AOI
+        plot(endpoints_x(idx_in == 1), endpoints_y(idx_in == 1), 'go');         % Plot corona around endpoints outside any AOI
         text(endpoints_x, endpoints_y, num2str((1:numel(endpoints_x))'));
         hold off
+        axis([-24.5129, 24.5129, -13.7834, 9.5+10.50])
         waitforbuttonpress
 
     end
