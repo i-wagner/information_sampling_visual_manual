@@ -2,3 +2,5 @@
 .DS_Store
 /2_data
 *.asv
+*.xlsx
+*.mat
