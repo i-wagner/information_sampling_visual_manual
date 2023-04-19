@@ -731,7 +731,14 @@ end
 clear c curr_cond
 
 % Exclude subjects based on defined criteria
+% Hardcode exclusion of participant 19
+% This one peformed very poorly in the double-target condition of the
+% eye tracking experiment (having a negative final score), while also
+% having a comparetively large number of excluded trials in this
+% condition this one is excluded because of an excessive search time,
+% which, however, is only calculated further down in the pipeline
 idx_excld = logical(sum(isnan(exper.trialNo), 2));
+idx_excld(19) = true;
 
 exper.events.stim_onOff(idx_excld, :)   = {[]};
 sacc.time.planning(idx_excld, :)        = {[]};
