@@ -3,7 +3,7 @@ close all; clear all; clc;
 
 %% Experiment structure
 exper.num.conds  = [2; 3]; % 2 == single-target, 3 == double-target
-exper.num.subs   = (1:8)';
+exper.num.subs   = (1:24)';
 exper.num.subNo  = numel(exper.num.subs);
 exper.num.condNo = numel(exper.num.conds);
 if numel(exper.num.conds) < 2 || diff(exper.num.conds) ~= 1
