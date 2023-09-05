@@ -21,13 +21,22 @@ stimPosForAlexander = cat(3, ...
                           stimPosForAlexander(:,colsHorizontalPositions), ...
                           stimPosForAlexander(:,colsVerticalPositions));
 
-%% Validate
+%% Response correctness
+% FOR RESPONSES WE WILL USE DATA FROM SINGLE-TARGET
+conditionOfInterest = 1;
+
+thisResponseData = perf.hitMiss{subjectOfInterest,conditionOfInterest};
+thisChosenTarget = stim.chosenTarget{subjectOfInterest,conditionOfInterest};
+
+responseChosenTarget = [thisChosenTarget, thisResponseData];
+
+%% Validate gaze data and stimulus locations
 aoiRadius = stim.radiusAOI.deg;
 debugPlot = [0, 0];
 
 fixatedAois = [];
 for t = 1:nTrials
-    liThoseGazeShifts= gazeShiftsForAlexander(:,10) == t;
+    liThoseGazeShifts = gazeShiftsForAlexander(:,10) == t;
     thoseHorizontalEndpoints = gazeShiftsForAlexander(liThoseGazeShifts,3);
     thoseVerticalEndpoints = gazeShiftsForAlexander(liThoseGazeShifts,4);
     thoseHorizontalLocations = stimPosForAlexander(t,:,1);
@@ -41,6 +50,7 @@ for t = 1:nTrials
 end
 
 resultReplicated = all((gazeShiftsForAlexander(:,5) == fixatedAois));
+
 
 %% Export
 exportPath = '/Users/ilja/Dropbox/12_work/mr_informationSamplingVisualManual/6_materials/';
