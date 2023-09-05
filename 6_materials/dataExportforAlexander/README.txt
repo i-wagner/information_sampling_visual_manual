@@ -19,3 +19,10 @@ stimPosForAlexander
 (:,11:18): locations of difficult distractors (dva)
 
 Stimulus locations are relative to the position of the fixation cross, which was located at the lower screen half (coordinates [0 dva, -9.5 dva])
+
+responseCorrectnessForAlexander
+2D matrix with the chosen target and the response correctness; rows are trials, columns are variables
+(:,1): chosen target (same logic as in the "gazeShiftsForAlexander" file)
+(:,2): response was correct (1) or incorrect (0)
+
+CAUTION: DATA HERE IS FROM THE SINGLE-TARGET CONDITION, WHILE IT IS FROM THE DOUBLE-TARGET CONDITION IN THE OTHER FILES
