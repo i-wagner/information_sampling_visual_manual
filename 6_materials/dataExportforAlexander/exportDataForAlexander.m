@@ -1,6 +1,6 @@
 %% Data of which subject from which condition to export?
 conditionOfInterest = 2; % Double-target
-subjectOfInterest = 1;
+subjectOfInterest = 7;
 
 %% Get gaze shifts
 colsOfInterest = [4, 7, 13, 15, 17, 18, 22:24, 26];
