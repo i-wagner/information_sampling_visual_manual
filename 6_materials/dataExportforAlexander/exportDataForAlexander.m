@@ -53,11 +53,13 @@ resultReplicated = all((gazeShiftsForAlexander(:,5) == fixatedAois));
 
 
 %% Export
-exportPath = '/Users/ilja/Dropbox/12_work/mr_informationSamplingVisualManual/6_materials/';
+exportPath = ['/Users/ilja/Dropbox/12_work/mr_informationSamplingVisualManual/' ...
+              '6_materials/dataExportforAlexander/'];
 errorMsg = 'Cannot export data, because to-be-exported data cannot replicate analysis!';
 if resultReplicated
     save([exportPath, 'gazeShiftsForAlexander.mat'], 'gazeShiftsForAlexander');
     save([exportPath, 'stimPosForAlexander.mat'], 'stimPosForAlexander');
+    save([exportPath, 'responseCorrectnessForAlexander.mat'], 'responseChosenTarget')
 else
     error(errorMsg);
 end
@@ -65,3 +67,4 @@ end
 %% Load exported data
 importedGazeShifts = load([exportPath, 'gazeShiftsForAlexander.mat']);
 importedStimPos = load([exportPath, 'stimPosForAlexander.mat']);
+importedResponseData = load([exportPath, 'responseCorrectnessForAlexander.mat']);
