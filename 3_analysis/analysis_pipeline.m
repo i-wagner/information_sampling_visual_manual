@@ -1292,6 +1292,73 @@ end
 clear c
 
 
+%% Latencies of first movement in trial
+sacc.latency.firstGs = NaN(exper.num.subNo, 3, exper.num.condNo);
+for c = 1:exper.num.condNo % Condition
+    for s = 1:exper.num.subNo % Subject
+        curr_sub = exper.num.subs(s);
+        subDat = sacc.gazeShifts{curr_sub,c};
+        if ~isempty(subDat)
+            % Unpack data
+            latencies = subDat(:,11);
+            saccNo = subDat(:,24);
+            chosenTarget = subDat(:,23);
+            nDisEasy = subDat(:,22);
+            nDisDifficult = subDat(:,28);
+            setSizes = unique(nDisEasy);
+            setSizes = setSizes(~isnan(setSizes));
+            nSs = numel(setSizes);
+
+            % Find trials
+            idxFirstSacc = saccNo == 1; % First saccades in trial
+            idxChosenEasy = chosenTarget == stim.identifier(1,1); % Easy chosen
+            idxChosenDifficult = chosenTarget == stim.identifier(1,2); % Difficult chosen
+
+            temp = NaN(3, nSs);
+            for ss = 1:numel(setSizes) % Set size
+                % Single-target
+                % - Select trials where either target was shown with a
+                %   given number of distractor and where the easy or
+                %   difficult target was shown with a given number of
+                %   same-colored distractors
+                % Double-target
+                % - Use the number of easy distractors in a trial as
+                %   reference, and find trials where a given number of easy
+                %   distractors was shown and participants chose either,
+                %   the easy, or the difficult target
+                % - We take the number of easy distractors as reference,
+                %   because nEasy == 1-nEasy or nDifficult = fliplr(nEasy)
+                if c == 1 % Single-target
+                    idxAnySet = any([nDisEasy, nDisDifficult] == setSizes(ss), 2);
+                    idxEasySet = nDisEasy == setSizes(ss);
+                    idxDifficultSet = nDisDifficult == setSizes(ss);
+                elseif c == 2 % Double-target
+                    idxAnySet = nDisEasy == setSizes(ss);
+                    idxEasySet = idxAnySet;
+                    idxDifficultSet = idxAnySet;
+                end
+                idxBoth = idxFirstSacc & idxAnySet;
+                idxEasy = idxFirstSacc & idxEasySet & idxChosenEasy;
+                idxDifficult = idxFirstSacc & idxDifficultSet & idxChosenDifficult;
+
+                temp(:,ss) = ...
+                    [median(latencies(idxBoth), 'omitnan'), ...
+                     median(latencies(idxEasy), 'omitnan'), ...
+                     median(latencies(idxDifficult), 'omitnan')];
+                clear idxAnySet idxEasySet idxDifficultSet idxBoth idxEasy idxDifficult
+            end
+            clear latencies saccNo chosenTarget nDisEasy nDisDifficult
+            clear setSizes nSs idxFirstSacc idxChosenEasy idxChosenDifficult ss
+
+            sacc.latency.firstGs(s,:,c) = mean(temp, 2, 'omitnan');
+            clear temp
+        end
+        clear curr_sub subDat
+    end
+    clear s
+end
+clear c
+
 %% Export data for model
 % Model scripts are build around getting data from exported .txt files and
 % fitting the model to the imported data. To make things easier, I will
