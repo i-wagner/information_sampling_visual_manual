@@ -6,20 +6,6 @@ settings_exper;
 %% Go to folder with data
 cd(exper.name.data);
 
-
-%% Miscellaneous settings
-exper.avg.minSub = 1; % Minimum number of subjects required to calculate mean
-exper.flag.export = 1; % Export data for model
-exper.crit.minDur = 5; % Minimum gaze shift duration; used for gaze shift detection
-exper.name.export = [{'dataSingleTargetEye',    'dataDoubleTargetEye'}; ...
-                     {'',                       ''}; ... Add an empty column for indexing to work
-                     {'dataSingleTargetTablet', 'dataDoubleTargetTablet'}];
-
-% Run modelling
-exper.flag.runModel.eye = true;
-exper.flag.runModel.tablet = true;
-
-
 %% Settings of screen, on which data was recorded
 screen = screenBig;
 screen.fixTol = 1.5;
