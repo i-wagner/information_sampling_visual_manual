@@ -5,27 +5,6 @@ settings_exper;
 settings_figure;
 settings_analysis;
 
-%% Go to folder with data
-cd(exper.name.data);
-%% Define columns for log file
-log.col.trialNo      = 4;     % Trial #
-log.col.noTargets    = 5;     % # of targets in trial
-log.col.targetDiff   = 6;     % Target type shown in trial (only single-target experiment); 1 == easy, 2 == difficult
-log.col.diffLvlEasy  = 7;     % Difficulty level of easy target
-log.col.diffLvlHard  = 8;     % Difficulty level of difficult target
-log.col.gapPosEasy   = 9;     % Gap location on easy target; 1 == bottom, 2 == top, 3 == left, 4 == right
-log.col.gapPosHard   = 10;    % Gap location on difficult target
-log.col.gapPosReport = 11;    % Reported gap location
-log.col.noDisEasy    = 12;    % # of easy distractors in trial
-log.col.noDisHard    = 13;    % # of difficult distractors in trial
-log.col.noDisOverall = 14;    % Overall # of distractors in trial
-log.col.stimPosX     = 15:24; % Positions on x-axis
-log.col.stimPosY     = 25:34; % Positions on y_axis
-log.col.cumTimer     = 35;    % Cumulative timer
-log.col.hitMiss      = 36;    % Hit/miss
-log.col.score        = 37;    % Number of points
-log.col.fixErr       = 38;    % Flag for fixation error
-
 
 %% Get data from trials
 exper.trialNo           = NaN(exper.num.subNo, exper.num.condNo);  % # of solved trials
