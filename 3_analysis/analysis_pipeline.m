@@ -34,19 +34,16 @@ data.ss.gazeShifts = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 % sacc.gazeShifts_zen = cell(exper.num.subNo, exper.num.condNo);
 data.ss.chosenTarget = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 data.ss.chosenIsFixated = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
-for c = 1:exper.num.condNo % Condition
-
-    curr_cond = exper.num.conds(c);
-    for s = 1:exper.num.subNo % Subject
-
-        % Go to folder of single subject
-        curr_sub    = exper.num.subs(s);
-        dirName_sub = dir(strcat(sprintf('e%dv%db%d', curr_cond, curr_sub), '*'));
+for c = 1:exper.n.CONDITIONS % Condition
+    thisCondition = exper.num.CONDITIONS(c);
+    for s = 1:exper.n.SUBJECTS % Subject
+        thisSubject = exper.num.SUBJECTS(s);
+        dirName_sub = dir(strcat(sprintf('e%dv%db%d', thisCondition, thisSubject), '*'));
         if ~isempty(dirName_sub)
             dirName_sub = dirName_sub(end).name;
             cd(dirName_sub);
         else
-            disp(['Skipping missing participant ', num2str(curr_sub)])
+            disp(['Skipping missing participant ', num2str(thisSubject)])
             continue
         end
 
@@ -57,7 +54,7 @@ for c = 1:exper.num.condNo % Condition
             keyboard
             log.file(:, 4) = log.file(:, 4) - min(log.file(:, 4)) + 1;
         end
-        if mod(curr_cond, 2) == 0 % Single-target condition
+        if mod(thisCondition, 2) == 0 % Single-target condition
 
             % For the single-target condition, trials in which the easy
             % target was shown without distractors and trials in which the
@@ -78,16 +75,16 @@ for c = 1:exper.num.condNo % Condition
         end
         clear fileName_log dirName_sub
 
-        exper.trialNo(curr_sub, c)     = max(log.file(:, log.col.trialNo));      % # completed trials
-        exper.excl_trials{curr_sub, c} = find(log.file(:, log.col.fixErr) == 1); % Trials with fixation error
-        perf.score.final(curr_sub, c)  = log.file(end, log.col.score);           % Score of subject at end of condition
-        perf.hitMiss{curr_sub, c}      = log.file(:, log.col.hitMiss);           % Hit/miss in trial
-        stim.no_easyDis{curr_sub, c}   = log.file(:, log.col.noDisEasy);         % # easy distractors in trial
-        stim.no_hardDis{curr_sub, c}   = log.file(:, log.col.noDisHard);         % # difficult distractors in trial
+        exper.trialNo(thisSubject, c)     = max(log.file(:, log.col.trialNo));      % # completed trials
+        exper.excl_trials{thisSubject, c} = find(log.file(:, log.col.fixErr) == 1); % Trials with fixation error
+        perf.score.final(thisSubject, c)  = log.file(end, log.col.score);           % Score of subject at end of condition
+        perf.hitMiss{thisSubject, c}      = log.file(:, log.col.hitMiss);           % Hit/miss in trial
+        stim.no_easyDis{thisSubject, c}   = log.file(:, log.col.noDisEasy);         % # easy distractors in trial
+        stim.no_hardDis{thisSubject, c}   = log.file(:, log.col.noDisHard);         % # difficult distractors in trial
 
         % Iterate through trials and get gaze shifts, fixated AOIs and
         % search as well as non-search times
-        no_trials_singleSub = exper.trialNo(curr_sub, c); % Number of trials
+        no_trials_singleSub = exper.trialNo(thisSubject, c); % Number of trials
 
         trial.events.stim_onOff  = NaN(no_trials_singleSub, 2);   % Timestamps of stimulus on- and offset
         time_planning            = NaN(no_trials_singleSub, 1);   % Plannning times
@@ -106,12 +103,12 @@ for c = 1:exper.num.condNo % Condition
         for t = 1:no_trials_singleSub % Trial
 
             % Get gaze trace in trial and preprocess data
-            if curr_cond < 4
+            if thisCondition < 4
 
                 flip_yAxis = 1;
 
                 [gTrace, flag_dataLoss]        = loadDat(t, screen.x_pix, screen.y_pix);
-                exper.excl_trials{curr_sub, c} = [exper.excl_trials{curr_sub, c}; flag_dataLoss];
+                exper.excl_trials{thisSubject, c} = [exper.excl_trials{thisSubject, c}; flag_dataLoss];
                 if ~isempty(flag_dataLoss)
     
                     log.file(t, log.col.fixErr) = 1;
@@ -132,7 +129,7 @@ for c = 1:exper.num.condNo % Condition
             % We expect five events to happen in a trial:
             % trial begin, start recording, fixation onset, onset of stimuli
             % and offset of stimuli [i.e., response])
-            if curr_cond < 4
+            if thisCondition < 4
 
                 trial.events.all = find(bitget(trial.gazeTrace(:, 4), 3));
                 if numel(trial.events.all) ~= 5
@@ -150,9 +147,9 @@ for c = 1:exper.num.condNo % Condition
                 trial.events.stim_onOff(t, 2) = trial.gazeTrace(trial.events.all(5), 1);                       % Timestamp stimulus offset
                 time_trial(t)                 = trial.events.stim_onOff(t, 2) - trial.events.stim_onOff(t, 1); % Time spent on trial
 
-            elseif curr_cond > 3
+            elseif thisCondition > 3
 
-                fileName_events  = sprintf('e%dv%db1_events.csv', curr_cond, curr_sub);
+                fileName_events  = sprintf('e%dv%db1_events.csv', thisCondition, thisSubject);
                 temp             = readmatrix(fileName_events);
                 trial.events.all = temp(t, :)';
 
@@ -164,14 +161,14 @@ for c = 1:exper.num.condNo % Condition
             end
 
             % Offline check for fixation errors (just to be sure)
-            if curr_cond < 4
+            if thisCondition < 4
 
                 fixPos_stimOn  = trial.gazeTrace(trial.events.all(4)-20:trial.events.all(4)+80, 2:3);
                 fixPos_deviate = sum(abs(fixPos_stimOn(:)) > screen.fixTol);
-                if fixPos_deviate > 0 && ~ismember(t, exper.excl_trials{curr_sub, c})
+                if fixPos_deviate > 0 && ~ismember(t, exper.excl_trials{thisSubject, c})
 
                     keyboard
-                    exper.excl_trials{curr_sub, c} = [exper.excl_trials{curr_sub, c}; t];
+                    exper.excl_trials{thisSubject, c} = [exper.excl_trials{thisSubject, c}; t];
 
                 end
                 clear fixPos_stimOn fixPos_deviate
@@ -192,11 +189,11 @@ for c = 1:exper.num.condNo % Condition
             inp_no_ed = log.file(t, log.col.noDisEasy); % # easy distractors
             inp_no_dd = log.file(t, log.col.noDisHard); % # difficult distractors
             inp_no_targ = log.file(t, log.col.noTargets); % Number targets in condition
-            if mod(curr_cond, 2) == 0
+            if mod(thisCondition, 2) == 0
 
                 inp_shownTarg = log.file(t, log.col.targetDiff); % Target shown in trial
 
-            elseif mod(curr_cond, 2) % In the double-target condition, both target were always shown
+            elseif mod(thisCondition, 2) % In the double-target condition, both target were always shown
 
                 inp_shownTarg = NaN;
                 
@@ -210,7 +207,7 @@ for c = 1:exper.num.condNo % Condition
 
             % Get gaze shifts in trial
             % Gaze shifts are all saccades and blinks, detected in a trial
-            if curr_cond < 4
+            if thisCondition < 4
 
                 inp_gazeTrace = trial.gazeTrace(trial.events.all(4):trial.events.all(5), :); % Gaze trace between stimulus on- and offset
                 inp_ts_stimOn = trial.events.stim_onOff(t, 1); % Timestampe stimulus onset
@@ -224,9 +221,9 @@ for c = 1:exper.num.condNo % Condition
                                               inp_minDur_sacc, inp_screen_x, inp_screen_y);
                 clear inp_gazeTrace inp_ts_stimOn inp_minDur_sacc inp_screen_x inp_screen_y
 
-            elseif curr_cond > 3
+            elseif thisCondition > 3
 
-                fileName_sacc  = sprintf('e%dv%db1_saccades.csv', curr_cond, curr_sub);
+                fileName_sacc  = sprintf('e%dv%db1_saccades.csv', thisCondition, thisSubject);
                 temp           = readmatrix(fileName_sacc);
                 if temp(1, 17) > 1
 
@@ -258,7 +255,7 @@ for c = 1:exper.num.condNo % Condition
             inp_stimLoc_y   = stim_locations(:, :, 2);
             inp_aoi_radius  = stim.radiusAOI.deg; % Desired AOI size
             inp_debug_plot  = [0, 0]; % Plot stimulus locations and gaze shift endpoints
-            if curr_cond < 4 && inp_debug_plot(2)==1
+            if thisCondition < 4 && inp_debug_plot(2)==1
                 inp_debug_plot(2) = 2;
             end
 
@@ -301,9 +298,9 @@ for c = 1:exper.num.condNo % Condition
             inp_gazeShifts = gazeShifts_singleTrial;
             inp_stimOn     = trial.events.stim_onOff(t, 1);
             inp_stimOff    = trial.events.stim_onOff(t, 2);
-            if mod(curr_cond, 2) == 0
+            if mod(thisCondition, 2) == 0
                 expNo = 2;
-            elseif mod(curr_cond, 2) == 1
+            elseif mod(thisCondition, 2) == 1
                 expNo = 3;
             end
             [time_planning(t), time_decision(t), time_inspection(t), gazeShifts_noConsec_singleTrial, time_respBg(t, :)] = ...
@@ -341,7 +338,7 @@ for c = 1:exper.num.condNo % Condition
 
             % Get chosen target in trial
             % 1 == easy target, 2 == hard target
-            if mod(curr_cond, 2) == 1 % Double-target condition
+            if mod(thisCondition, 2) == 1 % Double-target condition
 
                 % Chosen target is the one a participant looked at last,
                 % before giving a response. If the last fixated AOI was the
@@ -360,7 +357,7 @@ for c = 1:exper.num.condNo % Condition
                                                 inp_flag_targ, inp_flag_dis, inp_flag_bg);
                 clear inp_gapLoc_easy inp_resp inp_fixAOI inp_flag_targ inp_flag_dis inp_flag_bg
 
-            elseif mod(curr_cond, 2) == 0 % Single-target condition
+            elseif mod(thisCondition, 2) == 0 % Single-target condition
 
                 % Chosen target is the target shown in trial
                 choice_target(t) = log.file(t, log.col.targetDiff);
@@ -376,7 +373,7 @@ for c = 1:exper.num.condNo % Condition
             inspectedElements_no(t, 1:3) = infSampling_getUniqueFixations(gazeShifts_noConsec_singleTrial(:, 17), ...
                 stim.identifier(1, :), ...
                 stim.identifier_bg, ...
-                curr_cond);
+                thisCondition);
             inspectedElements_no(t, 4) = time_trial(t);
             if choice_target(t) == stim.identifier(1, 1) % Easy chosen
                 inspectedElements_no(t, 5) = log.file(t, log.col.noDisEasy);
@@ -445,15 +442,15 @@ for c = 1:exper.num.condNo % Condition
             % and std of gaze between AOI visits
             no_gs = size(gazeShifts_singleTrial, 1);
             gapLocChosen = NaN(no_gs, 2);
-            if mod(curr_cond, 2) == 0
+            if mod(thisCondition, 2) == 0
                 gapLocChosen(:, choice_target(t)) = log.file(t, log.col.gapPosEasy);
-            elseif mod(curr_cond, 2) == 1
+            elseif mod(thisCondition, 2) == 1
                 gapLocChosen = repmat([log.file(t, log.col.gapPosEasy), log.file(t, log.col.gapPosHard)], ...
                     no_gs, 1);
             end
             gazeShifts_allTrials_zen = [gazeShifts_allTrials_zen; ...
-                zeros(no_gs, 1)+curr_cond-1, ...                        Condition number
-                zeros(no_gs, 1)+curr_sub, ...                           Subject number
+                zeros(no_gs, 1)+thisCondition-1, ...                        Condition number
+                zeros(no_gs, 1)+thisSubject, ...                           Subject number
                 gazeShifts_singleTrial(:, 1:2), ...                     Gaze shifts in trial
                 zeros(no_gs, 1)+log.file(t, log.col.fixErr), ...        Exclude trial?
                 gazeShifts_singleTrial(:, 3:16), ...
@@ -475,28 +472,28 @@ for c = 1:exper.num.condNo % Condition
         clear t no_trials_singleSub
 
         % Store data of subject
-        exper.events.stim_onOff{curr_sub, c} = trial.events.stim_onOff;  % Timestamps of stimulus on- and offset
-        exper.cum_trialTime{curr_sub, c}     = time_trial;               % Time spent on trial
-        stim.chosenTarget{curr_sub, c}       = choice_target;            % Target, chosen in trial
-        stim.choiceCorrespond{curr_sub, c}   = choice_congruence;        % Correspondece between last fixated and responded on target
-        sacc.gazeShifts{curr_sub, c}         = gazeShifts_allTrials;     % Non-consecutive gaze shifts
-        sacc.gazeShifts_zen{curr_sub, c}     = gazeShifts_allTrials_zen; % All gaze shifts (for Zenodo)
-        sacc.time.planning{curr_sub, c}      = time_planning;            % Planning times (time between first saccade offset and stimulus onset)
-        sacc.time.inspection{curr_sub, c}    = time_inspection;          % Inspection times (for each fixated stimulus, time between entering gaze
+        exper.events.stim_onOff{thisSubject, c} = trial.events.stim_onOff;  % Timestamps of stimulus on- and offset
+        exper.cum_trialTime{thisSubject, c}     = time_trial;               % Time spent on trial
+        stim.chosenTarget{thisSubject, c}       = choice_target;            % Target, chosen in trial
+        stim.choiceCorrespond{thisSubject, c}   = choice_congruence;        % Correspondece between last fixated and responded on target
+        sacc.gazeShifts{thisSubject, c}         = gazeShifts_allTrials;     % Non-consecutive gaze shifts
+        sacc.gazeShifts_zen{thisSubject, c}     = gazeShifts_allTrials_zen; % All gaze shifts (for Zenodo)
+        sacc.time.planning{thisSubject, c}      = time_planning;            % Planning times (time between first saccade offset and stimulus onset)
+        sacc.time.inspection{thisSubject, c}    = time_inspection;          % Inspection times (for each fixated stimulus, time between entering gaze
                                                                          % shift onset and time leaving gaze shift offset)
-        sacc.time.decision{curr_sub, c}      = time_decision;            % Decision times (time between last saccade offset and response)
-        sacc.time.resp_bg{curr_sub, c}       = time_respBg;              % Time between last gaze shift in background and response
-        sacc.time.search{curr_sub, c}        = inspectedElements_no;     % # inspected elements & time spent searching for targets
-        sacc.propGs.closest{curr_sub, c}     = prop_gsClosest;           % Proportion gaze shifts to closest AOI
-        sacc.propGs.further{curr_sub, c}     = prop_gsFurther;           % Proportion gaze shifts to closest AOI
-        sacc.propGs.aoiFix{curr_sub, c}      = li_atLeastOneGs;          % Flag if at least one defined AOI was fixated in a trial
-        clear curr_sub trial gazeShifts_allTrials choice_target time_planning time_inspection time_decision gazeShifts_allTrials_zen
+        sacc.time.decision{thisSubject, c}      = time_decision;            % Decision times (time between last saccade offset and response)
+        sacc.time.resp_bg{thisSubject, c}       = time_respBg;              % Time between last gaze shift in background and response
+        sacc.time.search{thisSubject, c}        = inspectedElements_no;     % # inspected elements & time spent searching for targets
+        sacc.propGs.closest{thisSubject, c}     = prop_gsClosest;           % Proportion gaze shifts to closest AOI
+        sacc.propGs.further{thisSubject, c}     = prop_gsFurther;           % Proportion gaze shifts to closest AOI
+        sacc.propGs.aoiFix{thisSubject, c}      = li_atLeastOneGs;          % Flag if at least one defined AOI was fixated in a trial
+        clear thisSubject trial gazeShifts_allTrials choice_target time_planning time_inspection time_decision gazeShifts_allTrials_zen
         clear prop_gsClosest prop_gsFurther choice_congruence time_respBg inspectedElements_no time_trial li_atLeastOneGs
 
         cd(exper.name.data);
 
     end
-    clear s curr_cond
+    clear s thisCondition
 
 end
 clear c log
@@ -522,49 +519,49 @@ for c = 1:exper.num.condNo % Condition
 
     for s = 1:exper.num.subNo % Subject
 
-        curr_sub  = exper.num.subs(s);
-        idx_excld = sort(unique(exper.excl_trials{curr_sub, c}));
+        thisSubject  = exper.num.subs(s);
+        idx_excld = sort(unique(exper.excl_trials{thisSubject, c}));
 
-        exper.events.stim_onOff{curr_sub, c}(idx_excld, :) = NaN;
-        sacc.time.planning{curr_sub, c}(idx_excld, :)      = NaN;
-        sacc.time.inspection{curr_sub, c}(idx_excld, :)    = NaN;
-        sacc.time.decision{curr_sub, c}(idx_excld, :)      = NaN;
-        sacc.time.resp_bg{curr_sub, c}(idx_excld, :)       = NaN;
-        sacc.time.search{curr_sub, c}(idx_excld, :)        = NaN;
-        sacc.propGs.closest{curr_sub, c}(idx_excld, :)     = NaN;
-        sacc.propGs.further{curr_sub, c}(idx_excld, :)     = NaN;
-        sacc.propGs.aoiFix{curr_sub, c}(idx_excld, :)      = NaN;
-        stim.chosenTarget{curr_sub, c}(idx_excld, :)       = NaN;
-        stim.choiceCorrespond{curr_sub, c}(idx_excld, :)   = NaN;
-        stim.no_easyDis{curr_sub, c}(idx_excld, :)         = NaN;
-        stim.no_hardDis{curr_sub, c}(idx_excld, :)         = NaN;
-        perf.hitMiss{curr_sub, c}(idx_excld, :)            = NaN;
+        exper.events.stim_onOff{thisSubject, c}(idx_excld, :) = NaN;
+        sacc.time.planning{thisSubject, c}(idx_excld, :)      = NaN;
+        sacc.time.inspection{thisSubject, c}(idx_excld, :)    = NaN;
+        sacc.time.decision{thisSubject, c}(idx_excld, :)      = NaN;
+        sacc.time.resp_bg{thisSubject, c}(idx_excld, :)       = NaN;
+        sacc.time.search{thisSubject, c}(idx_excld, :)        = NaN;
+        sacc.propGs.closest{thisSubject, c}(idx_excld, :)     = NaN;
+        sacc.propGs.further{thisSubject, c}(idx_excld, :)     = NaN;
+        sacc.propGs.aoiFix{thisSubject, c}(idx_excld, :)      = NaN;
+        stim.chosenTarget{thisSubject, c}(idx_excld, :)       = NaN;
+        stim.choiceCorrespond{thisSubject, c}(idx_excld, :)   = NaN;
+        stim.no_easyDis{thisSubject, c}(idx_excld, :)         = NaN;
+        stim.no_hardDis{thisSubject, c}(idx_excld, :)         = NaN;
+        perf.hitMiss{thisSubject, c}(idx_excld, :)            = NaN;
 
-        gazeShifts = sacc.gazeShifts{curr_sub, c};
+        gazeShifts = sacc.gazeShifts{thisSubject, c};
         if ~isempty(gazeShifts)
 
             li_excld = ismember(gazeShifts(:, 26), idx_excld);
             gazeShifts(li_excld, :) = NaN;
-            sacc.gazeShifts{curr_sub, c} = gazeShifts;
+            sacc.gazeShifts{thisSubject, c} = gazeShifts;
 
         end
         clear gazeShifts gazeShifts_zen li_excld li_excld_zen
 
         % Calculat proportion valid trials
-        exper.prop.val_trials(curr_sub, c) = 1 - numel(idx_excld) / exper.trialNo(curr_sub, c);
+        exper.prop.val_trials(thisSubject, c) = 1 - numel(idx_excld) / exper.trialNo(thisSubject, c);
 
         % Calculate proportion trials with at least one fixated AOI
-        sacc.propGs.aoiFix_mean(curr_sub, c) = ...
-            sum(sacc.propGs.aoiFix{curr_sub, c}, 'omitnan') / (exper.trialNo(curr_sub, c) - numel(idx_excld));
+        sacc.propGs.aoiFix_mean(thisSubject, c) = ...
+            sum(sacc.propGs.aoiFix{thisSubject, c}, 'omitnan') / (exper.trialNo(thisSubject, c) - numel(idx_excld));
 
         % Calculate time lost due to excluded trials and store # excluded trials
-        exper.timeLostExcldTrials(curr_sub, c) = ...
-            exper.timeLostExcldTrials(curr_sub, c) + sum(exper.cum_trialTime{curr_sub, c}(idx_excld)) / 1000;
-        exper.noExcludedTrial(curr_sub, c) = numel(idx_excld);
+        exper.timeLostExcldTrials(thisSubject, c) = ...
+            exper.timeLostExcldTrials(thisSubject, c) + sum(exper.cum_trialTime{thisSubject, c}(idx_excld)) / 1000;
+        exper.noExcludedTrial(thisSubject, c) = numel(idx_excld);
         clear idx_excld
 
     end
-    clear s curr_sub
+    clear s thisSubject
 
 end
 clear c
@@ -586,33 +583,33 @@ exper.prop.resp_trials       = NaN(exper.num.subNo, exper.num.condNo);
 exper.prop.correspond_trials = NaN(exper.num.subNo, exper.num.condNo-1);
 for c = 1:exper.num.condNo % Condition
 
-    curr_cond = exper.num.conds(c);
+    thisCondition = exper.num.conds(c);
     for s = 1:exper.num.subNo % Subject
 
-        curr_sub  = exper.num.subs(s);
-        idx_excld = sort(unique(exper.excl_trials{curr_sub, c}));
-        no_valid  = exper.trialNo(curr_sub, c) - numel(idx_excld); % # valid trials
+        thisSubject  = exper.num.subs(s);
+        idx_excld = sort(unique(exper.excl_trials{thisSubject, c}));
+        no_valid  = exper.trialNo(thisSubject, c) - numel(idx_excld); % # valid trials
 
         % Calculat proportion trials for which we could calculate the decision time
-        time_decision = sacc.time.decision{curr_sub, c};
+        time_decision = sacc.time.decision{thisSubject, c};
 
-        exper.prop.resp_trials(curr_sub, c) = sum(~isnan(time_decision)) / no_valid;
+        exper.prop.resp_trials(thisSubject, c) = sum(~isnan(time_decision)) / no_valid;
         clear time_decision
 
         % Calculate proportion trials in which the last fixated and the
         % responded on target corresponded
-        if mod(curr_cond, 2) == 1 % Only doube-target condition
+        if mod(thisCondition, 2) == 1 % Only doube-target condition
 
-            no_correspond = sum(stim.choiceCorrespond{curr_sub, c} == 1); % # trials with correspondence
+            no_correspond = sum(stim.choiceCorrespond{thisSubject, c} == 1); % # trials with correspondence
 
-            exper.prop.correspond_trials(curr_sub) = no_correspond / no_valid;
+            exper.prop.correspond_trials(thisSubject) = no_correspond / no_valid;
             clear no_valid no_correspond
 
         end
         clear idx_excld
 
     end
-    clear s curr_sub
+    clear s thisSubject
 
     % Plot proportion trials where responded on and last fixated target correspond
 %     if curr_cond == 3 % Only doube-target condition
@@ -631,7 +628,7 @@ for c = 1:exper.num.condNo % Condition
 %     end
 
 end
-clear c curr_cond
+clear c thisCondition
 
 % Exclude subjects based on defined criteria
 % 
@@ -683,19 +680,19 @@ for c = 1:exper.num.condNo % Condition
     % Proportion correct for individual subjects
     for s = 1:exper.num.subNo % Subject
 
-        curr_sub         = exper.num.subs(s);
-        inp_chosenTarget = stim.chosenTarget{curr_sub, c};
-        inp_hitMiss      = perf.hitMiss{curr_sub, c};
-        inp_decisionTime = sacc.time.decision{curr_sub, c};
+        thisSubject         = exper.num.subs(s);
+        inp_chosenTarget = stim.chosenTarget{thisSubject, c};
+        inp_hitMiss      = perf.hitMiss{thisSubject, c};
+        inp_decisionTime = sacc.time.decision{thisSubject, c};
         inp_noDis        = [stim.no_easyDis{s, c} stim.no_hardDis{s, c}];
 
         if ~isempty(inp_chosenTarget)
 
-            [~, perf.hitrates(curr_sub, c, 1:3), perf.hitrates_withDecTime(:, :, s, c)] = ...
+            [~, perf.hitrates(thisSubject, c, 1:3), perf.hitrates_withDecTime(:, :, s, c)] = ...
                 infSampling_propCorrect(inp_hitMiss, inp_chosenTarget, inp_decisionTime, inp_noDis, c);
 
         end
-        clear curr_sub inp_chosenTarget inp_hitMiss inp_decisionTime inp_noDis
+        clear thisSubject inp_chosenTarget inp_hitMiss inp_decisionTime inp_noDis
 
     end
     clear s
@@ -710,9 +707,9 @@ for c = 2:exper.num.condNo % Condition
     for s = 1:exper.num.subNo % Subject
 
         % Get data of subject
-        curr_sub       = exper.num.subs(s);
-        dat_sub_choice = stim.chosenTarget{curr_sub, c};
-        dat_sub_ed     = stim.no_easyDis{curr_sub, c};
+        thisSubject       = exper.num.subs(s);
+        dat_sub_choice = stim.chosenTarget{thisSubject, c};
+        dat_sub_ed     = stim.no_easyDis{thisSubject, c};
 
         % For each set-size, determine proportion choices easy target
         ind_ss = unique(dat_sub_ed(~isnan(dat_sub_ed)));
@@ -723,11 +720,11 @@ for c = 2:exper.num.condNo % Condition
             no_trials_easy = sum(dat_sub_choice == stim.identifier(1, 1) & ...
                                  dat_sub_ed == ind_ss(ss));
 
-            stim.propChoice.easy(ss, curr_sub, c) = no_trials_easy / no_trials_val;
+            stim.propChoice.easy(ss, thisSubject, c) = no_trials_easy / no_trials_val;
             clear no_trials_val no_trials_easy
 
         end
-        clear curr_sub dat_sub_choice dat_sub_ed ind_ss no_ss ss
+        clear thisSubject dat_sub_choice dat_sub_ed ind_ss no_ss ss
 
     end
     clear s
@@ -740,12 +737,12 @@ clear c
 sacc.propGs.onEasy_noLock_indSs = NaN(9, exper.num.subNo, exper.num.condNo);
 for c = 2:exper.num.condNo % Condition
 
-    curr_cond = exper.num.conds(c);
+    thisCondition = exper.num.conds(c);
     for s = 1:exper.num.subNo % Subject
 
         % Get data of subject and drop excluded trials
-        curr_sub = exper.num.subs(s);
-        dat_sub  = sacc.gazeShifts{curr_sub, c};
+        thisSubject = exper.num.subs(s);
+        dat_sub  = sacc.gazeShifts{thisSubject, c};
         if ~isempty(dat_sub)
 
             % Get rid of entries we do not care about
@@ -778,13 +775,13 @@ for c = 2:exper.num.condNo % Condition
                                               inp_coiLab, inp_ssGroups);
 
             % Unpack and store data
-            sacc.propGs.onEasy_noLock_indSs(:, curr_sub, c) = ...
+            sacc.propGs.onEasy_noLock_indSs(:, thisSubject, c) = ...
                 cell2mat(cellfun(@(x) x(:, 4, 3), propGs_onEasy_noLock_indSs, ...
                          'UniformOutput', false));
             clear inp_mat inp_coiLab inp_ssGroups inp_lock propGs_onEasy_noLock_indSs
 
         end
-        clear curr_sub
+        clear thisSubject
 
     end
     clear s
@@ -803,7 +800,7 @@ for c = 2:exper.num.condNo % Condition
 %     end
 
 end
-clear c curr_cond
+clear c thisCondition
 
 
 %% Timecourse proportion gaze shifts on stimulus in trial
@@ -816,8 +813,8 @@ for c = 2:exper.num.condNo % Condition; only double-target
     for s = 1:exper.num.subNo % Subject
 
         % Get data of subject and drop excluded trials
-        curr_sub = exper.num.subs(s);
-        dat_sub  = sacc.gazeShifts{curr_sub, c};
+        thisSubject = exper.num.subs(s);
+        dat_sub  = sacc.gazeShifts{thisSubject, c};
         if ~isempty(dat_sub)
 
             % Get rid of entries we do not care about
@@ -848,19 +845,19 @@ for c = 2:exper.num.condNo % Condition; only double-target
             inp_coiLab   = stim.identifier; % Category of interest == chosen target
             inp_ssGroups = (0:8)';          % Analyse over all set-sizes
             inp_lock     = 2;               % Locked to trial beginning
-            sacc.propGs.onChosen_trialBegin{curr_sub, c} = ... 
+            sacc.propGs.onChosen_trialBegin{thisSubject, c} = ... 
                 infSampling_timecourseGsInAOI(inp_mat, inp_lock, ...
                                               inp_coiLab, inp_ssGroups);
 
             % Timecourse of proportion gaze shifts to easy set
             inp_mat(:, 4) = li_gsOnEasySet;
-            sacc.propGs.onEasy_trialBegin{curr_sub, c} = ... 
+            sacc.propGs.onEasy_trialBegin{thisSubject, c} = ... 
                 infSampling_timecourseGsInAOI(inp_mat, inp_lock, ...
                                               inp_coiLab, inp_ssGroups);
 
             % Timecourse of proportion gaze shifts to closer stimulus
             inp_mat(:, 4) = li_gsOnClosestStim;
-            sacc.propGs.onCloser_trialBegin{curr_sub, c} = ... 
+            sacc.propGs.onCloser_trialBegin{thisSubject, c} = ... 
                 infSampling_timecourseGsInAOI(inp_mat, inp_lock, ...
                                               inp_coiLab, inp_ssGroups);
             clear li_gsOnChosenSet li_gsOnEasySet li_gsOnClosestStim inp_mat
@@ -876,13 +873,13 @@ for c = 2:exper.num.condNo % Condition; only double-target
                        dat_sub_noMed(:, 26) ...   Trial number
                        dat_sub_noMed(:, 23)];   % Target chosen in trial
 
-            sacc.propGs.onSmaller_trialBegin{curr_sub, c} = ... 
+            sacc.propGs.onSmaller_trialBegin{thisSubject, c} = ... 
                 infSampling_timecourseGsInAOI(inp_mat, inp_lock, ...
                                               inp_coiLab, inp_ssGroups);
             clear li_gsOnSmallerSet inp_coiLab inp_ssGroups inp_lock dat_sub_noMed no_gs inp_mat
 
         end
-        clear curr_sub dat_sub 
+        clear thisSubject dat_sub 
 
     end
     clear s
@@ -900,13 +897,13 @@ for c = 1:exper.num.condNo % Condition
 
     for s = 1:exper.num.subNo % Subject
 
-        curr_sub = exper.num.subs(s);
+        thisSubject = exper.num.subs(s);
 
-        dat_chosenTarg_sub = stim.chosenTarget{curr_sub, c};
-        dat_noDis_sub      = [stim.no_easyDis{curr_sub, c} stim.no_hardDis{curr_sub, c}];
-        dat_planTime_sub   = sacc.time.planning{curr_sub, c};
-        dat_inspTime_sub   = sacc.time.inspection{curr_sub, c};
-        dat_decTime_sub    = sacc.time.decision{curr_sub, c};
+        dat_chosenTarg_sub = stim.chosenTarget{thisSubject, c};
+        dat_noDis_sub      = [stim.no_easyDis{thisSubject, c} stim.no_hardDis{thisSubject, c}];
+        dat_planTime_sub   = sacc.time.planning{thisSubject, c};
+        dat_inspTime_sub   = sacc.time.inspection{thisSubject, c};
+        dat_decTime_sub    = sacc.time.decision{thisSubject, c};
         if ~isempty(dat_inspTime_sub)
 
             setSizes = unique(dat_noDis_sub(~isnan(dat_noDis_sub(:, 1)), 1));
@@ -946,17 +943,17 @@ for c = 1:exper.num.condNo % Condition
                     clear li_trials
 
                 end
-                sacc.time.mean.planning(curr_sub, c, t)   = mean(temp(1, :), 2, 'omitnan');
-                sacc.time.mean.inspection(curr_sub, c, t) = mean(temp(2, :), 2, 'omitnan');
-                sacc.time.mean.decision(curr_sub, c, t)   = mean(temp(3, :), 2, 'omitnan');
-                sacc.time.mean.non_search(curr_sub, c, t) = mean(temp(4, :), 2, 'omitnan');
+                sacc.time.mean.planning(thisSubject, c, t)   = mean(temp(1, :), 2, 'omitnan');
+                sacc.time.mean.inspection(thisSubject, c, t) = mean(temp(2, :), 2, 'omitnan');
+                sacc.time.mean.decision(thisSubject, c, t)   = mean(temp(3, :), 2, 'omitnan');
+                sacc.time.mean.non_search(thisSubject, c, t) = mean(temp(4, :), 2, 'omitnan');
                 clear temp ss
 
             end
             clear t NOSS
 
         end
-        clear curr_sub dat_noDis_sub dat_planTime_sub dat_inspTime_sub dat_decTime_sub dat_planTime_sub dat_chosenTarg_sub setSizes
+        clear thisSubject dat_noDis_sub dat_planTime_sub dat_inspTime_sub dat_decTime_sub dat_planTime_sub dat_chosenTarg_sub setSizes
 
     end
     clear s
@@ -973,12 +970,12 @@ for c = 1:exper.num.condNo % Condition
 
     for s = 1:exper.num.subNo % Subject
 
-        curr_sub   = exper.num.subs(s);
-        searchTime = sacc.time.search{curr_sub, c};
+        thisSubject   = exper.num.subs(s);
+        searchTime = sacc.time.search{thisSubject, c};
         if ~isempty(searchTime)
 
-            searchTime = sacc.time.search{curr_sub, c}(:, 4);
-            noDis_sub  = [stim.no_easyDis{curr_sub, c} stim.no_hardDis{curr_sub, c}];
+            searchTime = sacc.time.search{thisSubject, c}(:, 4);
+            noDis_sub  = [stim.no_easyDis{thisSubject, c} stim.no_hardDis{thisSubject, c}];
             no_ss      = unique(noDis_sub(~isnan(noDis_sub(:, 1)), 1));
             for ss = 1:numel(no_ss) % Set size
 
@@ -992,7 +989,7 @@ for c = 1:exper.num.condNo % Condition
 
                 end
 
-                sacc.time.search_ss(curr_sub, ss, c) = mean(searchTime(li_trials), 'omitnan');
+                sacc.time.search_ss(thisSubject, ss, c) = mean(searchTime(li_trials), 'omitnan');
                 clear li_trials
 
             end
@@ -1000,14 +997,14 @@ for c = 1:exper.num.condNo % Condition
 
             % Regression over mean inspection time for different set sizes
             reg_predictor = (0:8)';
-            reg_criterion = sacc.time.search_ss(curr_sub, :, c)';
+            reg_criterion = sacc.time.search_ss(thisSubject, :, c)';
 
-            [sacc.time.search_reg_coeff(curr_sub, :, c), sacc.time.search_confInt(:, :, curr_sub, c)] = ...
+            [sacc.time.search_reg_coeff(thisSubject, :, c), sacc.time.search_confInt(:, :, thisSubject, c)] = ...
                 regress(reg_criterion, [ones(numel(reg_predictor), 1) reg_predictor]);
             clear reg_predictor reg_criterion
 
         end
-        clear curr_sub searchTime
+        clear thisSubject searchTime
 
     end
     clear s
@@ -1025,8 +1022,8 @@ for c = 1:exper.num.condNo % Condition
 
     for s = 1:exper.num.subNo % Subject
 
-        curr_sub = exper.num.subs(s);
-        gs_sub   = sacc.gazeShifts{curr_sub, c};
+        thisSubject = exper.num.subs(s);
+        gs_sub   = sacc.gazeShifts{thisSubject, c};
         if ~isempty(gs_sub)
 
             fixatedStim                       = gs_sub(:, 18);
@@ -1091,7 +1088,7 @@ for c = 1:exper.num.condNo % Condition
             clear fixatedStim id_chosenTarget id_nonChosenTarget setSizes ss
 
         end
-        clear curr_sub gs_sub
+        clear thisSubject gs_sub
 
     end
     clear s
@@ -1113,8 +1110,8 @@ for c = 2:exper.num.condNo % Condition
 
     for s = 1:exper.num.subNo % Subject
 
-        curr_sub = exper.num.subs(s);
-        gs_sub   = sacc.gazeShifts{curr_sub, c};
+        thisSubject = exper.num.subs(s);
+        gs_sub   = sacc.gazeShifts{thisSubject, c};
         if ~isempty(gs_sub)
 
             % Extract unique fixations of elements
@@ -1186,7 +1183,7 @@ for c = 2:exper.num.condNo % Condition
             clear fixatedStim id_chosenTarget id_nonChosenTarget setSizes ss
 
         end
-        clear curr_sub gs_sub
+        clear thisSubject gs_sub
 
     end
     clear s
@@ -1199,8 +1196,8 @@ clear c
 sacc.latency.firstGs = NaN(exper.num.subNo, 3, exper.num.condNo);
 for c = 1:exper.num.condNo % Condition
     for s = 1:exper.num.subNo % Subject
-        curr_sub = exper.num.subs(s);
-        subDat = sacc.gazeShifts{curr_sub,c};
+        thisSubject = exper.num.subs(s);
+        subDat = sacc.gazeShifts{thisSubject,c};
         if ~isempty(subDat)
             % Unpack data
             latencies = subDat(:,11);
@@ -1256,7 +1253,7 @@ for c = 1:exper.num.condNo % Condition
             sacc.latency.firstGs(s,:,c) = mean(temp, 2, 'omitnan');
             clear temp
         end
-        clear curr_sub subDat
+        clear thisSubject subDat
     end
     clear s
 end
