@@ -8,8 +8,6 @@ settings_analysis;
 %% Go to folder with data
 cd(exper.name.data);
 
-%% Settings of screen, on which data was recorded
-screen = screenBig;
 screen.fixTol = 1.5;
 
 % Define position of fixation cross
