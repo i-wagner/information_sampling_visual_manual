@@ -7,33 +7,6 @@ settings_exper;
 cd(exper.name.data);
 
 
-%% Plot settings
-plt.name.aggr     = strcat(exper.name.plt, '/infSampling_c_'); % Naming scheme; aggregated data
-plt.color         = plotColors;                              % Default colors
-plt.color.o1      = [241 163 64]./255;                       % Some additional colors
-plt.color.o2      = [239 209 127]./255;
-plt.color.p1      = [153 142 195]./255;
-plt.color.p2      = [199 187 245]./255;
-plt.color.mid     = [219 198 208]./255;
-plt.color.dark    = [219-50 198-50 208-50]./255;
-plt.size.mrk_ss   = 10;                                       % Markersize when plotting single-subject data
-plt.size.mrk_mean = 12;                                      % Markersize when plotting aggregated data
-plt.lw.thick      = 3;                                       % Linewidth
-plt.lw.thin       = 2;
-plt.save          = 0;                                       % Toggle if plots should be saved to drive
-show_figs         = 1;                                       % Toggle if figure should be shown during plotting
-if show_figs == 1
-
-    set(groot, 'DefaultFigureVisible', 'on')
-
-else
-
-    set(groot, 'DefaultFigureVisible', 'off')
-
-end
-clear show_figs
-
-
 %% Miscellaneous settings
 exper.avg.minSub = 1; % Minimum number of subjects required to calculate mean
 exper.flag.export = 1; % Export data for model
