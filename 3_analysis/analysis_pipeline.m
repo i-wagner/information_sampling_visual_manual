@@ -11,26 +11,29 @@ addpath(exper.path.ANALYSIS);
 cd(exper.path.DATA);
 
 %% Get data from trials
-exper.trialNo           = NaN(exper.num.subNo, exper.num.condNo);  % # of solved trials
-exper.excl_trials       = cell(exper.num.subNo, exper.num.condNo); % Trials with fixation error
-exper.events.stim_onOff = cell(exper.num.subNo, exper.num.condNo); % Timestamps of stimulus on- and offset
-exper.cum_trialTime     = cell(exper.num.subNo, exper.num.condNo); % Cumulative time spent on a trial
-sacc.gazeShifts         = cell(exper.num.subNo, exper.num.condNo); % Gaze shifts (blinks and saccades)
-sacc.gazeShifts_zen     = cell(exper.num.subNo, exper.num.condNo); % Gaze shifts (blinks and saccades) for Zenodo
-sacc.time.planning      = cell(exper.num.subNo, exper.num.condNo); % Planning times
-sacc.time.inspection    = cell(exper.num.subNo, exper.num.condNo); % Inspection times
-sacc.time.decision      = cell(exper.num.subNo, exper.num.condNo); % Decision times
-sacc.time.resp_bg       = cell(exper.num.subNo, exper.num.condNo); % Time between last gaze shift on background and response
-sacc.time.search        = cell(exper.num.subNo, exper.num.condNo); % Time that was spent searching targets in a trial
-sacc.propGs.closest     = cell(exper.num.subNo, exper.num.condNo); % Proportion gaze shifts to closest stimulus
-sacc.propGs.further     = cell(exper.num.subNo, exper.num.condNo); % Proportion gaze shifts to further away stimulus
-sacc.propGs.aoiFix      = cell(exper.num.subNo, exper.num.condNo); % Flags if at least one defined AOI was fixated in a trial
-stim.chosenTarget       = cell(exper.num.subNo, exper.num.condNo); % Chosen target
-stim.choiceCorrespond   = cell(exper.num.subNo, exper.num.condNo); % Corresponde chosen and last saccade target
-stim.no_easyDis         = cell(exper.num.subNo, exper.num.condNo); % # easy distractors
-stim.no_hardDis         = cell(exper.num.subNo, exper.num.condNo); % # difficult distractors
-perf.score.final        = NaN(exper.num.subNo, exper.num.condNo);  % Score at end of condition
-perf.hitMiss            = cell(exper.num.subNo, exper.num.condNo); % Hit/miss in trial
+data.ss.flags.fixationError = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+data.ss.flags.atLeastOneStimFixated = ...
+    cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+data.ss.events.stimOn = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+data.ss.events.stimOff = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+data.ss.time.planning = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+data.ss.time.inspection = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+data.ss.time.decision = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+data.ss.time.search = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+data.ss.time.lastGazeShiftOnBg = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+data.ss.proportion.gazeShifts.toClosest = ...
+    cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+data.ss.stim.n_distractor_easy = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+data.ss.stim.n_distractor_difficult = ...
+    cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+data.ss.performance.scoreFinal = NaN(exper.n.SUBJECTS, exper.n.CONDITIONS);
+data.ss.performance.isHit = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+data.ss.nCompletedTrials = NaN(exper.n.SUBJECTS, exper.n.CONDITIONS);
+data.ss.cumulativeTimer = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+data.ss.gazeShifts = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+% sacc.gazeShifts_zen = cell(exper.num.subNo, exper.num.condNo);
+data.ss.chosenTarget = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+data.ss.chosenIsFixated = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 for c = 1:exper.num.condNo % Condition
 
     curr_cond = exper.num.conds(c);
