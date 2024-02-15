@@ -4,6 +4,8 @@ close all; clear all; clc;
 settings_exper;
 settings_figure;
 settings_analysis;
+settings_screen;
+settings_log;
 
 addpath(exper.path.ANALYSIS);
 cd(exper.path.DATA);
