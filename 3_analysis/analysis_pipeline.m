@@ -2,6 +2,8 @@ close all; clear all; clc;
 
 %% Load settings
 settings_exper;
+settings_figure;
+settings_analysis;
 
 %% Go to folder with data
 cd(exper.name.data);
