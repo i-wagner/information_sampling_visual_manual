@@ -7,28 +7,6 @@ settings_analysis;
 
 %% Go to folder with data
 cd(exper.name.data);
-
-screen.fixTol = 1.5;
-
-% Define position of fixation cross
-exper.fixLoc.deg = [0, 9.5];
-exper.fixLoc.px = round([(exper.fixLoc.deg(1) / screen.xPIX2DEG) + screen.x_center ... 
-                         (exper.fixLoc.deg(2) / screen.yPIX2DEG) + screen.y_center]);
-
-
-%% Stimulus settings
-% We define our AOI as a circular area, with a diameter of 5deg, around the
-% center of each stimulus
-stim.diameter.px = 49; % Stimulus diameter (pixel)
-stim.diameter.deg = stim.diameter.px*screen.xPIX2DEG; % Stimulus diameter (deg)
-stim.diameterAOI.deg = 3;
-stim.radiusAOI.deg = stim.diameterAOI.deg/2; % AOI radius (deg)
-
-% Identifier for easy (:, 1) and hard (:, 2) targets (1, :) and distractors (2, :)
-stim.identifier = [1, 2; 3, 4];
-stim.identifier_bg = 666;
-
-
 %% Define columns for log file
 log.col.trialNo      = 4;     % Trial #
 log.col.noTargets    = 5;     % # of targets in trial
