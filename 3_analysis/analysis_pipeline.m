@@ -5,6 +5,8 @@ settings_exper;
 settings_figure;
 settings_analysis;
 
+addpath(exper.path.ANALYSIS);
+cd(exper.path.DATA);
 
 %% Get data from trials
 exper.trialNo           = NaN(exper.num.subNo, exper.num.condNo);  % # of solved trials
