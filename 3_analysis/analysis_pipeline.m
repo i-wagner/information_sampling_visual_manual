@@ -75,7 +75,7 @@ for c = 1:exper.n.CONDITIONS % Condition
             clear idx shownTarget id
         end
 
-        % Store info from log fiel for later usage
+        % Store info from log file for later usage
         data.ss.nCompletedTrials(s,c) = ...
             max(thisSubject.logFile(:,logCol.TRIAL_NO));
         data.ss.fixationErrorTrials{s,c} = ...
@@ -89,8 +89,8 @@ for c = 1:exper.n.CONDITIONS % Condition
         data.ss.nDistractor.difficult{s,c} = ...
             thisSubject.logFile(:,logCol.N_DISTRACTOR_DIFFICULT);
 
-        thisSubject.sample.stimOn = NaN(data.ss.nCompletedTrials(s,c),1);
-        thisSubject.sample.stimOff = NaN(data.ss.nCompletedTrials(s,c),1);
+        thisSubject.events = NaN(data.ss.nCompletedTrials(s,c),5);
+        thisSubject.eventMissing = NaN(data.ss.nCompletedTrials(s,c),1);
         thisSubject.time.planning = NaN(data.ss.nCompletedTrials(s,c),1);
         thisSubject.time.inspection = NaN(data.ss.nCompletedTrials(s,c),1);
         thisSubject.time.decision = NaN(data.ss.nCompletedTrials(s,c),1);
@@ -110,43 +110,29 @@ for c = 1:exper.n.CONDITIONS % Condition
                 % Get gaze trace of participant
                 [thisTrial.gazeTrace, thisSubject.dataLoss(t)] = ...
                     getGazeTrace(thisSubject.number, thisCondition, t, ...
-                                   exper.path.DATA, screen);
+                                 exper.path.DATA, screen);
+
+                % Get eye-link events
+                % We expect five events to happen in a trial:
+                % trial begin, start recording, fixation onset, onset of
+                % stimuli and offset of stimuli [i.e., response])
+                [thisSubject.events(t,:), thisSubject.eventMissing(t)] = ...
+                    getEvents(thisTrial.gazeTrace(:,4), 5);
+            elseif any(thisCondition == [3, 4]) % Manual search
+%                 % Get eye-link events
+%                 fileName_events  = sprintf('e%dv%db1_events.csv', thisCondition, thisSubject.number);
+%                 temp = readmatrix(fileName_events);
+%                 trial.events.all = temp(t, :)';
+% 
+%                 trial.events.stim_onOff(t, 1) = trial.events.all(4); % Timestamp stimulus onset
+%                 trial.events.stim_onOff(t, 2) = trial.events.all(5); % Timestamp stimulus offset
+%                 time_trial(t) = trial.events.stim_onOff(t, 2) - trial.events.stim_onOff(t, 1); % Time spent on trial
+%                 clear fileName_events
             end
 
-            % Get events in trial
-            % We expect five events to happen in a trial:
-            % trial begin, start recording, fixation onset, onset of stimuli
-            % and offset of stimuli [i.e., response])
-            if thisCondition < 4
-
-                trial.events.all = find(bitget(trial.gazeTrace(:, 4), 3));
-                if numel(trial.events.all) ~= 5
-
-                    % For one participant in the single-target condition, we
-                    % miss a chunk of data right at trial start, which results
-                    % in an event being missing. To stop the analysis from
-                    % crashing, we add a placeholder so that the event vector
-                    % has the appropriate length
-    %                 keyboard
-                    trial.events.all = [trial.events.all(1:2); NaN; trial.events.all(3:end)];
-
-                end
-                trial.events.stim_onOff(t, 1) = trial.gazeTrace(trial.events.all(4), 1);                       % Timestamp stimulus onset
-                trial.events.stim_onOff(t, 2) = trial.gazeTrace(trial.events.all(5), 1);                       % Timestamp stimulus offset
-                time_trial(t)                 = trial.events.stim_onOff(t, 2) - trial.events.stim_onOff(t, 1); % Time spent on trial
-
-            elseif thisCondition > 3
-
-                fileName_events  = sprintf('e%dv%db1_events.csv', thisCondition, thisSubject.number);
-                temp             = readmatrix(fileName_events);
-                trial.events.all = temp(t, :)';
-
-                trial.events.stim_onOff(t, 1) = trial.events.all(4);                       % Timestamp stimulus onset
-                trial.events.stim_onOff(t, 2) = trial.events.all(5);                       % Timestamp stimulus offset
-                time_trial(t)                 = trial.events.stim_onOff(t, 2) - trial.events.stim_onOff(t, 1); % Time spent on trial
-                clear fileName_events
-
-            end
+            %
+            thisSubject.time.duration(t) = ...
+                thisSubject.events(t,2) - thisSubject.events(t,1);
 
             % Offline check for fixation errors (just to be sure)
             if thisCondition < 4
