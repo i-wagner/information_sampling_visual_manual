@@ -33,7 +33,6 @@ exper.stimulus.id.distractor.DIFFICULT = 4;
 exper.stimulus.id.BACKGROUND = 666;
 
 %% Fixation cross
-exper.fixation.tolerance.DVA = 1.50;
 exper.fixation.location.x.DVA = 0;
 exper.fixation.location.y.DVA = 9.50;
 exper.fixation.location.x.PX = 960;
