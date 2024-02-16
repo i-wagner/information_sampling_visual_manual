@@ -7,6 +7,13 @@ settings_analysis;
 settings_screen;
 settings_log;
 
+% Defne reference point, relative to which we calculate dva values. 
+% Dva values are NOT calculated relative to screen center (which is 
+% convention), because the fixation cross was not placed at the screen 
+% center, but the lower part of the screen
+screen.referencePoint.x.PX = exper.fixation.location.x.PX;
+screen.referencePoint.y.PX = exper.fixation.location.y.PX;
+
 addpath(exper.path.ANALYSIS);
 cd(exper.path.ROOT);
 
