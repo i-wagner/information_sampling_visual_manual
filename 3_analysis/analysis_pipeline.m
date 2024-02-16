@@ -12,6 +12,7 @@ cd(exper.path.ROOT);
 
 %% Get data from trials
 data.ss.fixationErrorTrials = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+data.ss.dataLossTrials = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 data.ss.flags.atLeastOneStimFixated = ...
     cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 data.ss.events.stimOn = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
@@ -88,15 +89,16 @@ for c = 1:exper.n.CONDITIONS % Condition
         data.ss.nDistractor.difficult{s,c} = ...
             thisSubject.logFile(:,logCol.N_DISTRACTOR_DIFFICULT);
 
-        thisTrial.sample.stimOn = NaN(data.ss.nCompletedTrials(s,c),1);
-        thisTrial.sample.stimOff = NaN(data.ss.nCompletedTrials(s,c),1);
-        thisTrial.time.planning = NaN(data.ss.nCompletedTrials(s,c),1);
-        thisTrial.time.inspection = NaN(data.ss.nCompletedTrials(s,c),1);
-        thisTrial.time.decision = NaN(data.ss.nCompletedTrials(s,c),1);
-        thisTrial.time.duration = NaN(data.ss.nCompletedTrials(s,c),1);
-        thisTrial.nUniqueFix = NaN(data.ss.nCompletedTrials(s,c),5);
-        thisTrial.chosenTarget = NaN(data.ss.nCompletedTrials(s,c), 1);
-        thisTrial.fixChoiseCongruent = NaN(data.ss.nCompletedTrials(s,c),1);
+        thisSubject.sample.stimOn = NaN(data.ss.nCompletedTrials(s,c),1);
+        thisSubject.sample.stimOff = NaN(data.ss.nCompletedTrials(s,c),1);
+        thisSubject.time.planning = NaN(data.ss.nCompletedTrials(s,c),1);
+        thisSubject.time.inspection = NaN(data.ss.nCompletedTrials(s,c),1);
+        thisSubject.time.decision = NaN(data.ss.nCompletedTrials(s,c),1);
+        thisSubject.time.duration = NaN(data.ss.nCompletedTrials(s,c),1);
+        thisSubject.nUniqueFix = NaN(data.ss.nCompletedTrials(s,c),5);
+        thisSubject.chosenTarget = NaN(data.ss.nCompletedTrials(s,c), 1);
+        thisSubject.fixChoiseCongruent = NaN(data.ss.nCompletedTrials(s,c),1);
+        thisSubject.dataLoss = NaN(data.ss.nCompletedTrials(s,c),1);
 %         time_respBg = NaN(data.ss.nCompletedTrials(s,c),2);
 %         prop_gsClosest = NaN(data.ss.nCompletedTrials(s,c),1);
 %         prop_gsFurther = NaN(data.ss.nCompletedTrials(s,c),1);
@@ -104,28 +106,11 @@ for c = 1:exper.n.CONDITIONS % Condition
 %         gazeShifts_allTrials_zen = [];
 %         gazeShifts_allTrials = [];
         for t = 1:data.ss.nCompletedTrials(s,c) % Trial
-
-            % Get gaze trace in trial and preprocess data
-            if thisCondition < 4
-
-                flip_yAxis = 1;
-
-                [gTrace, flag_dataLoss]        = loadDat(t, screen.x_pix, screen.y_pix);
-                exper.excl_trials{thisSubject.number, c} = [exper.excl_trials{thisSubject.number, c}; flag_dataLoss];
-                if ~isempty(flag_dataLoss)
-    
-                    log.file(t, log.col.fixErr) = 1;
-    
-                end
-                [gTrace(:, 2), gTrace(:, 3)] = ...
-                    convertPix2Deg(gTrace(:, 2), gTrace(:, 3), ...
-                                   [exper.fixLoc.px(1) exper.fixLoc.px(2)], ...
-                                   [screen.xPIX2DEG  screen.yPIX2DEG], ...
-                                   flip_yAxis);
-
-                trial.gazeTrace = gTrace;
-                clear flip_yAxis gTrace flag_dataLoss
-
+            if any(thisCondition == [1, 2]) % Visual search
+                % Get gaze trace of participant
+                [thisTrial.gazeTrace, thisSubject.dataLoss(t)] = ...
+                    getGazeTrace(thisSubject.number, thisCondition, t, ...
+                                   exper.path.DATA, screen);
             end
 
             % Get events in trial
