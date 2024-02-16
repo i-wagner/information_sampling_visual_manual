@@ -106,6 +106,7 @@ for c = 1:exper.n.CONDITIONS % Condition
         thisSubject.chosenTarget = NaN(data.ss.nCompletedTrials(s,c), 1);
         thisSubject.fixChoiseCongruent = NaN(data.ss.nCompletedTrials(s,c),1);
         thisSubject.dataLoss = NaN(data.ss.nCompletedTrials(s,c),1);
+        thisSubject.offlineFixError = NaN(data.ss.nCompletedTrials(s,c),1);
 %         time_respBg = NaN(data.ss.nCompletedTrials(s,c),2);
 %         prop_gsClosest = NaN(data.ss.nCompletedTrials(s,c),1);
 %         prop_gsFurther = NaN(data.ss.nCompletedTrials(s,c),1);
@@ -125,6 +126,13 @@ for c = 1:exper.n.CONDITIONS % Condition
                 % stimuli and offset of stimuli [i.e., response])
                 [thisSubject.events(t,:), thisSubject.eventMissing(t)] = ...
                     getEvents(thisTrial.gazeTrace(:,4), 5);
+
+                % Perform offline fixation check
+                thisSubject.offlineFixError(t) = ...
+                    checkFixation(thisTrial.gazeTrace, ...
+                                  thisSubject.events(t,4), ...
+                                  anal.fixation.checkBounds, ...
+                                  anal.fixation.tolerance.DVA);
             elseif any(thisCondition == [3, 4]) % Manual search
 %                 % Get eye-link events
 %                 fileName_events  = sprintf('e%dv%db1_events.csv', thisCondition, thisSubject.number);
@@ -140,21 +148,6 @@ for c = 1:exper.n.CONDITIONS % Condition
             %
             thisSubject.time.duration(t) = ...
                 thisSubject.events(t,2) - thisSubject.events(t,1);
-
-            % Offline check for fixation errors (just to be sure)
-            if thisCondition < 4
-
-                fixPos_stimOn  = trial.gazeTrace(trial.events.all(4)-20:trial.events.all(4)+80, 2:3);
-                fixPos_deviate = sum(abs(fixPos_stimOn(:)) > screen.fixTol);
-                if fixPos_deviate > 0 && ~ismember(t, exper.excl_trials{thisSubject.number, c})
-
-                    keyboard
-                    exper.excl_trials{thisSubject.number, c} = [exper.excl_trials{thisSubject.number, c}; t];
-
-                end
-                clear fixPos_stimOn fixPos_deviate
-
-            end
 
             % The stimulus locations, extracted from the .log-file, are not
             % ordered: because of this, different cells in the location
