@@ -36,12 +36,8 @@ exper.stimulus.id.BACKGROUND = 666;
 exper.fixation.tolerance.DVA = 1.50;
 exper.fixation.location.x.DVA = 0;
 exper.fixation.location.y.DVA = 9.50;
-% exper.fixation.location.x.PX = ...
-%     round((exper.fixation.location.x.DVA / screen.pix2deg.X) + ...
-%           screen.center.x.PX);
-% exper.fixation.location.y.PX = ...
-%     round((exper.fixation.location.y.DVA / screen.pix2deg.Y) + ...
-%           screen.center.y.PX);
+exper.fixation.location.x.PX = 960;
+exper.fixation.location.y.PX = 912;
 
 %% Path settings
 % For figures:
