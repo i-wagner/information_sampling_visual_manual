@@ -8,7 +8,7 @@ settings_screen;
 settings_log;
 
 addpath(exper.path.ANALYSIS);
-cd(exper.path.DATA);
+cd(exper.path.ROOT);
 
 %% Get data from trials
 data.ss.flags.fixationError = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
@@ -67,16 +67,16 @@ for c = 1:exper.n.CONDITIONS % Condition
         end
         clear fileName_log dirName_sub
 
-        exper.trialNo(thisSubject, c)     = max(log.file(:, log.col.trialNo));      % # completed trials
-        exper.excl_trials{thisSubject, c} = find(log.file(:, log.col.fixErr) == 1); % Trials with fixation error
-        perf.score.final(thisSubject, c)  = log.file(end, log.col.score);           % Score of subject at end of condition
-        perf.hitMiss{thisSubject, c}      = log.file(:, log.col.hitMiss);           % Hit/miss in trial
-        stim.no_easyDis{thisSubject, c}   = log.file(:, log.col.noDisEasy);         % # easy distractors in trial
-        stim.no_hardDis{thisSubject, c}   = log.file(:, log.col.noDisHard);         % # difficult distractors in trial
+        exper.trialNo(thisSubject.number, c)     = max(log.file(:, log.col.trialNo));      % # completed trials
+        exper.excl_trials{thisSubject.number, c} = find(log.file(:, log.col.fixErr) == 1); % Trials with fixation error
+        perf.score.final(thisSubject.number, c)  = log.file(end, log.col.score);           % Score of subject at end of condition
+        perf.hitMiss{thisSubject.number, c}      = log.file(:, log.col.hitMiss);           % Hit/miss in trial
+        stim.no_easyDis{thisSubject.number, c}   = log.file(:, log.col.noDisEasy);         % # easy distractors in trial
+        stim.no_hardDis{thisSubject.number, c}   = log.file(:, log.col.noDisHard);         % # difficult distractors in trial
 
         % Iterate through trials and get gaze shifts, fixated AOIs and
         % search as well as non-search times
-        no_trials_singleSub = exper.trialNo(thisSubject, c); % Number of trials
+        no_trials_singleSub = exper.trialNo(thisSubject.number, c); % Number of trials
 
         trial.events.stim_onOff  = NaN(no_trials_singleSub, 2);   % Timestamps of stimulus on- and offset
         time_planning            = NaN(no_trials_singleSub, 1);   % Plannning times
@@ -100,7 +100,7 @@ for c = 1:exper.n.CONDITIONS % Condition
                 flip_yAxis = 1;
 
                 [gTrace, flag_dataLoss]        = loadDat(t, screen.x_pix, screen.y_pix);
-                exper.excl_trials{thisSubject, c} = [exper.excl_trials{thisSubject, c}; flag_dataLoss];
+                exper.excl_trials{thisSubject.number, c} = [exper.excl_trials{thisSubject.number, c}; flag_dataLoss];
                 if ~isempty(flag_dataLoss)
     
                     log.file(t, log.col.fixErr) = 1;
@@ -141,7 +141,7 @@ for c = 1:exper.n.CONDITIONS % Condition
 
             elseif thisCondition > 3
 
-                fileName_events  = sprintf('e%dv%db1_events.csv', thisCondition, thisSubject);
+                fileName_events  = sprintf('e%dv%db1_events.csv', thisCondition, thisSubject.number);
                 temp             = readmatrix(fileName_events);
                 trial.events.all = temp(t, :)';
 
@@ -157,10 +157,10 @@ for c = 1:exper.n.CONDITIONS % Condition
 
                 fixPos_stimOn  = trial.gazeTrace(trial.events.all(4)-20:trial.events.all(4)+80, 2:3);
                 fixPos_deviate = sum(abs(fixPos_stimOn(:)) > screen.fixTol);
-                if fixPos_deviate > 0 && ~ismember(t, exper.excl_trials{thisSubject, c})
+                if fixPos_deviate > 0 && ~ismember(t, exper.excl_trials{thisSubject.number, c})
 
                     keyboard
-                    exper.excl_trials{thisSubject, c} = [exper.excl_trials{thisSubject, c}; t];
+                    exper.excl_trials{thisSubject.number, c} = [exper.excl_trials{thisSubject.number, c}; t];
 
                 end
                 clear fixPos_stimOn fixPos_deviate
@@ -215,7 +215,7 @@ for c = 1:exper.n.CONDITIONS % Condition
 
             elseif thisCondition > 3
 
-                fileName_sacc  = sprintf('e%dv%db1_saccades.csv', thisCondition, thisSubject);
+                fileName_sacc  = sprintf('e%dv%db1_saccades.csv', thisCondition, thisSubject.number);
                 temp           = readmatrix(fileName_sacc);
                 if temp(1, 17) > 1
 
@@ -442,7 +442,7 @@ for c = 1:exper.n.CONDITIONS % Condition
             end
             gazeShifts_allTrials_zen = [gazeShifts_allTrials_zen; ...
                 zeros(no_gs, 1)+thisCondition-1, ...                        Condition number
-                zeros(no_gs, 1)+thisSubject, ...                           Subject number
+                zeros(no_gs, 1)+thisSubject.number, ...                           Subject number
                 gazeShifts_singleTrial(:, 1:2), ...                     Gaze shifts in trial
                 zeros(no_gs, 1)+log.file(t, log.col.fixErr), ...        Exclude trial?
                 gazeShifts_singleTrial(:, 3:16), ...
@@ -464,21 +464,21 @@ for c = 1:exper.n.CONDITIONS % Condition
         clear t no_trials_singleSub
 
         % Store data of subject
-        exper.events.stim_onOff{thisSubject, c} = trial.events.stim_onOff;  % Timestamps of stimulus on- and offset
-        exper.cum_trialTime{thisSubject, c}     = time_trial;               % Time spent on trial
-        stim.chosenTarget{thisSubject, c}       = choice_target;            % Target, chosen in trial
-        stim.choiceCorrespond{thisSubject, c}   = choice_congruence;        % Correspondece between last fixated and responded on target
-        sacc.gazeShifts{thisSubject, c}         = gazeShifts_allTrials;     % Non-consecutive gaze shifts
-        sacc.gazeShifts_zen{thisSubject, c}     = gazeShifts_allTrials_zen; % All gaze shifts (for Zenodo)
-        sacc.time.planning{thisSubject, c}      = time_planning;            % Planning times (time between first saccade offset and stimulus onset)
-        sacc.time.inspection{thisSubject, c}    = time_inspection;          % Inspection times (for each fixated stimulus, time between entering gaze
+        exper.events.stim_onOff{thisSubject.number, c} = trial.events.stim_onOff;  % Timestamps of stimulus on- and offset
+        exper.cum_trialTime{thisSubject.number, c}     = time_trial;               % Time spent on trial
+        stim.chosenTarget{thisSubject.number, c}       = choice_target;            % Target, chosen in trial
+        stim.choiceCorrespond{thisSubject.number, c}   = choice_congruence;        % Correspondece between last fixated and responded on target
+        sacc.gazeShifts{thisSubject.number, c}         = gazeShifts_allTrials;     % Non-consecutive gaze shifts
+        sacc.gazeShifts_zen{thisSubject.number, c}     = gazeShifts_allTrials_zen; % All gaze shifts (for Zenodo)
+        sacc.time.planning{thisSubject.number, c}      = time_planning;            % Planning times (time between first saccade offset and stimulus onset)
+        sacc.time.inspection{thisSubject.number, c}    = time_inspection;          % Inspection times (for each fixated stimulus, time between entering gaze
                                                                          % shift onset and time leaving gaze shift offset)
-        sacc.time.decision{thisSubject, c}      = time_decision;            % Decision times (time between last saccade offset and response)
-        sacc.time.resp_bg{thisSubject, c}       = time_respBg;              % Time between last gaze shift in background and response
-        sacc.time.search{thisSubject, c}        = inspectedElements_no;     % # inspected elements & time spent searching for targets
-        sacc.propGs.closest{thisSubject, c}     = prop_gsClosest;           % Proportion gaze shifts to closest AOI
-        sacc.propGs.further{thisSubject, c}     = prop_gsFurther;           % Proportion gaze shifts to closest AOI
-        sacc.propGs.aoiFix{thisSubject, c}      = li_atLeastOneGs;          % Flag if at least one defined AOI was fixated in a trial
+        sacc.time.decision{thisSubject.number, c}      = time_decision;            % Decision times (time between last saccade offset and response)
+        sacc.time.resp_bg{thisSubject.number, c}       = time_respBg;              % Time between last gaze shift in background and response
+        sacc.time.search{thisSubject.number, c}        = inspectedElements_no;     % # inspected elements & time spent searching for targets
+        sacc.propGs.closest{thisSubject.number, c}     = prop_gsClosest;           % Proportion gaze shifts to closest AOI
+        sacc.propGs.further{thisSubject.number, c}     = prop_gsFurther;           % Proportion gaze shifts to closest AOI
+        sacc.propGs.aoiFix{thisSubject.number, c}      = li_atLeastOneGs;          % Flag if at least one defined AOI was fixated in a trial
         clear thisSubject trial gazeShifts_allTrials choice_target time_planning time_inspection time_decision gazeShifts_allTrials_zen
         clear prop_gsClosest prop_gsFurther choice_congruence time_respBg inspectedElements_no time_trial li_atLeastOneGs
 
