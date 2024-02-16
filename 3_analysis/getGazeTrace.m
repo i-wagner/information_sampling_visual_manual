@@ -11,6 +11,12 @@ function [gazeTrace, dataLoss] = getGazeTrace(thisSubject, thisCondition, thisTr
     %         positions in the screen half above the vertical screen center
     %
     % Input
+    % thisSubject: integer; ID of current subject
+    % thisCondition: integer; ID of current condition
+    % thisTrial: integer; ID of current trial
+    % pathData: string; path to data folder
+    % screen: structure; variable with parameters of screen, on which the
+    % experiment was conducted
     %
     % Output
     % gazeTrace: matrix; gaze trace of participant
