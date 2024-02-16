@@ -38,6 +38,8 @@ for c = 1:exper.n.CONDITIONS % Condition
     thisCondition = exper.num.CONDITIONS(c);
     for s = 1:exper.n.SUBJECTS % Subject
         thisSubject.number = exper.num.SUBJECTS(s);
+
+        % Load log file
         [thisSubject.logFile, thisSubject.isMissing] = ...
             loadLog(thisSubject.number, thisCondition, exper.path.DATA);
         if thisSubject.isMissing
@@ -46,26 +48,32 @@ for c = 1:exper.n.CONDITIONS % Condition
             continue
         end
 
-        if mod(thisCondition, 2) == 0 % Single-target condition
+        % Recode distractor numbers in single-target condition.
+        % In the single-target condition, trials in which the easy
+        % target was shown without distractors are coded with 0 in the
+        % column in the column, which logs the number of difficult
+        % distractors in a trial. The same is true for trials where the
+        % difficult target was shown. This is ambigous, because, in this
+        % condition, no distractors from the respective other set where
+        % shown at all! To make it easier to find trials in the
+        % single-target condition, where one of the target was shown
+        % without distractors, we recode the column with the number of
+        % easy/difficult distractors in a trial to be NaN for the
+        % distractor of the non-shown set, i.e., difficult when easy was
+        % shown, and easy when difficult was shown
+        if mod(thisCondition, 2) == 0
+            idx = [logFile.idx.N_DISTRACTOR_EASY, ...
+                   logFile.idx.N_DISTRACTOR_DIFFICULT];
+            shownTarget = ...
+                thisSubject.logFile(:,logFile.idx.DIFFICULTY_TARGET);
+            id = [exper.stimulus.id.target.EASY, ...
+                  exper.stimulus.id.target.DIFFICULT];
 
-            % For the single-target condition, trials in which the easy
-            % target was shown without distractors and trials in which the
-            % difficult target was shown without distractors are coded the
-            % same (i.e., "0" in the vector that indicates the trialwise
-            % number of easy distractors). To make things unambigous, we
-            % have to set the # easy distractors NaN for trials where the
-            % difficult target was chosen (and we have to do the same with
-            % # difficult distractors and trials where the easy target was
-            % chosen)
-            li_choiceEasy      = log.file(:, log.col.targetDiff) == stim.identifier(1, 1);
-            li_choiceDifficult = log.file(:, log.col.targetDiff) == stim.identifier(1, 2);
-
-            log.file(li_choiceDifficult, log.col.noDisEasy) = NaN;
-            log.file(li_choiceEasy, log.col.noDisHard)      = NaN;
-            clear li_choiceEasy li_choiceDifficult
-
+            thisSubject.logFile(:,idx) = ...
+                recodeDistractorNumber(thisSubject.logFile(:,idx), ...
+                                       shownTarget, id);
+            clear idx shownTarget id
         end
-        clear fileName_log dirName_sub
 
         exper.trialNo(thisSubject.number, c)     = max(log.file(:, log.col.trialNo));      % # completed trials
         exper.excl_trials{thisSubject.number, c} = find(log.file(:, log.col.fixErr) == 1); % Trials with fixation error
