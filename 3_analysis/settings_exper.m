@@ -27,8 +27,8 @@ exper.stimulus.aoi.radius.DVA = exper.stimulus.aoi.diameter.DVA / 2;
 % Stimuli in a trial will get assigned an identifier, allowing us to put it
 % into one of five categories
 exper.stimulus.id.target.EASY = 1;
-exper.stimulus.id.target.DIFFICULT = 3;
-exper.stimulus.id.distractor.EASY = 2;
+exper.stimulus.id.target.DIFFICULT = 2;
+exper.stimulus.id.distractor.EASY = 3;
 exper.stimulus.id.distractor.DIFFICULT = 4;
 exper.stimulus.id.BACKGROUND = 666;
 
