@@ -37,22 +37,15 @@ data.ss.chosenIsFixated = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 for c = 1:exper.n.CONDITIONS % Condition
     thisCondition = exper.num.CONDITIONS(c);
     for s = 1:exper.n.SUBJECTS % Subject
-        thisSubject = exper.num.SUBJECTS(s);
-        if ~isempty(dirName_sub)
-            dirName_sub = dirName_sub(end).name;
-            cd(dirName_sub);
-        else
-            disp(['Skipping missing participant ', num2str(thisSubject)])
+        thisSubject.number = exper.num.SUBJECTS(s);
+        [thisSubject.logFile, thisSubject.isMissing] = ...
+            loadLog(thisSubject.number, thisCondition, exper.path.DATA);
+        if thisSubject.isMissing
+            disp(['Skipping missing participant ', ...
+                  num2str(thisSubject.number)])
             continue
         end
 
-        % Load .log file of single subject and extract relevant data from it
-        fileName_log = [dirName_sub, '.log'];
-        log.file     = readmatrix(fileName_log);
-        if log.file(1, 4) > 1 % Recode trial #
-            keyboard
-            log.file(:, 4) = log.file(:, 4) - min(log.file(:, 4)) + 1;
-        end
         if mod(thisCondition, 2) == 0 % Single-target condition
 
             % For the single-target condition, trials in which the easy
