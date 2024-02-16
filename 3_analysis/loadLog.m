@@ -11,7 +11,8 @@ function [logFile, isMissing] = loadLog(thisSubject, thisCondition, pathData)
     % logFile: matrix; log file of subject
 
     %% Load log file of subject
-    [isMissing, subjectId] = getSubjectId(thisSubject, thisCondition);
+    [isMissing, subjectId] = ...
+        getSubjectId(thisSubject, thisCondition, pathData);
 
     logFile = [];
     if ~isMissing
