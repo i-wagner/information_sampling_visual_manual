@@ -38,7 +38,6 @@ for c = 1:exper.n.CONDITIONS % Condition
     thisCondition = exper.num.CONDITIONS(c);
     for s = 1:exper.n.SUBJECTS % Subject
         thisSubject = exper.num.SUBJECTS(s);
-        dirName_sub = dir(strcat(sprintf('e%dv%db%d', thisCondition, thisSubject), '*'));
         if ~isempty(dirName_sub)
             dirName_sub = dirName_sub(end).name;
             cd(dirName_sub);
