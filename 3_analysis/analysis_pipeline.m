@@ -11,7 +11,7 @@ addpath(exper.path.ANALYSIS);
 cd(exper.path.ROOT);
 
 %% Get data from trials
-data.ss.flags.fixationError = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+data.ss.fixationErrorTrials = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 data.ss.flags.atLeastOneStimFixated = ...
     cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 data.ss.events.stimOn = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
@@ -23,9 +23,8 @@ data.ss.time.search = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 data.ss.time.lastGazeShiftOnBg = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 data.ss.proportion.gazeShifts.toClosest = ...
     cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
-data.ss.stim.n_distractor_easy = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
-data.ss.stim.n_distractor_difficult = ...
-    cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+data.ss.nDistractor.easy = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+data.ss.nDistractor.difficult = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 data.ss.performance.scoreFinal = NaN(exper.n.SUBJECTS, exper.n.CONDITIONS);
 data.ss.performance.isHit = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 data.ss.nCompletedTrials = NaN(exper.n.SUBJECTS, exper.n.CONDITIONS);
@@ -62,10 +61,10 @@ for c = 1:exper.n.CONDITIONS % Condition
         % distractor of the non-shown set, i.e., difficult when easy was
         % shown, and easy when difficult was shown
         if mod(thisCondition, 2) == 0
-            idx = [logFile.idx.N_DISTRACTOR_EASY, ...
-                   logFile.idx.N_DISTRACTOR_DIFFICULT];
+            idx = [logCol.N_DISTRACTOR_EASY, ...
+                   logCol.N_DISTRACTOR_DIFFICULT];
             shownTarget = ...
-                thisSubject.logFile(:,logFile.idx.DIFFICULTY_TARGET);
+                thisSubject.logFile(:,logCol.DIFFICULTY_TARGET);
             id = [exper.stimulus.id.target.EASY, ...
                   exper.stimulus.id.target.DIFFICULT];
 
@@ -75,32 +74,36 @@ for c = 1:exper.n.CONDITIONS % Condition
             clear idx shownTarget id
         end
 
-        exper.trialNo(thisSubject.number, c)     = max(log.file(:, log.col.trialNo));      % # completed trials
-        exper.excl_trials{thisSubject.number, c} = find(log.file(:, log.col.fixErr) == 1); % Trials with fixation error
-        perf.score.final(thisSubject.number, c)  = log.file(end, log.col.score);           % Score of subject at end of condition
-        perf.hitMiss{thisSubject.number, c}      = log.file(:, log.col.hitMiss);           % Hit/miss in trial
-        stim.no_easyDis{thisSubject.number, c}   = log.file(:, log.col.noDisEasy);         % # easy distractors in trial
-        stim.no_hardDis{thisSubject.number, c}   = log.file(:, log.col.noDisHard);         % # difficult distractors in trial
+        % Store info from log fiel for later usage
+        data.ss.nCompletedTrials(s,c) = ...
+            max(thisSubject.logFile(:,logCol.TRIAL_NO));
+        data.ss.fixationErrorTrials{s,c} = ...
+            find(thisSubject.logFile(:,logCol.IS_FIXATION_ERROR));
+        data.ss.performance.scoreFinal(s,c) = ...
+            thisSubject.logFile(end,logCol.SCORE);
+        data.ss.performance.isHit{s,c} = ...
+            thisSubject.logFile(:,logCol.HIT_OR_MISS);
+        data.ss.nDistractor.easy{s,c} = ...
+            thisSubject.logFile(:,logCol.N_DISTRACTOR_EASY);
+        data.ss.nDistractor.difficult{s,c} = ...
+            thisSubject.logFile(:,logCol.N_DISTRACTOR_DIFFICULT);
 
-        % Iterate through trials and get gaze shifts, fixated AOIs and
-        % search as well as non-search times
-        no_trials_singleSub = exper.trialNo(thisSubject.number, c); % Number of trials
-
-        trial.events.stim_onOff  = NaN(no_trials_singleSub, 2);   % Timestamps of stimulus on- and offset
-        time_planning            = NaN(no_trials_singleSub, 1);   % Plannning times
-        time_inspection          = NaN(no_trials_singleSub, 1);   % Inspection times
-        time_decision            = NaN(no_trials_singleSub, 1);   % Decision times
-        time_respBg              = NaN(no_trials_singleSub, 2);   % Time between last gaze shift on background and response
-        time_trial               = NaN(no_trials_singleSub, 1);   % Time between stimulus onset and offset/response
-        inspectedElements_no     = NaN(no_trials_singleSub, 5);   % # unique stimuli a subjects inspected in a trial
-        choice_target            = NaN(no_trials_singleSub, 1);   % Chosen target
-        choice_congruence        = NaN(no_trials_singleSub, 1);   % Correspondence responded and last fixated target
-        prop_gsClosest           = NaN(no_trials_singleSub, 1);   % Proportion gaze shifts to closest AOI
-        prop_gsFurther           = NaN(no_trials_singleSub, 1);   % Proportion gaze shifts to more distant AOI
-        li_atLeastOneGs          = zeros(no_trials_singleSub, 1); % Flag if at least one gaze shift to any defined AOI was made in a trial
-        gazeShifts_allTrials_zen = [];                            % Gaze shift matrix for Zenodo
-        gazeShifts_allTrials     = [];                            % Gaze shift matrix for analysis
-        for t = 1:no_trials_singleSub % Trial
+        thisTrial.sample.stimOn = NaN(data.ss.nCompletedTrials(s,c),1);
+        thisTrial.sample.stimOff = NaN(data.ss.nCompletedTrials(s,c),1);
+        thisTrial.time.planning = NaN(data.ss.nCompletedTrials(s,c),1);
+        thisTrial.time.inspection = NaN(data.ss.nCompletedTrials(s,c),1);
+        thisTrial.time.decision = NaN(data.ss.nCompletedTrials(s,c),1);
+        thisTrial.time.duration = NaN(data.ss.nCompletedTrials(s,c),1);
+        thisTrial.nUniqueFix = NaN(data.ss.nCompletedTrials(s,c),5);
+        thisTrial.chosenTarget = NaN(data.ss.nCompletedTrials(s,c), 1);
+        thisTrial.fixChoiseCongruent = NaN(data.ss.nCompletedTrials(s,c),1);
+%         time_respBg = NaN(data.ss.nCompletedTrials(s,c),2);
+%         prop_gsClosest = NaN(data.ss.nCompletedTrials(s,c),1);
+%         prop_gsFurther = NaN(data.ss.nCompletedTrials(s,c),1);
+%         li_atLeastOneGs = zeros(data.ss.nCompletedTrials(s,c),1);
+%         gazeShifts_allTrials_zen = [];
+%         gazeShifts_allTrials = [];
+        for t = 1:data.ss.nCompletedTrials(s,c) % Trial
 
             % Get gaze trace in trial and preprocess data
             if thisCondition < 4
@@ -469,7 +472,7 @@ for c = 1:exper.n.CONDITIONS % Condition
             clear no_gs gazeShifts_singleTrial stim_locations gapLocChosen
 
         end
-        clear t no_trials_singleSub
+        clear t
 
         % Store data of subject
         exper.events.stim_onOff{thisSubject.number, c} = trial.events.stim_onOff;  % Timestamps of stimulus on- and offset
