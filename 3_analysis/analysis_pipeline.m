@@ -41,6 +41,7 @@ data.ss.gazeShifts = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 % sacc.gazeShifts_zen = cell(exper.num.subNo, exper.num.condNo);
 data.ss.chosenTarget = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 data.ss.chosenIsFixated = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+data.ss.stimulusCoordinates = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 for c = 1:exper.n.CONDITIONS % Condition
     thisCondition = exper.num.CONDITIONS(c);
     for s = 1:exper.n.SUBJECTS % Subject
@@ -83,6 +84,13 @@ for c = 1:exper.n.CONDITIONS % Condition
         end
 
         % Store info from log file for later usage
+        data.ss.stimulusCoordinates{s,c} = ...                  
+            sortStimLoc(thisSubject.logFile(:,logCol.STIMULUS_POSITION_X), ...
+                        thisSubject.logFile(:,logCol.STIMULUS_POSITION_Y), ...
+                        thisSubject.logFile(:,logCol.N_DISTRACTOR_EASY), ...
+                        thisSubject.logFile(:,logCol.N_DISTRACTOR_DIFFICULT), ...
+                        thisSubject.logFile(:,logCol.N_TARGETS), ...
+                        thisSubject.logFile(:,logCol.DIFFICULTY_TARGET));
         data.ss.nCompletedTrials(s,c) = ...
             max(thisSubject.logFile(:,logCol.TRIAL_NO));
         data.ss.fixationErrorTrials{s,c} = ...
@@ -144,40 +152,8 @@ for c = 1:exper.n.CONDITIONS % Condition
 %                 time_trial(t) = trial.events.stim_onOff(t, 2) - trial.events.stim_onOff(t, 1); % Time spent on trial
 %                 clear fileName_events
             end
-
-            %
             thisSubject.time.duration(t) = ...
                 thisSubject.events(t,2) - thisSubject.events(t,1);
-
-            % The stimulus locations, extracted from the .log-file, are not
-            % ordered: because of this, different cells in the location
-            % vector might correspond to different stimulus types, depending
-            % on the number of easy/difficult distractors in a trial. To make
-            % our life easier, we want to order them so that each position
-            % in the location matrix is directly linked to one type of
-            % stimulus (easy/difficult target/distractor)
-            % CAUTION: SINCE WE FLIPPED THE Y-COORDINATES OF THE GAZE TRACE
-            % WE ALSO FLIP THE Y-COORDINATES OF THE STIMULUS LOCATIONS
-            inp_x_loc = log.file(t, log.col.stimPosX); % Stimulus locations
-            inp_y_loc = log.file(t, log.col.stimPosY);
-            inp_no_ed = log.file(t, log.col.noDisEasy); % # easy distractors
-            inp_no_dd = log.file(t, log.col.noDisHard); % # difficult distractors
-            inp_no_targ = log.file(t, log.col.noTargets); % Number targets in condition
-            if mod(thisCondition, 2) == 0
-
-                inp_shownTarg = log.file(t, log.col.targetDiff); % Target shown in trial
-
-            elseif mod(thisCondition, 2) % In the double-target condition, both target were always shown
-
-                inp_shownTarg = NaN;
-                
-            end
-
-            stim_locations = ...                  
-                infSampling_getStimLoc(inp_x_loc, inp_y_loc, ...
-                                       inp_no_ed, inp_no_dd, ...
-                                       inp_no_targ, inp_shownTarg);
-            clear inp_x_loc inp_y_loc inp_no_ed inp_no_dd inp_no_targ inp_shownTarg
 
             % Get gaze shifts in trial
             % Gaze shifts are all saccades and blinks, detected in a trial
