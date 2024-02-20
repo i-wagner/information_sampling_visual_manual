@@ -132,8 +132,27 @@ for c = 1:exper.n.CONDITIONS % Condition
                                   thisSubject.events(t,4), ...
                                   anal.fixation.checkBounds, ...
                                   anal.fixation.tolerance.DVA);
+
+                % Get gaze shifts in trial
+                thisTrial.gazeShifts.idx = getGazeShifts(thisTrial.gazeTrace);
+
+                % Calculate gaze shift metrics
+                [thisTrial.gazeShifts.onsets, thisTrial.gazeShifts.offsets, ...
+                 thisTrial.gazeShifts.duration, ~, thisTrial.gazeShifts.latency] = ...
+                    getGazeShiftMetrics(thisTrial.gazeTrace, ...
+                                        thisTrial.gazeShifts.idx, ...
+                                        thisSubject.events(t,4));
+                thisTrial.gazeShifts.meanGazePos = ...
+                    calcMeanGazePos(thisTrial.gazeTrace, thisTrial.gazeShifts.idx);
+                thisTrial.gazeShifts.exclude = ....
+                    checkGazeShifts(thisTrial.gazeShifts.onsets(:,2:3), ...
+                                    thisTrial.gazeShifts.offsets(:,2:3), ...
+                                    thisTrial.gazeShifts.meanGazePos(:,[1,3]), ...
+                                    thisTrial.gazeShifts.duration, ...
+                                    screen.bounds.dva, ...
+                                    anal.saccadeDetection.MIN_SACC_DUR);
             elseif any(thisCondition == [3, 4]) % Manual search
-%                 % Get eye-link events
+                % Get eye-link events
 %                 fileName_events  = sprintf('e%dv%db1_events.csv', thisCondition, thisSubject.number);
 %                 temp = readmatrix(fileName_events);
 %                 trial.events.all = temp(t, :)';
@@ -142,40 +161,19 @@ for c = 1:exper.n.CONDITIONS % Condition
 %                 trial.events.stim_onOff(t, 2) = trial.events.all(5); % Timestamp stimulus offset
 %                 time_trial(t) = trial.events.stim_onOff(t, 2) - trial.events.stim_onOff(t, 1); % Time spent on trial
 %                 clear fileName_events
+
+                % Get gaze shifts
+%                 fileName_sacc = sprintf('e%dv%db1_saccades.csv', thisCondition, thisSubject.number);
+%                 temp = readmatrix(fileName_sacc);
+%                 if temp(1, 17) > 1
+%                     temp(:, 17) = temp(:, 17) - min(temp(:, 17)) + 1;
+%                 end
+%                 gazeShifts_singleTrial = temp(temp(:, 17) == t, :);
+%                 gazeShifts_singleTrial = gazeShifts_singleTrial(:, 1:end-1);
             end
             thisSubject.time.duration(t) = ...
                 thisSubject.events(t,2) - thisSubject.events(t,1);
 
-            % Get gaze shifts in trial
-            % Gaze shifts are all saccades and blinks, detected in a trial
-            if thisCondition < 4
-
-                inp_gazeTrace = trial.gazeTrace(trial.events.all(4):trial.events.all(5), :); % Gaze trace between stimulus on- and offset
-                inp_ts_stimOn = trial.events.stim_onOff(t, 1); % Timestampe stimulus onset
-                inp_minDur_sacc = exper.crit.minDur; % Minimum duration of gaze shifts [ms]; everything beneath is flagged
-                inp_screen_x = (screen.x_pix - exper.fixLoc.px(1)) * screen.xPIX2DEG; % Most extrem gaze position possible, given the display size
-                inp_screen_y= [exper.fixLoc.px(2) * screen.yPIX2DEG ...
-                               (screen.y_pix - exper.fixLoc.px(2)) * screen.yPIX2DEG*-1];
-
-                gazeShifts_singleTrial = ...
-                    infSampling_getGazeShifts(inp_gazeTrace, inp_ts_stimOn, ...
-                                              inp_minDur_sacc, inp_screen_x, inp_screen_y);
-                clear inp_gazeTrace inp_ts_stimOn inp_minDur_sacc inp_screen_x inp_screen_y
-
-            elseif thisCondition > 3
-
-                fileName_sacc  = sprintf('e%dv%db1_saccades.csv', thisCondition, thisSubject.number);
-                temp           = readmatrix(fileName_sacc);
-                if temp(1, 17) > 1
-
-                    temp(:, 17) = temp(:, 17) - min(temp(:, 17)) + 1;
-
-                end
-                gazeShifts_singleTrial = temp(temp(:, 17) == t, :);
-                gazeShifts_singleTrial = gazeShifts_singleTrial(:, 1:end-1);
-                clear fileName_sacc
-
-            end
 
             % Get fixated AOIs
             % If a gaze shift landed on either one of the stimuli, we
