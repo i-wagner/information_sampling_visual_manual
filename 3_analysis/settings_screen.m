@@ -14,3 +14,11 @@ screen.pix2deg.X = atand(screen.size.x.CM / screen.size.x.PX / ...
                          screen.distance.subject.CM);
 screen.pix2deg.Y = atand(screen.size.y.CM / screen.size.y.PX / ...
                          screen.distance.subject.CM);
+
+%% Define reference point, relative to which we calculate dva values
+% Dva values are NOT calculated relative to screen center (which is 
+% convention), because the fixation cross was not placed at the screen 
+% center, but the lower part of the screen
+screen.referencePoint.x.PX = exper.fixation.location.x.PX;
+screen.referencePoint.y.PX = exper.fixation.location.y.PX;
+
