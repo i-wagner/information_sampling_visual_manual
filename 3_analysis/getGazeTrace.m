@@ -6,6 +6,8 @@ function [gazeTrace, dataLoss] = getGazeTrace(thisSubject, thisCondition, thisTr
     % - Load the fiel with the gaze trace
     % - Format the gaze trace so it only contains values from the recorded eye
     % - Check gaze trace for sample integrity
+    % - Recode bit flags of samples with data loss so they can be
+    %   identified as a gaze shift, i.e., blink
     % - Convert gaze coordinates from pixel to dva.
     %   NOTE: y-traces are flipped, so that positive values correspond to
     %         positions in the screen half above the vertical screen center
@@ -38,6 +40,7 @@ function [gazeTrace, dataLoss] = getGazeTrace(thisSubject, thisCondition, thisTr
         loadDat(thisSubject, thisCondition, thisTrial, pathData);
     gazeTrace = formatGazeTrace(gazeTrace);
     gazeTrace = checkGazeSamples(gazeTrace, screenSize);
+    gazeTrace(:,4) = recodeDataloss(gazeTrace(:,4));
     gazeTrace(:,2) = pix2dva(gazeTrace(:,2), screen.referencePoint.x.PX, ...
                              screen.pix2deg.X, false);
     gazeTrace(:,3) = pix2dva(gazeTrace(:,3), screen.referencePoint.y.PX, ...
