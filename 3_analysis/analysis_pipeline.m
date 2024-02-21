@@ -142,7 +142,7 @@ for c = 1:exper.n.CONDITIONS % Condition
                 thisTrial.gazeShifts.meanGazePos = ...
                     calcMeanGazePos(thisTrial.gazeTrace, thisTrial.gazeShifts.idx);
 
-                % Check whether to exclude gaze shifts
+                % Check and exclude gaze shifts
                 thisTrial.gazeShifts.exclude = ....
                     checkGazeShifts(thisTrial.gazeShifts.onsets(:,2:3), ...
                                     thisTrial.gazeShifts.offsets(:,2:3), ...
@@ -150,6 +150,12 @@ for c = 1:exper.n.CONDITIONS % Condition
                                     thisTrial.gazeShifts.duration, ...
                                     screen.bounds.dva, ...
                                     anal.saccadeDetection.MIN_SACC_DUR);
+                thisTrial.gazeShifts.duration(thisTrial.gazeShifts.exclude) = [];
+                thisTrial.gazeShifts.idx(thisTrial.gazeShifts.exclude,:) = [];
+                thisTrial.gazeShifts.latency(thisTrial.gazeShifts.exclude) = [];
+                thisTrial.gazeShifts.meanGazePos(thisTrial.gazeShifts.exclude,:) = [];
+                thisTrial.gazeShifts.offsets(thisTrial.gazeShifts.exclude,:) = [];
+                thisTrial.gazeShifts.onsets(thisTrial.gazeShifts.exclude,:) = [];
 
                 % Get fixated AOIs
                 % We are using the mean gaze position inbetween gaze shifts
