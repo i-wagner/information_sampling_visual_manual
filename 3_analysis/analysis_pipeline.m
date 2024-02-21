@@ -168,7 +168,9 @@ for c = 1:exper.n.CONDITIONS % Condition
                                   thisSubject.stimulusCoordinates(t,:,1), ...
                                   thisSubject.stimulusCoordinates(t,:,2), ...
                                   exper.stimulus.aoi.radius.DVA, ...
-                                  exper.stimulus.id.BACKGROUND);
+                                  exper.stimulus.id.BACKGROUND, ...
+                                  exper.stimulus.id.distractor.EASY, ...
+                                  exper.stimulus.id.distractor.DIFFICULT);
                 if fig.toggle.debug.SHOW_FIXATIONS
                     plotStimulusPositions(thisTrial.gazeShifts.meanGazePos(:,1), ...
                                           thisTrial.gazeShifts.meanGazePos(:,3), ...
@@ -198,21 +200,6 @@ for c = 1:exper.n.CONDITIONS % Condition
             end
             thisSubject.time.duration(t) = ...
                 thisSubject.events(t,2) - thisSubject.events(t,1);
-
-            % Currently, each individual distractor has an unique identifier,
-            % which corresponds to the distractors location in the position
-            % matrix; to make things easier, we assign easy/difficult
-            % distractors an unambigous identifier each. For targets and
-            % the background the identifier stays the same as before
-            li_de = gazeShifts_singleTrial(:, end) > 2 & gazeShifts_singleTrial(:, end) <= 10;
-            li_dd = gazeShifts_singleTrial(:, end) > 10 & gazeShifts_singleTrial(:, end) <= 18;
-            li_d  = sum([li_de li_dd ], 2);
-
-            gazeShifts_singleTrial(:, end+1)   = zeros;
-            gazeShifts_singleTrial(li_de, end) = stim.identifier(2, 1);                % Easy distractor
-            gazeShifts_singleTrial(li_dd, end) = stim.identifier(2, 2);                % Difficult distractor
-            gazeShifts_singleTrial(~li_d, end) = gazeShifts_singleTrial(~li_d, end-1); % Other
-            clear li_de li_dd li_d
 
             % Get unique AOI fixations as well as search and non-search times
             % Sometimes participants land in an AOI and make corrective

@@ -1,4 +1,4 @@
-function aoiVisits = getFixatedAOI(horEndpoints, vertEndpoints, horStimCoord, vertStimCoord, aoiRadius, bgFlag)
+function aoiVisits = getFixatedAOI(horEndpoints, vertEndpoints, horStimCoord, vertStimCoord, aoiRadius, bgFlag, edFlag, ddFlag)
 
     % Determines if a gaze shift landed within the AOI around one of the
     % shown stimuli, and if yes, which stimulus was targeted
@@ -23,12 +23,22 @@ function aoiVisits = getFixatedAOI(horEndpoints, vertEndpoints, horStimCoord, ve
     % integer; flag used to mark gaze shift that landed on the background, 
     % i.e., outside any defined AOI
     %
+    % edFlag:
+    % integer; flag used to mark gaze shift that landed on an easy
+    % distractor
+    %
+    % ddFlag:
+    % integer; flag used to mark gaze shift that landed on a difficult
+    % distractor
+    %
     % Output
     % aoiVisits: 
-    % vector; indices of stimuli that were targeted by gaze 
-    % shift. Indices correspond to the location of the stimulus in the
-    % stimulus coordinate vectors. Gaze shifts that landed outside any AOI
-    % will get the "background" flag
+    % matrix; indices of stimuli that were targeted by gaze shift and 
+    % unique identifier of stimulus group. Indices correspond to the 
+    % location of the stimulus in the stimulus coordinate vectors. Gaze 
+    % shifts that landed outside any AOI will get the "background" flag.
+    % Easy/difficult distractor will get a group variable so we can easily
+    % locate them
 
     %% Get fixated AOIs
     % We define a circular AOI with a fixed radius around each stimulus.
@@ -63,5 +73,20 @@ function aoiVisits = getFixatedAOI(horEndpoints, vertEndpoints, horStimCoord, ve
                      ~isnan(vertEndpoints);
     aoiVisits(gsOnBackground) = bgFlag;
     aoiVisits(aoiVisits == 0) = NaN; % Gaze shift without offset
+
+    %% Assign a group variable to each fixated AOI
+    % Initially, stimulus in a trial has a unique identifier, which
+    % corresponds to the index of it's position in the location matrix. In
+    % addition to this, we assign a high-level identifier, which marks the
+    % group a stimulus belong to, i.e., easy/difficult distractor
+    fixatedEasyDistractor = aoiVisits > 2 & aoiVisits <= 10;
+    fixatedDifficultDistractor = aoiVisits > 10 & aoiVisits <= 18;
+    fixatedDistractor = ...
+        sum([fixatedEasyDistractor, fixatedDifficultDistractor], 2);
+
+    aoiVisits = [aoiVisits, zeros(nGazeShifts,1)];
+    aoiVisits(fixatedEasyDistractor,2) = edFlag;
+    aoiVisits(fixatedDifficultDistractor,2) = ddFlag;
+    aoiVisits(~fixatedDistractor,2) = aoiVisits(~fixatedDistractor,1);
 
 end
