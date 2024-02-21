@@ -1,6 +1,7 @@
 %% General
 fig.toggle.SAVE = false;
 fig.toggle.SHOW = true;
+fig.toggle.debug.SHOW_FIXATIONS = false;
 
 set(groot, 'DefaultFigureVisible', 'on')
 if ~fig.toggle.SHOW

@@ -34,7 +34,6 @@ data.ss.gazeShifts = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 % sacc.gazeShifts_zen = cell(exper.num.subNo, exper.num.condNo);
 data.ss.chosenTarget = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 data.ss.chosenIsFixated = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
-data.ss.stimulusCoordinates = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 for c = 1:exper.n.CONDITIONS % Condition
     thisCondition = exper.num.CONDITIONS(c);
     for s = 1:exper.n.SUBJECTS % Subject
@@ -75,13 +74,14 @@ for c = 1:exper.n.CONDITIONS % Condition
         end
 
         % Store info from log file for later usage
-        data.ss.stimulusCoordinates{s,c} = ...                  
+        thisSubject.stimulusCoordinates = ...                  
             sortStimLoc(thisSubject.logFile(:,logCol.STIMULUS_POSITION_X), ...
                         thisSubject.logFile(:,logCol.STIMULUS_POSITION_Y), ...
                         thisSubject.logFile(:,logCol.N_DISTRACTOR_EASY), ...
                         thisSubject.logFile(:,logCol.N_DISTRACTOR_DIFFICULT), ...
                         thisSubject.logFile(:,logCol.N_TARGETS), ...
                         thisSubject.logFile(:,logCol.DIFFICULTY_TARGET));
+
         data.ss.nCompletedTrials(s,c) = ...
             max(thisSubject.logFile(:,logCol.TRIAL_NO));
         data.ss.fixationErrorTrials{s,c} = ...
@@ -144,6 +144,8 @@ for c = 1:exper.n.CONDITIONS % Condition
                                         thisSubject.events(t,4));
                 thisTrial.gazeShifts.meanGazePos = ...
                     calcMeanGazePos(thisTrial.gazeTrace, thisTrial.gazeShifts.idx);
+
+                % Check whether to exclude gaze shifts
                 thisTrial.gazeShifts.exclude = ....
                     checkGazeShifts(thisTrial.gazeShifts.onsets(:,2:3), ...
                                     thisTrial.gazeShifts.offsets(:,2:3), ...
@@ -151,6 +153,29 @@ for c = 1:exper.n.CONDITIONS % Condition
                                     thisTrial.gazeShifts.duration, ...
                                     screen.bounds.dva, ...
                                     anal.saccadeDetection.MIN_SACC_DUR);
+
+                % Get fixated AOIs
+                % We are using the mean gaze position inbetween gaze shifts
+                % for that. We do this, because, sometimes, a gaze shift
+                % might initially land in an AOI/land close to the edge of 
+                % an AOI, but then drift out/drift into the AOI. By using 
+                % the mean gaze position after each gaze shift we can 
+                % circumvent those kind of fluctuations and get more 
+                % reliable estimate for if an AOI was fixated or not
+                thisTrial.fixatedAois = ...
+                    getFixatedAOI(thisTrial.gazeShifts.meanGazePos(:,1), ...
+                                  thisTrial.gazeShifts.meanGazePos(:,3), ...
+                                  thisSubject.stimulusCoordinates(t,:,1), ...
+                                  thisSubject.stimulusCoordinates(t,:,2), ...
+                                  exper.stimulus.aoi.radius.DVA, ...
+                                  exper.stimulus.id.BACKGROUND);
+                if fig.toggle.debug.SHOW_FIXATIONS
+                    plotStimulusPositions(thisTrial.gazeShifts.meanGazePos(:,1), ...
+                                          thisTrial.gazeShifts.meanGazePos(:,3), ...
+                                          thisSubject.stimulusCoordinates(t,:,1), ...
+                                          thisSubject.stimulusCoordinates(t,:,2))
+                end
+
             elseif any(thisCondition == [3, 4]) % Manual search
                 % Get eye-link events
 %                 fileName_events  = sprintf('e%dv%db1_events.csv', thisCondition, thisSubject.number);
@@ -173,37 +198,6 @@ for c = 1:exper.n.CONDITIONS % Condition
             end
             thisSubject.time.duration(t) = ...
                 thisSubject.events(t,2) - thisSubject.events(t,1);
-
-
-            % Get fixated AOIs
-            % If a gaze shift landed on either one of the stimuli, we
-            % output the index of this stimulus in the location matrix; if
-            % a gaze shift landed on the background (i.e., the area not
-            % covered by any AOI) we output an unambigious flag.
-            % To determine the fixated AOI, we use the mean gaze position
-            % between end of the current gaze shift and the begin of the
-            % next gaze shift. We do this, because, sometimes, a gaze shift
-            % might initially land in an AOI/land close to the edge of an AOI,
-            % but then drift out/drift into the AOI. By using the mean gaze
-            % position after each gaze shift we can circumvent those kind
-            % of fluctuations and get more reliable estimate for if an AOI
-            % was fixated or not
-            inp_endpoints_x = gazeShifts_singleTrial(:, 13); % Mean gaze position after gaze shift
-            inp_endpoints_y = gazeShifts_singleTrial(:, 15);
-            inp_stimLoc_x   = stim_locations(:, :, 1); % Stimulus locations
-            inp_stimLoc_y   = stim_locations(:, :, 2);
-            inp_aoi_radius  = stim.radiusAOI.deg; % Desired AOI size
-            inp_debug_plot  = [0, 0]; % Plot stimulus locations and gaze shift endpoints
-            if thisCondition < 4 && inp_debug_plot(2)==1
-                inp_debug_plot(2) = 2;
-            end
-
-            gazeShifts_singleTrial(:, end+1) = ...
-                infSampling_getFixatedAOI(inp_endpoints_x, inp_endpoints_y, ...
-                inp_stimLoc_x, inp_stimLoc_y, ...
-                inp_aoi_radius, stim.identifier_bg, ...
-                inp_debug_plot);
-            clear inp_endpoints_x inp_endpoints_y inp_stimLoc_x inp_stimLoc_y inp_aoi_radius inp_debug_plot
 
             % Currently, each individual distractor has an unique identifier,
             % which corresponds to the distractors location in the position
