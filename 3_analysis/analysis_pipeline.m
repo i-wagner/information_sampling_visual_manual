@@ -19,7 +19,6 @@ data.ss.time.planning = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 data.ss.time.inspection = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 data.ss.time.decision = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 data.ss.time.search = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
-data.ss.time.lastGazeShiftOnBg = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 data.ss.proportion.gazeShifts.toClosest = ...
     cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 data.ss.nDistractor.easy = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
@@ -201,6 +200,18 @@ for c = 1:exper.n.CONDITIONS % Condition
                 thisTrial.fixatedAois = ...
                     thisTrial.fixatedAois(thisTrial.gazeShifts.isUniqueFix);
 
+                % Check whether last gaze shift landed on the background
+                thisTrial.gazeShifts.lastOnBg = ...
+                    checkLastGazeShift(fixatedAois, flagBg);
+                if thisTrial.gazeShifts.lastOnBg
+                    thisTrial.gazeShifts.duration(end) = [];
+                    thisTrial.gazeShifts.idx(end) = [];
+                    thisTrial.gazeShifts.latency(end) = [];
+                    thisTrial.gazeShifts.meanGazePos(end) = [];
+                    thisTrial.gazeShifts.offsets(end) = [];
+                    thisTrial.gazeShifts.onsets(end) = [];
+                    thisTrial.fixatedAois(end) = [];
+                end
             elseif any(thisCondition == [3, 4]) % Manual search
                 % Get eye-link events
 %                 fileName_events  = sprintf('e%dv%db1_events.csv', thisCondition, thisSubject.number);
