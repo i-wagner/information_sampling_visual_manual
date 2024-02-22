@@ -200,6 +200,17 @@ for c = 1:exper.n.CONDITIONS % Condition
                 thisTrial.fixatedAois = ...
                     thisTrial.fixatedAois(thisTrial.gazeShifts.isUniqueFix);
 
+                % Check for blinks during AOI visits
+                % If a participant blinked during an AOI visit, and the 
+                % gaze was in the same AOI before and after the blink, we 
+                % will adjust the dwell time by the duration of the blink 
+                % (since participants cannot see anything during the blink, 
+                % and thus, technially do not "dwell" during this time)
+                thisTrials.gazeShifts.informationLoss = ...
+                    getInformationLoss(thisTrial.gazeShifts.isUniqueFix, ...
+                                       logical(thisTrial.gazeShifts.idx(:,3)), ...
+                                       thisTrial.gazeShifts.duration);
+
                 % Check whether last gaze shift landed on the background
                 thisTrial.gazeShifts.lastOnBg = ...
                     checkLastGazeShift(fixatedAois, flagBg);
