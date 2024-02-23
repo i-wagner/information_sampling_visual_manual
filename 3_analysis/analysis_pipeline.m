@@ -261,26 +261,25 @@ for c = 1:exper.n.CONDITIONS % Condition
                                      exper.stimulus.id.BACKGROUND);
 
             % Check if gaze shifts went to closest stimulus
-            inp_gsOn_x    = gazeShifts_noConsec_singleTrial(:, 5);  % Onset position of gaze shifts
-            inp_gsOn_y    = gazeShifts_noConsec_singleTrial(:, 6);
-            inp_targAoi   = gazeShifts_noConsec_singleTrial(:, 17); % Index of gaze shift target
-            inp_flagBg    = stim.identifier_bg;                     % Flag, marking background as gaze shift target
-            inp_stimLoc_x = stim_locations(:, :, 1);                % Stimulus locations
-            inp_stimLoc_y = stim_locations(:, :, 2);
+            thisTrial.gazeShifts.wentToClosest = ...
+                getDistanceToClosestStim(thisTrial.gazeShifts.fixatedAois(thisTrial.gazeShifts.subset,1), ...
+                                         thisSubject.stimulusCoordinates(t,:,1), ...
+                                         thisSubject.stimulusCoordinates(t,:,2), ...
+                                         thisTrial.gazeShifts.onsets(thisTrial.gazeShifts.subset,2), ...
+                                         thisTrial.gazeShifts.onsets(thisTrial.gazeShifts.subset,3), ...
+                                         exper.stimulus.id.BACKGROUND);
+            thisTrial.gazeShifts.propToCloests = ...
+                mean(thisTrial.gazeShifts.wentToClosest, 1, 'omitnan');
 
-            [gazeShifts_noConsec_singleTrial(:, end+1), prop_gsClosest(t), prop_gsFurther(t)] = ...
-                infSampling_distStim(inp_gsOn_x, inp_gsOn_y, inp_targAoi, ...
-                inp_stimLoc_x, inp_stimLoc_y, inp_flagBg);
-
-            % Check distance between gaze while fixating and closest stimulus
-            inp_gsOn_x  = gazeShifts_noConsec_singleTrial(:, 13); % Onset position of gaze shifts
-            inp_gsOn_y  = gazeShifts_noConsec_singleTrial(:, 15);
-            inp_targAoi = NaN(size(inp_gsOn_x, 1), 1);            % Do not correct for currently fixated AOI
-
-            [~, ~, ~, euc_dist] = ...
-                infSampling_distStim(inp_gsOn_x, inp_gsOn_y, inp_targAoi, ...
-                inp_stimLoc_x, inp_stimLoc_y, inp_flagBg);
-            clear inp_gsOn_x inp_gsOn_y inp_targAoi inp_flagBg inp_stimLoc_x inp_stimLoc_y
+%             % Check distance between gaze while fixating and closest stimulus
+%             inp_gsOn_x  = gazeShifts_noConsec_singleTrial(:, 13); % Onset position of gaze shifts
+%             inp_gsOn_y  = gazeShifts_noConsec_singleTrial(:, 15);
+%             inp_targAoi = NaN(size(inp_gsOn_x, 1), 1);            % Do not correct for currently fixated AOI
+% 
+%             [~, ~, ~, euc_dist] = ...
+%                 infSampling_distStim(inp_gsOn_x, inp_gsOn_y, inp_targAoi, ...
+%                 inp_stimLoc_x, inp_stimLoc_y, inp_flagBg);
+%             clear inp_gsOn_x inp_gsOn_y inp_targAoi inp_flagBg inp_stimLoc_x inp_stimLoc_y
 
             % Get chosen target in trial
             % 1 == easy target, 2 == hard target
