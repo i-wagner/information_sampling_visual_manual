@@ -218,6 +218,11 @@ for c = 1:exper.n.CONDITIONS % Condition
                                       thisTrial.time.leaving, ...
                                       anal.dwellTimes.useTargets(c));
 
+                % Get planning time
+                thisTrial.time.planning = ...
+                    getPlanningTime(thisTrial.gazeShifts.offsets(thisTrial.gazeShifts.subset,1), ...
+                                    thisTrial.timestamp.stimOn);
+
             elseif any(thisCondition == [3, 4]) % Manual search
                 % Get eye-link events
 %                 fileName_events  = sprintf('e%dv%db1_events.csv', thisCondition, thisSubject.number);
