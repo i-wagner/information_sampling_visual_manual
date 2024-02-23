@@ -4,6 +4,12 @@ function [wentToClosest, wentNotToClosest, distanceToClosest] = ...
     % Determines whether a gaze shift went to the stimulus cloests to the
     % current fixation location or to a stimulus further away
     %
+    % NOTE:
+    % Gaze shifts to a further away stimulus are not necessarily the
+    % inverse of gaze shifts to the closest stimulus, because gaze
+    % shiftsncan also go to the background, which don't fall into either
+    % category
+    %
     % Input
     % fixatedAoi:
     % vector; IDs of fixated AOIs. HAS TO BE UNIQUE IDs, because the ID
