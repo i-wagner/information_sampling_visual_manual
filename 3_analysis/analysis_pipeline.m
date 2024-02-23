@@ -203,18 +203,6 @@ for c = 1:exper.n.CONDITIONS % Condition
                                        logical(thisTrial.gazeShifts.idx(:,3)), ...
                                        thisTrial.gazeShifts.duration);
 
-                % Check whether last gaze shift landed on the background
-                thisTrial.gazeShifts.lastOnBg = ...
-                    checkLastGazeShift(fixatedAois, flagBg);
-                if thisTrial.gazeShifts.lastOnBg
-                    thisTrial.gazeShifts.duration(end) = [];
-                    thisTrial.gazeShifts.idx(end) = [];
-                    thisTrial.gazeShifts.latency(end) = [];
-                    thisTrial.gazeShifts.meanGazePos(end) = [];
-                    thisTrial.gazeShifts.offsets(end) = [];
-                    thisTrial.gazeShifts.onsets(end) = [];
-                    thisTrial.fixatedAois(end) = [];
-                end
             elseif any(thisCondition == [3, 4]) % Manual search
                 % Get eye-link events
 %                 fileName_events  = sprintf('e%dv%db1_events.csv', thisCondition, thisSubject.number);
@@ -237,32 +225,6 @@ for c = 1:exper.n.CONDITIONS % Condition
             end
             thisSubject.time.duration(t) = ...
                 thisSubject.events(t,2) - thisSubject.events(t,1);
-
-            % Get unique AOI fixations as well as search and non-search times
-            % Sometimes participants land in an AOI and make corrective
-            % gaze shifts within this AOI, without actually leaving the
-            % AOI; we call those consecutive gaze shifts and we are not
-            % interested in them
-            % search times:    time between entering and leaving an AOI
-            %                  entered/left via saccade:          time between entering and leaving saccade offset
-            %                  entere via saccade/left via blink: time between entering saccade offset and blink onset
-            %                  blink during visit:                duration of blink subtracted from search time
-            % non-search time: sum of response time (between offset of last
-            %                  gaze shift and response) and time between
-            %                  stimulus onset and offset of first gaze
-            %                  shift. Response time can only be calculated
-            %                  if the last gaze shift landed in a target
-            inp_gazeShifts = gazeShifts_singleTrial;
-            inp_stimOn     = trial.events.stim_onOff(t, 1);
-            inp_stimOff    = trial.events.stim_onOff(t, 2);
-            if mod(thisCondition, 2) == 0
-                expNo = 2;
-            elseif mod(thisCondition, 2) == 1
-                expNo = 3;
-            end
-            [time_planning(t), time_decision(t), time_inspection(t), gazeShifts_noConsec_singleTrial, time_respBg(t, :)] = ...
-                infSampling_getDwellTime(inp_gazeShifts, inp_stimOn, inp_stimOff, stim.identifier, stim.identifier_bg, expNo);
-            clear inp_gazeShifts inp_stimOn inp_stimOff expNo
 
             % Check if at least one gaze shift was made to any AOI
             if ~isempty(gazeShifts_noConsec_singleTrial) && ~all(gazeShifts_noConsec_singleTrial(:, 18) == stim.identifier_bg)
