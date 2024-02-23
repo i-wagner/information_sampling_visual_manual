@@ -1,7 +1,6 @@
 function isOnBg = checkLastGazeShift(fixatedAois, flagBg)
 
-    % Checks if the last gaze shift in a trial landed outside any AOI, and
-    % if so, drops it
+    % Checks if the last gaze shift in a trial landed outside any AOI
     %
     % Input
     % fixatedAois:

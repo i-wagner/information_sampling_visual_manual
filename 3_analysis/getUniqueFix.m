@@ -10,7 +10,7 @@ function isUnique = getUniqueFix(idFixatedAoi)
     % vector; unique IDs of fixated AOIs.
     %
     % NOTE:
-    % input as to be UNIQUE IDs, not group IDs. The latter are, by
+    % input has to be UNIQUE IDs, not group IDs. The latter are, by
     % definition, not unique, so we cannot use them to get unique gaze
     % shifts.
     %
@@ -18,7 +18,7 @@ function isUnique = getUniqueFix(idFixatedAoi)
     % isUnique:
     % vector; unique or consecutive AOI fixation?
 
-    %% Remove consecutive gaze shifts
+    %% Flag consecutive gaze shifts
     % No idea why we do not keep consecutive gaze shifts on the background
     % (since we cannot really if those changed the current fixation
     % location or not). This is the method we used for the first
