@@ -255,12 +255,10 @@ for c = 1:exper.n.CONDITIONS % Condition
 %             thisSubject.time.duration(t) = ...
 %                 thisSubject.events(t,2) - thisSubject.events(t,1);
 
-            % Check if at least one gaze shift was made to any AOI
-            if ~isempty(gazeShifts_noConsec_singleTrial) && ~all(gazeShifts_noConsec_singleTrial(:, 18) == stim.identifier_bg)
-
-                li_atLeastOneGs(t) = 1;
-
-            end
+            % Check whether at least one gaze shift was made to any AOI
+            thisTrial.gazeShifts.atLeastOneFixatedAoi = ...
+                checkOneAoiGazeShift(thisTrial.gazeShifts.fixatedAois(thisTrial.gazeShifts.subset,1), ...
+                                     exper.stimulus.id.BACKGROUND);
 
             % Check if gaze shifts went to closest stimulus
             inp_gsOn_x    = gazeShifts_noConsec_singleTrial(:, 5);  % Onset position of gaze shifts
