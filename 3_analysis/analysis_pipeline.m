@@ -104,22 +104,10 @@ for c = 1:exper.n.CONDITIONS % Condition
         data.ss.nDistractor.difficult{s,c} = ...
             thisSubject.logFile(:,logCol.N_DISTRACTOR_DIFFICULT);
 
-        thisSubject.eventMissing = NaN(data.ss.nCompletedTrials(s,c),1);
-        thisSubject.time.duration = NaN(data.ss.nCompletedTrials(s,c),1);
-        thisSubject.nUniqueFix = NaN(data.ss.nCompletedTrials(s,c),5);
-        thisSubject.chosenTarget = NaN(data.ss.nCompletedTrials(s,c), 1);
-        thisSubject.dataLoss = NaN(data.ss.nCompletedTrials(s,c),1);
-        thisSubject.offlineFixError = NaN(data.ss.nCompletedTrials(s,c),1);
-%         time_respBg = NaN(data.ss.nCompletedTrials(s,c),2);
-%         prop_gsClosest = NaN(data.ss.nCompletedTrials(s,c),1);
-%         prop_gsFurther = NaN(data.ss.nCompletedTrials(s,c),1);
-%         li_atLeastOneGs = zeros(data.ss.nCompletedTrials(s,c),1);
-%         gazeShifts_allTrials_zen = [];
-%         gazeShifts_allTrials = [];
         for t = 1:data.ss.nCompletedTrials(s,c) % Trial
             if any(thisCondition == [1, 2]) % Visual search
                 % Get gaze trace of participant
-                [thisTrial.gazeTrace, thisSubject.dataLoss(t)] = ...
+                [thisTrial.gazeTrace, thisTrial.error.dataLoss] = ...
                     getGazeTrace(thisSubject.number, thisCondition, t, ...
                                  exper.path.DATA, screen);
 
@@ -127,7 +115,7 @@ for c = 1:exper.n.CONDITIONS % Condition
                 % We expect five events to happen in a trial:
                 % trial begin, start recording, fixation onset, onset of
                 % stimuli and offset of stimuli [i.e., response])
-                [thisTrial.events, thisSubject.eventMissing(t)] = ...
+                [thisTrial.events, thisTrial.error.eventMissing] = ...
                     getEvents(thisTrial.gazeTrace(:,4), 5);
 
                 % Get tiemstamps of stimulus on- and offset
@@ -137,7 +125,7 @@ for c = 1:exper.n.CONDITIONS % Condition
                     thisTrial.gazeTrace(thisTrial.events(5),1);
 
                 % Perform offline fixation check
-                thisSubject.offlineFixError(t) = ...
+                thisTrial.error.fixation.offline = ...
                     checkFixation(thisTrial.gazeTrace(:,2:3), ...
                                   thisTrial.events(4), ...
                                   anal.fixation.checkBounds, ...
@@ -259,9 +247,9 @@ for c = 1:exper.n.CONDITIONS % Condition
                                 [exper.stimulus.id.target.EASY, exper.stimulus.id.target.DIFFICULT], ...
                                 exper.stimulus.id.BACKGROUND);
 
-%             % Get trial duration
-%             thisSubject.time.duration(t) = ...
-%                 thisSubject.events(t,2) - thisSubject.events(t,1);
+            % Get trial duration
+            thisTrial.time.trialDuration = ...
+                thisTrial.timestamp.stimOff - thisTrial.timestamp.stimOn;
 
             % Check whether at least one gaze shift was made to any AOI
             thisTrial.gazeShifts.atLeastOneFixatedAoi = ...
