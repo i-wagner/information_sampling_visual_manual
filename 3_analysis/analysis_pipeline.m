@@ -70,6 +70,18 @@ for c = 1:exper.n.CONDITIONS % Condition
             clear idx
         end
 
+        % Recode gap position
+        % In the single-target condition, the gap position of the shown
+        % target is stored in the column, which, in the double-target
+        % condition, houses the gap position on the easy target. We recode
+        % this and align the storage scheme in the single-target with the
+        % scheme in the double-target condition, to make analysis more
+        % straightforward
+        thisSubject.logFile(:,logCol.GAP_POSITION_EASY:logCol.GAP_POSITION_DIFFICULT) = ...
+            recodeGapPosColumns(thisSubject.logFile(:,6), ...
+                                [thisSubject.logFile(:,logCol.GAP_POSITION_EASY), ...
+                                 thisSubject.logFile(:,logCol.GAP_POSITION_DIFFICULT)]);
+
         % Store info from log file for later usage
         thisSubject.stimulusCoordinates = ...                  
             sortStimLoc(thisSubject.logFile(:,logCol.STIMULUS_POSITION_X), ...
