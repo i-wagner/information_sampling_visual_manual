@@ -289,22 +289,13 @@ for c = 1:exper.n.CONDITIONS % Condition
                     thisTrial.chosenTarget.response == thisTrial.chosenTarget.fixation;
             end
 
-            % Count how many unique stimuli were fixated in a trial,
-            % determine how much time was spent searching in a trial (#
-            % fixated stimuli * inspection time in a trial) and add #
-            % distractors (of the chosen set) in a trial
-            % If one and the same stimulus was fixated more than once, we
-            % treat this as one fixation
-            inspectedElements_no(t, 1:3) = infSampling_getUniqueFixations(gazeShifts_noConsec_singleTrial(:, 17), ...
-                stim.identifier(1, :), ...
-                stim.identifier_bg, ...
-                thisCondition);
-            inspectedElements_no(t, 4) = time_trial(t);
-            if choice_target(t) == stim.identifier(1, 1) % Easy chosen
-                inspectedElements_no(t, 5) = log.file(t, log.col.noDisEasy);
-            elseif choice_target(t) == stim.identifier(1, 2) % Difficult chosen
-                inspectedElements_no(t, 5) = log.file(t, log.col.noDisHard);
-            end
+            % Get number of distractors in set of chosen target
+            thisTrial.nDistractorsChosenSet = ...
+                getDistractorsChosenSet([thisSubject.logFile(t,logCol.N_DISTRACTOR_EASY), ...
+                                         thisSubject.logFile(t,logCol.N_DISTRACTOR_DIFFICULT)], ...
+                                        thisTrial.chosenTarget.response, ...
+                                        [exper.stimulus.id.target.EASY, exper.stimulus.id.target.DIFFICULT]);
+
 
             % Create gaze shift matrix
             % Gaze shift matrix, used for further analysis
