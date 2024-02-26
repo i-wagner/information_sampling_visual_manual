@@ -105,13 +105,9 @@ for c = 1:exper.n.CONDITIONS % Condition
             thisSubject.logFile(:,logCol.N_DISTRACTOR_DIFFICULT);
 
         thisSubject.eventMissing = NaN(data.ss.nCompletedTrials(s,c),1);
-        thisSubject.time.planning = NaN(data.ss.nCompletedTrials(s,c),1);
-        thisSubject.time.inspection = NaN(data.ss.nCompletedTrials(s,c),1);
-        thisSubject.time.decision = NaN(data.ss.nCompletedTrials(s,c),1);
         thisSubject.time.duration = NaN(data.ss.nCompletedTrials(s,c),1);
         thisSubject.nUniqueFix = NaN(data.ss.nCompletedTrials(s,c),5);
         thisSubject.chosenTarget = NaN(data.ss.nCompletedTrials(s,c), 1);
-        thisSubject.fixChoiseCongruent = NaN(data.ss.nCompletedTrials(s,c),1);
         thisSubject.dataLoss = NaN(data.ss.nCompletedTrials(s,c),1);
         thisSubject.offlineFixError = NaN(data.ss.nCompletedTrials(s,c),1);
 %         time_respBg = NaN(data.ss.nCompletedTrials(s,c),2);
