@@ -294,31 +294,16 @@ for c = 1:exper.n.CONDITIONS % Condition
 %             clear inp_gsOn_x inp_gsOn_y inp_targAoi inp_flagBg inp_stimLoc_x inp_stimLoc_y
 
             % Get chosen target in trial
-            % 1 == easy target, 2 == hard target
-            if mod(thisCondition, 2) == 1 % Double-target condition
-
-                % Chosen target is the one a participant looked at last,
-                % before giving a response. If the last fixated AOI was the
-                % background and the second-to-last a target, this target
-                % is the chosen target. If something else is fixated, no
-                % chosen target can be identified
-                inp_gapLoc_easy = log.file(t, log.col.gapPosEasy);
-                inp_resp        = log.file(t, log.col.gapPosReport);
-                inp_fixAOI = gazeShifts_noConsec_singleTrial(:, 18);
-                inp_flag_targ   = stim.identifier(1, :);
-                inp_flag_dis    = stim.identifier(2, :);
-                inp_flag_bg     = stim.identifier_bg;
-
-                [choice_target(t), ~, choice_congruence(t)] = ...
-                    infSampling_getChosenTarget(inp_gapLoc_easy, inp_resp, inp_fixAOI, ...
-                                                inp_flag_targ, inp_flag_dis, inp_flag_bg);
-                clear inp_gapLoc_easy inp_resp inp_fixAOI inp_flag_targ inp_flag_dis inp_flag_bg
-
-            elseif mod(thisCondition, 2) == 0 % Single-target condition
-
-                % Chosen target is the target shown in trial
-                choice_target(t) = log.file(t, log.col.targetDiff);
-
+            [thisTrial.chosenTarget.response, thisTrial.chosenTarget.fixation] = ...
+                getChosenTarget([thisSubject.logFile(t,logCol.GAP_POSITION_EASY), ...
+                                 thisSubject.logFile(t,logCol.GAP_POSITION_DIFFICULT)], ...
+                                thisSubject.logFile(t,logCol.GAP_POSITION_REPORTED), ...
+                                thisTrial.gazeShifts.fixatedAois(thisTrial.gazeShifts.subset,1), ...
+                                [exper.stimulus.id.target.EASY, exper.stimulus.id.target.DIFFICULT], ...
+                                exper.stimulus.id.BACKGROUND);
+            if ~isnan(thisTrial.chosenTarget.fixation)
+                thisTrial.chosenTarget.respCongruency = ...
+                thisTrial.chosenTarget.response == thisTrial.chosenTarget.fixation;
             end
 
             % Count how many unique stimuli were fixated in a trial,
