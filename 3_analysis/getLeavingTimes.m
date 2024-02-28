@@ -35,9 +35,9 @@ function leavingTimes = getLeavingTimes(isBlink, timestampOffset, timestampOnset
     nGazeShifts = size(isBlink, 1);
     leavingTimes = NaN(nGazeShifts, 1);
     for g = 1:(nGazeShifts - 1) % Unique AOI fixations
-        if ~isBlink(g) % AOI left via saccade
+        if ~isBlink(g+1) % AOI left via saccade
             leavingTimes(g) = timestampOffset(g+1);
-        elseif isBlink(g) % AOI left via blink
+        elseif isBlink(g+1) % AOI left via blink
             leavingTimes(g) = timestampOnset(g+1);
         end
     end
