@@ -1,5 +1,5 @@
 function [wentToClosest, wentNotToClosest, distanceToClosest] = ...
-    getDistanceToClosestStim(fixatedAoi, horStimCoord, vertStimCoord, horOnsetCoord, vertOnsetCoord, flagBg)
+    getDistanceToClosestStim(fixatedAoi, horStimCoord, vertStimCoord, horOnsetCoord, vertOnsetCoord, flagBg, correctCurrent)
 
     % Determines whether a gaze shift went to the stimulus cloests to the
     % current fixation location or to a stimulus further away
@@ -30,6 +30,12 @@ function [wentToClosest, wentNotToClosest, distanceToClosest] = ...
     %
     % flagBg;
     % integer; flag to identify background fixations
+    %
+    % correctCurrent;
+    % Boolean; correct for currently fixated stimulus, when calculating
+    % distances? If not, the distance to the currently fixated stimulus
+    % will be calculated, which results in the currently fixated stimulus
+    % always being the closest stimulus
     %
     % Output
     % wentToClosest:
@@ -70,7 +76,7 @@ function [wentToClosest, wentNotToClosest, distanceToClosest] = ...
         % Drop distance to the currently fixated stimulus (except for the
         % first gaze shift, which is at the fixation cross, and we do not
         % calculate the distance relative to the cross)
-        if ~isnan(currentAoi(g)) & currentAoi(g) ~= flagBg
+        if ~isnan(currentAoi(g)) & currentAoi(g) ~= flagBg & correctCurrent
             distanceToStimulus(currentAoi(g)) = NaN;
         end
 
