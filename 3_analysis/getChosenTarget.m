@@ -55,13 +55,13 @@ function [chosenTargetResp, chosenTargetFix] = getChosenTarget(gapLocation, resp
     % upper side of the stimulus, check whether the up or down button was
     % pressed
     if response == 1 | response == 2 % Down or up button pressed
-        if gapLocation == 1 | gapLocation == 2
+        if gapLocation(1) == 1 | gapLocation(1) == 2
             chosenTargetResp = flagTarget(1);
         else
             chosenTargetResp = flagTarget(2);
         end
     elseif response == 3 | response == 4 % Left or right button pressed
-        if gapLocation == 3 | gapLocation == 4
+        if gapLocation(1) == 3 | gapLocation(1) == 4
             chosenTargetResp = flagTarget(1);
         else
             chosenTargetResp = flagTarget(2);
@@ -76,12 +76,12 @@ function [chosenTargetResp, chosenTargetFix] = getChosenTarget(gapLocation, resp
         if any(lastTwoFixations(2) == flagTarget)
             chosenTargetFix = lastTwoFixations(2);
         elseif lastTwoFixations(2) == flagBg & ...
-               any(lastTwoFixations(1) == flag_targ)
+               any(lastTwoFixations(1) == flagTarget)
             chosenTargetFix = lastTwoFixations(1); 
         end
     elseif nGazeShifts == 1
         lastFixation = fixatedAoi(end);
-        if any(lastFixation == flag_targ)
+        if any(lastFixation == flagTarget)
             chosenTargetFix = lastFixation;
         end
     end
