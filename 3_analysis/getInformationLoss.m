@@ -1,4 +1,4 @@
-function adjustmentAmount = getInformationLoss(isUnique, isBlink, gazeShiftDuration)
+function adjustmentAmount = getInformationLoss(fixatedAois, isUnique, isBlink, gazeShiftDuration)
 
     % Checks whether a blink occured between two unique AOI visits, and
     % calculates the overall duration of said blink
@@ -51,8 +51,10 @@ function adjustmentAmount = getInformationLoss(isUnique, isBlink, gazeShiftDurat
             idxEnd = idxUnique(g+1) - 1;
     
             blinkOccured = any(isBlink(idxStart:idxEnd));
-            if blinkOccured
-                inArea = ismember(idxBlink, [idxStart, idxEnd]);
+            isSameAoi = fixatedAois(idxStart:idxEnd) == ...
+                        fixatedAois(idxUnique(g));
+            if blinkOccured &  all(isSameAoi)
+                inArea = ismember(idxBlink, idxStart:idxEnd);
                 idxBlinkDurations = idxBlink(inArea);
                 adjustmentAmount(g) = ...
                     adjustmentAmount(g) + ...
