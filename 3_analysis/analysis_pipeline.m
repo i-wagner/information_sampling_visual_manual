@@ -306,93 +306,9 @@ for c = 1:exper.n.CONDITIONS % Condition
                                         thisTrial.chosenTarget.response, ...
                                         [exper.stimulus.id.target.EASY, exper.stimulus.id.target.DIFFICULT]);
 
-
-            % Create gaze shift matrix
-            % Gaze shift matrix, used for further analysis
-            % This one contains all non-consecutive gaze shifts in a trial
-            % and some additional data (set-size easy, chosen target,
-            % timelock to trial start/last gaze shift in trial and trial
-            % number)
-            % (:, 1:2):   indices of onset/offset of gaze shift
-            % (:, 3):     bit gaze shift onset
-            % (:, 4:6):   timestamp, x- and y-coordinates of gaze shift onset
-            % (:, 7:9):   timestamp, x- and y-coordinates of gaze shift offset
-            % (:, 10):    gaze shift duration
-            % (:, 11):    gaze shift latency
-            % (:, 12):    flag, marking a gaze shift as saccade ("1") or
-            %             blink ("2")
-            % (:, 13:14): mean and standard deviation of horizontal gaze
-            %             position after gaze shift offset
-            % (:, 15:16): mean and standard deviation of vertical gaze
-            %             position after gaze shift offset
-            % (:, 17):    index of AOI in location matrix, target by gaze
-            %             shift
-            % (:, 18):    flag, marking if a gaze shift went to easy target
-            %             ("1"), hard target ("2"), easy distractor ("3"),
-            %             hard distractor("4") or background ("666")
-            % (:, 19):    time to subtract from dwell-time; corresponds to
-            %             duration of blinks that happened during AOI
-            %             visit
-            % (:, 20):    dwell-time within AOI
-            % (:, 21):    flag if gaze shift target stimulus, closest to
-            %             gaze shift onset location ("1") or not ("0")
-            % (:, 22):    # easy distractors
-            % (:, 23):    easy ("1") or hard ("2") target chosen
-            % (:, 24):    # gaze shift after trial start
-            % (:, 25):    # gaze shift before last gaze shift
-            % (:, 26):    trial number, from which we extracted gaze shift
-            % (:, 27):    distance between mean fixation position and closest stimulus
-            no_gs_ncs            = size(gazeShifts_noConsec_singleTrial, 1);
-            li_noBg              = gazeShifts_noConsec_singleTrial(:, 18) ~= stim.identifier_bg;
-            timelock             = NaN(no_gs_ncs, 2);
-            timelock(li_noBg, 1) = (1:sum(li_noBg))';
-            timelock(li_noBg, 2) = (sum(li_noBg)-1:-1:0)';
-
-            gazeShifts_allTrials = [gazeShifts_allTrials; ...
-                gazeShifts_noConsec_singleTrial ...                    Gaze shifts in trial
-                zeros(no_gs_ncs, 1)+log.file(t, log.col.noDisEasy) ... Number easy distractors
-                zeros(no_gs_ncs, 1)+choice_target(t) ...               Chosen target
-                timelock ...                                           Timelock to trial start/last gaze shift
-                zeros(no_gs_ncs, 1)+t, ...                             Trial number
-                euc_dist(:, end), ...                                  Distance to closest stimulus (includes the currently fixated stimulus)
-                zeros(no_gs_ncs, 1)+log.file(t, log.col.noDisHard) ... Number difficult distractors
-                zeros(no_gs_ncs, 1)+inspectedElements_no(t, 5)];     % Number distractors from chosen set
-            clear no_gs_ncs gazeShifts_noConsec_singleTrial timelock li_noBg euc_dist
-
-            % Gaze shift matrix, used for export to Zenodo
-            % This one contains all gaze shifts, including consecutive gaze
-            % shifts and some additional data (set-size easy, chosen target, 
-            % timestamps for stimulus on- and offset and trialnumber). For
-            % the gaze shifts, we export timestamps and coordinates of on-
-            % and offset, type of gaze shift (saccade/blink) and mean
-            % and std of gaze between AOI visits
-            no_gs = size(gazeShifts_singleTrial, 1);
-            gapLocChosen = NaN(no_gs, 2);
-            if mod(thisCondition, 2) == 0
-                gapLocChosen(:, choice_target(t)) = log.file(t, log.col.gapPosEasy);
-            elseif mod(thisCondition, 2) == 1
-                gapLocChosen = repmat([log.file(t, log.col.gapPosEasy), log.file(t, log.col.gapPosHard)], ...
-                    no_gs, 1);
-            end
-            gazeShifts_allTrials_zen = [gazeShifts_allTrials_zen; ...
-                zeros(no_gs, 1)+thisCondition-1, ...                        Condition number
-                zeros(no_gs, 1)+thisSubject.number, ...                           Subject number
-                gazeShifts_singleTrial(:, 1:2), ...                     Gaze shifts in trial
-                zeros(no_gs, 1)+log.file(t, log.col.fixErr), ...        Exclude trial?
-                gazeShifts_singleTrial(:, 3:16), ...
-                zeros(no_gs, 1)+log.file(t, log.col.targetDiff), ...    Shown target (only single-target)
-                zeros(no_gs, 1)+log.file(t, log.col.noDisEasy) ...      Number easy distractors
-                zeros(no_gs, 1)+log.file(t, log.col.noDisHard) ...      Number difficult distractors
-                zeros(no_gs, 1)+gapLocChosen(:, 1) ...                  Gap location on easy
-                zeros(no_gs, 1)+gapLocChosen(:, 2) ...                  Gap location on difficult
-                zeros(no_gs, 1)+log.file(t, log.col.gapPosReport) ...   Gap location reported
-                zeros(no_gs, 1)+log.file(t, log.col.hitMiss) ...        Hit/miss
-                zeros(no_gs, 1)+log.file(t, log.col.score) ...          Score after trial
-                zeros(no_gs, 2)+trial.events.stim_onOff(t, :) ...       Timestamps stimulus on-/offset
-                zeros(no_gs, 1)+t, ...                                  Trial number
-                zeros(no_gs, 18)+stim_locations(:, :, 1), ...           x/y coordinates of stimulus locations
-                zeros(no_gs, 18)+stim_locations(:, :, 2)];
-            clear no_gs gazeShifts_singleTrial stim_locations gapLocChosen
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            comparePipelines(thisSubject, thisTrial, exper, logCol, s, c, t);
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         end
         clear t
