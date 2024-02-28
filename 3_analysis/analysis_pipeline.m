@@ -336,12 +336,7 @@ for c = 1:exper.n.CONDITIONS % Condition
         cd(exper.name.data);
 
     end
-    clear s thisCondition
-
 end
-clear c log
-cd(exper.name.root);
-
 
 %% Export for Zenodo
 % for c = 1:exper.num.condNo % Condition
