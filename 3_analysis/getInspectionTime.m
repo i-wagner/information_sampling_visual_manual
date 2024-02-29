@@ -26,7 +26,12 @@ function [inspectionTime, dwellTimes] = getInspectionTime(fixatedUniqueAoi, targ
         useFixation = useFixation & ...
                       all(fixatedUniqueAoi ~= targetIds, 2);        
     end
-    useFixation(end) = false; % Last fixation is not considered by default
+
+    % Only works if we have at least one fixation, i.e., if participants
+    % made at least one gaze shift
+    if ~isempty(useFixation)
+        useFixation(end) = false; % Last fixation is not considered by default
+    end
 
     nGazeShifts = numel(fixatedUniqueAoi);
     dwellTimes = NaN(nGazeShifts, 1);

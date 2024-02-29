@@ -41,6 +41,11 @@ function leavingTimes = getLeavingTimes(isBlink, timestampOffset, timestampOnset
             leavingTimes(g) = timestampOnset(g+1);
         end
     end
-    leavingTimes(end) = timestampResponse;
+
+    % Only works if we actually have leaving times, i.e., if participant
+    % made at least one gaze shift
+    if ~isempty(leavingTimes)
+        leavingTimes(end) = timestampResponse;
+    end
 
 end
