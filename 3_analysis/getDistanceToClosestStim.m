@@ -87,7 +87,7 @@ function [wentToClosest, wentNotToClosest, distanceToClosest] = ...
         % If only one stimulus shown in a trial (probably the currently
         % fixated one), we will not be able to calculate any distances
         [~, idxClosest] = min(distanceToStimulus);
-        if ~isempty(idxClosest)
+        if ~isempty(idxClosest) & ~all(isnan(distanceToStimulus))
             wentToClosest(g) = idxClosest == nextAoi(g);
             wentNotToClosest(g) = idxClosest ~= nextAoi(g) & ...
                                   nextAoi(g) ~= flagBg;
