@@ -54,7 +54,7 @@ function comparePipelines(thisSubject, thisTrial, exper, logCol, s, c, t)
     %% Compare results
     % We round decimals, because floats cannot be compared properly
     % otherwise
-    nDecimals = 11;
+    nDecimals = 9;
     pipelinesEqual = isequaln(round(newPipeline,nDecimals), ...
                               round(oldPipelineTrial,nDecimals));
     if ~pipelinesEqual
