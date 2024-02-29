@@ -27,31 +27,31 @@ function [onsets, offsets, duration, amplitude, latency] = getGazeShiftMetrics(g
     % Output
     % different named vector, with the corresponding gaze shift metric
 
-    %% Add parameters for detected saccades
-    % Only calculate parameter for gaze shifts, for which both, on- and
-    % offset are available
-    isComplete = all(~isnan(idxGazeShifts(:,1:2)), 2);
-    idxCompleteGazeShifts = idxGazeShifts(isComplete,:);
+    %% Check for availability of on- and offsets
+    hasOn = ~isnan(idxGazeShifts(:,1));
+    hasOff = ~isnan(idxGazeShifts(:,2));
 
     %% On- and offset coordinates
-    onsets = gazeTrace(idxCompleteGazeShifts(:,1),1:3);
-    offsets = gazeTrace(idxCompleteGazeShifts(:,2),1:3);
+    nGazeShifts = size(idxGazeShifts, 1);
+    onsets = NaN(nGazeShifts, 3);
+    offsets = NaN(nGazeShifts, 3);
+
+    onsets(hasOn,:) = gazeTrace(idxGazeShifts(hasOn,1),1:3);
+    offsets(hasOff,:) = gazeTrace(idxGazeShifts(hasOff,2),1:3);
 
     %% Gaze shift duration
-    duration = gazeTrace(idxCompleteGazeShifts(:,2),1) - ...
-               gazeTrace(idxCompleteGazeShifts(:,1),1);
+    duration = offsets(:,1) - onsets(:,1);
 
     %% Gaze shift amplitudes
     % Calculate horizontal, vertical, and 2D amplitude (i.e., Euclidean
     % distance)
-    amplitude = gazeTrace(idxCompleteGazeShifts(:,2),2:3) - ...
-                gazeTrace(idxCompleteGazeShifts(:,1),2:3);
+    amplitude = offsets(:,2:3) - onsets(:,2:3);
     amplitude = [amplitude, ...
                  sqrt(amplitude(:,1).^2 + amplitude(:,2).^2)];
 
     %% Gaze shift latency
-    timeStampsOnsets = [gazeTrace(idxStimOn,1); ...
-                        gazeTrace(idxCompleteGazeShifts(1:end-1,2),1)];
-    latency = gazeTrace(idxCompleteGazeShifts(:,1),1) - timeStampsOnsets;
+    tsNextGazeShift = [gazeTrace(idxStimOn,1); offsets(1:(end-1),1)];
+
+    latency = onsets(:,1) - tsNextGazeShift;
 
 end
