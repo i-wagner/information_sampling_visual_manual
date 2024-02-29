@@ -49,13 +49,13 @@ function adjustmentAmount = getInformationLoss(fixatedAois, isUnique, isBlink, g
         if diff([idxUnique(g), idxUnique(g+1)]) ~= 1
             idxStart = idxUnique(g) + 1;
             idxEnd = idxUnique(g+1) - 1;
+            areaBlink = idxStart:idxEnd;
     
-            blinkOccured = any(isBlink(idxStart:idxEnd));
-            isSameAoi = fixatedAois(idxStart:idxEnd) == ...
-                        fixatedAois(idxUnique(g));
-            if blinkOccured &  all(isSameAoi)
-                inArea = ismember(idxBlink, idxStart:idxEnd);
-                idxBlinkDurations = idxBlink(inArea);
+            blinkInAoiOccured = ...
+                isBlink(areaBlink) & ...
+                (fixatedAois(areaBlink) == fixatedAois(idxUnique(g)));
+            if any(blinkInAoiOccured)
+                idxBlinkDurations = areaBlink(blinkInAoiOccured);
                 adjustmentAmount(g) = ...
                     adjustmentAmount(g) + ...
                     sum(gazeShiftDuration(idxBlinkDurations));
