@@ -57,7 +57,38 @@ function comparePipelines(thisSubject, thisTrial, exper, logCol, s, c, t)
     nDecimals = 9;
     pipelinesEqual = isequaln(round(newPipeline,nDecimals), ...
                               round(oldPipelineTrial,nDecimals));
-    if ~pipelinesEqual
+
+    % There are some special rules for a handful of participants, mostly
+    % due to the new gaze shift detection algorithm we are using for the
+    % new analysis pipeline
+    %
+    % c: 1; s: 6; t: 118
+    % The old pipeline detects an additional gaze shift for this
+    % participant, which the new pipeline does not detect. This is because
+    % the new pipeline labels the gaze shift in question as being part of a
+    % blink, while the old pipeline misses to do so
+    %
+    % c: 1; s: 10; t: 85
+    % The old pipeline detects two additional gaze shifts for this
+    % participant, which the new pipeline excludes. This is because the old
+    % pipeleine missdetects the offset of one of the gaze shifts in
+    % question, which causes it to be included (the new pipeleine detects
+    % the correct offset). Due to this inclusion, another subsequent gaze
+    % shift is also not dropped, even though it should be dropped (since
+    % its mean gaze position is labeled as NaN, and no AOI is determined
+    % for it)
+    %
+    % c: 1; s: 12; t: 34
+    % The old pipeline misses one gaze shift, which the new pipeline
+    % detects. This is because the old pipeline looks for gaze shifts only
+    % between stimulus on- and offset; since the gaze shift in question
+    % occurs at the same sample as stimulus onset, the old pipeline misses
+    % it (but detects the offset, which, however, ahs no corresponding
+    % onset).
+    if ~pipelinesEqual & ...
+       (c ~= 1 & s ~= 6 & t ~= 118) & ...
+       (c ~= 1 & s ~= 10 & t ~= 85) & ...
+       (c ~= 1 & s ~= 12 & t ~= 34)
         warning("Difference in results detects, please check pipelines!");
         keyboard
     end
