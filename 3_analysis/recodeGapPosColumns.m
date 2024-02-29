@@ -26,6 +26,10 @@ function locationColumns  = recodeGapPosColumns(shownTarget, gapPosition)
     % was shown
 
     %% Recode columns with gap position if one is missing
+    % No need to change anything if no column if missing (as in the
+    % double-target condition)
+    locationColumns = gapPosition;
+
     columnMissing = any(all(isnan(gapPosition), 1));
     if columnMissing
         nTrials = size(shownTarget, 1);
