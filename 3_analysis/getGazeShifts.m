@@ -30,7 +30,7 @@ function gazeShifts = getGazeShifts(gazeTrace)
 
         % Find offset for the current onset
         % Offset is defined as the first offset occuring after an onset
-        idx = find(saccade.offsets > thisOnset, 1, 'first');
+        idx = find(saccade.offsets >= thisOnset, 1, 'first');
         if ~isempty(idx)
             thisOffset = saccade.offsets(idx);
         end
