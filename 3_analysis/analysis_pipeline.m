@@ -144,15 +144,15 @@ for c = 1:exper.n.CONDITIONS % Condition
                                       thisTrial.gazeShifts.idx, ...
                                       thisTrial.events(5));
             elseif any(thisCondition == [4, 5]) % Manual search
-                % Get eye-link events
-%                 fileName_events  = sprintf('e%dv%db1_events.csv', thisCondition, thisSubject.number);
-%                 temp = readmatrix(fileName_events);
-%                 trial.events.all = temp(t, :)';
-% 
-%                 trial.events.stim_onOff(t, 1) = trial.events.all(4); % Timestamp stimulus onset
-%                 trial.events.stim_onOff(t, 2) = trial.events.all(5); % Timestamp stimulus offset
-%                 time_trial(t) = trial.events.stim_onOff(t, 2) - trial.events.stim_onOff(t, 1); % Time spent on trial
-%                 clear fileName_events
+                % Get events
+                % In the manual search experiment, events are stored in a
+                % dedicated file, instead of being coded in the gaze trace
+                % file (since there is no gaze trace)
+                [thisTrial.error.eventMissing, ...
+                 thisTrial.timestamp.stimOn, thisTrial.timestamp.stimOff] = ...
+                    getEventsManualSearch(thisSubject.number, thisCondition, ...
+                                          t, exper.path.DATA, ...
+                                          anal.nExpectedEvents);
 
                 % Get gaze shifts
 %                 fileName_sacc = sprintf('e%dv%db1_saccades.csv', thisCondition, thisSubject.number);
