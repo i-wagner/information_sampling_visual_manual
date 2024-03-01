@@ -67,16 +67,24 @@ function [subset, passedQualityCheck] = ...
                          ~outOfBoundsVert & ~offsetAfterResponse;
 
     %% Second, select fixations based of inclusion criteria
+    % Only get unique fixations after stimulus onset. This bit of code is
+    % not directly necessary. It was only included to replicate the results
+    % from the old pipeline (i.e., for sanity checks)
     subset = (tsGsOnset >= tsStimOnset) & passedQualityCheck;
 
     % Get unique AOI fixations 
     subset(subset) = getUniqueFix(fixatedAois(subset));
 
     % Check whether last unique gaze shift landed on the background
-    lastOnBackground = ...
-        checkLastGazeShift(fixatedAois(subset), idBg);
-
-    idxLastUnique = find(subset, 1, 'last');
-    subset(idxLastUnique) = ~lastOnBackground;
+    % Only do this for cases where participants actually made any agze
+    % shifts to something other than the background (or made any gaze
+    % shifts at all)
+    if ~all(~subset)
+        lastOnBackground = ...
+            checkLastGazeShift(fixatedAois(subset), idBg);
+    
+        idxLastUnique = find(subset, 1, 'last');
+        subset(idxLastUnique) = ~lastOnBackground;
+    end
 
 end
