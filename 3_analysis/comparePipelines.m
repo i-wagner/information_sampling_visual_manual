@@ -85,10 +85,14 @@ function comparePipelines(thisSubject, thisTrial, exper, logCol, s, c, t)
     % occurs at the same sample as stimulus onset, the old pipeline misses
     % it (but detects the offset, which, however, ahs no corresponding
     % onset).
+    %
+    % c: 2; s: 4; t: 122
+    % Same as participant "c: 1; s: 12; t: 34"
     if ~pipelinesEqual & ...
        (c ~= 1 & s ~= 6 & t ~= 118) & ...
        (c ~= 1 & s ~= 10 & t ~= 85) & ...
-       (c ~= 1 & s ~= 12 & t ~= 34)
+       (c ~= 1 & s ~= 12 & t ~= 34) & ...
+       (c ~= 2 & s ~= 4 & t ~= 122)
         warning("Difference in results detects, please check pipelines!");
         keyboard
     end
