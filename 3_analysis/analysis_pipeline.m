@@ -111,11 +111,8 @@ for c = 1:exper.n.CONDITIONS % Condition
                                  exper.path.DATA, screen);
 
                 % Get eye-link events
-                % We expect five events to happen in a trial:
-                % trial begin, start recording, fixation onset, onset of
-                % stimuli and offset of stimuli [i.e., response])
                 [thisTrial.events, thisTrial.error.eventMissing] = ...
-                    getEvents(thisTrial.gazeTrace(:,4), 5);
+                    getEvents(thisTrial.gazeTrace(:,4), anal.nExpectedEvents);
 
                 % Get tiemstamps of stimulus on- and offset
                 thisTrial.timestamp.stimOn = ...
