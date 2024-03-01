@@ -155,13 +155,11 @@ for c = 1:exper.n.CONDITIONS % Condition
                                           anal.nExpectedEvents);
 
                 % Get gaze shifts
-%                 fileName_sacc = sprintf('e%dv%db1_saccades.csv', thisCondition, thisSubject.number);
-%                 temp = readmatrix(fileName_sacc);
-%                 if temp(1, 17) > 1
-%                     temp(:, 17) = temp(:, 17) - min(temp(:, 17)) + 1;
-%                 end
-%                 gazeShifts_singleTrial = temp(temp(:, 17) == t, :);
-%                 gazeShifts_singleTrial = gazeShifts_singleTrial(:, 1:end-1);
+                thisTrial.gazeShifts = ... 
+                    getGazeShiftsManualSearch(thisSubject.number, ...
+                                              thisCondition, t, ...
+                                              exper.path.DATA, ...
+                                              thisTrial.timestamp.stimOn);
             end
 
             % Get fixated AOIs
