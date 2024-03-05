@@ -50,23 +50,12 @@ function metrics = getGazeShiftsManualSearch(thisSubject, thisCondition, thisTri
     % "idx", and "meanGazePos"; metrics of gaze shifts (see also Note 2) 
 
     %% Get gaze shifts
-    [~, subjectId] = ...
-        getSubjectId(thisSubject, thisCondition, pathData);
+    [~, subjectId] = getSubjectId(thisSubject, thisCondition, pathData);
     filepath = strcat(pathData, subjectId, "/", subjectId, "_saccades.csv");
-
     gazeShiftFile = readmatrix(filepath);
-    if gazeShiftFile(1,17) > 1
-        % Legacy code
-        % Used to correct continously labeld trial numbers, i.e., trial
-        % number carried over from single- to double-target experiment
-        keyboard
-%         gazeShiftFile(:,17) = gazeShiftFile(:,17) - ...
-%                               min(gazeShiftFile(:,17)) + 1;
-    end
 
     idx = gazeShiftFile(:,17) == thisTrial;
     gazeShifts = gazeShiftFile(idx,:);
-    gazeShifts = gazeShifts(:,1:end-1);
 
     %% Get metrics
     nGazeShifts = size(gazeShifts, 1);
@@ -74,7 +63,7 @@ function metrics = getGazeShiftsManualSearch(thisSubject, thisCondition, thisTri
     metrics.onsets = gazeShifts(:,4:6);
     metrics.offsets = gazeShifts(:,7:9);
     metrics.duration = gazeShifts(:,10);
-    metrics.latency = gazeShifts(:,11); 
+    metrics.latency = gazeShifts(:,11);
     metrics.idx = [NaN(nGazeShifts, 2), gazeShifts(:,12)];
     metrics.meanGazePos = gazeShifts(:,13:16);
 
