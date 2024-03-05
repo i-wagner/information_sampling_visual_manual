@@ -7,9 +7,19 @@ function comparePipelines(thisSubject, thisTrial, exper, logCol, s, c, t)
     nGs = sum(thisTrial.gazeShifts.subset);
     newPipeline = double.empty(0, 29);
     if nGs > 0
+        if ismember(c, [1, 2])
+            sampleOn = thisTrial.gazeShifts.idx(thisTrial.gazeShifts.subset,1) - thisTrial.events(4) + 1;
+            sampleOff = thisTrial.gazeShifts.idx(thisTrial.gazeShifts.subset,2) - thisTrial.events(4) + 1;
+            latency = thisTrial.gazeTrace(thisTrial.gazeShifts.idx(thisTrial.gazeShifts.subset,1),1) - ...
+                      thisTrial.gazeTrace(thisTrial.events(4),1);
+        elseif ismember(c, [3, 4])
+            sampleOn = thisTrial.gazeShifts.onsets(thisTrial.gazeShifts.subset,1);
+            sampleOff = thisTrial.gazeShifts.offsets(thisTrial.gazeShifts.subset,1);
+            latency = thisTrial.gazeShifts.latency(thisTrial.gazeShifts.subset);
+        end
         newPipeline = [ ...
-            thisTrial.gazeShifts.idx(thisTrial.gazeShifts.subset,1) - thisTrial.events(4) + 1, ... Sample # onset
-            thisTrial.gazeShifts.idx(thisTrial.gazeShifts.subset,2) - thisTrial.events(4) + 1, ... Sample # offset
+            sampleOn, ... Sample # onset
+            sampleOff, ... Sample # offset
             zeros(nGs, 1), ... Exclude gaze shift?
             thisTrial.gazeShifts.onsets(thisTrial.gazeShifts.subset,1), ... Timestamp onset
             thisTrial.gazeShifts.onsets(thisTrial.gazeShifts.subset,2), ... x-coordinate onset
@@ -18,7 +28,7 @@ function comparePipelines(thisSubject, thisTrial, exper, logCol, s, c, t)
             thisTrial.gazeShifts.offsets(thisTrial.gazeShifts.subset,2), ... x-coordinate offset
             thisTrial.gazeShifts.offsets(thisTrial.gazeShifts.subset,3), ... y-coordinat eoffset
             thisTrial.gazeShifts.duration(thisTrial.gazeShifts.subset), ... Gaze shift duration
-            thisTrial.gazeTrace(thisTrial.gazeShifts.idx(thisTrial.gazeShifts.subset,1),1) - thisTrial.gazeTrace(thisTrial.events(4),1), ... Gaze shift latency (relative to stimulus onset)
+            latency, ... Gaze shift latency (relative to stimulus onset)
             (thisTrial.gazeShifts.idx(thisTrial.gazeShifts.subset,3) + 1), ... Saccade or blink?
             thisTrial.gazeShifts.meanGazePos(thisTrial.gazeShifts.subset,1), ... Mean x-pos.
             thisTrial.gazeShifts.meanGazePos(thisTrial.gazeShifts.subset,2), ... Std x-pos.
