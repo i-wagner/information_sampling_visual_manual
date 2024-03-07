@@ -71,10 +71,25 @@ function comparePipelines(thisSubject, thisTrial, exper, logCol, s, c, t)
     end
 
     %% Get data from old pipeline
-    oldPipeline = load("/Users/ilja/Desktop/oldGs.mat");
-    
-    idx = oldPipeline.gazeShifts{s,c}(:,26) == t;
-    oldPipelineTrial = oldPipeline.gazeShifts{s,c}(idx,:);
+    if ismember(c, [1, 2])
+        filename = "oldGs_visual";
+        idxCol = c;
+    elseif ismember(c, [3, 4])
+        filename = "oldGs_manual";
+        switch c
+            case 3
+                idxCol = 1;
+            case 4
+                idxCol = 2;
+        end
+    end
+    pathToData = strcat("/Users/ilja/Dropbox/12_work/..." + ...
+                        "mr_informationSamplingVisualManual/2_data/", ...
+                        filename, ".mat");
+    oldPipeline = load(pathToData);
+
+    idx = oldPipeline.gazeShifts{s,idxCol}(:,26) == t;
+    oldPipelineTrial = oldPipeline.gazeShifts{s,idxCol}(idx,:);
 
     %% Compare results
     % We round decimals, because floats cannot be compared properly
@@ -88,8 +103,7 @@ function comparePipelines(thisSubject, thisTrial, exper, logCol, s, c, t)
     % new analysis pipeline
     %
     % c: 1; s: 6; t: 118
-    % The old pipeline detects an additional gaze shift for this
-    % participant, which the new pipeline does not detect. This is because
+    % The old pipeline detects an additional gaze shift for this    % participant, which the new pipeline does not detect. This is because
     % the new pipeline labels the gaze shift in question as being part of a
     % blink, while the old pipeline misses to do so
     %
