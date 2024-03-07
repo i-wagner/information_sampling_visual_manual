@@ -34,7 +34,7 @@ exper.stimulus.id.BACKGROUND = 666;
 
 %% Fixation cross
 exper.fixation.location.x.DVA = 0;
-exper.fixation.location.y.DVA = 9.50;
+exper.fixation.location.y.DVA = -9.50; % Below screen center
 exper.fixation.location.x.PX = 960;
 exper.fixation.location.y.PX = 912;
 
