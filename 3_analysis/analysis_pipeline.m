@@ -45,6 +45,21 @@ for c = 1:exper.n.CONDITIONS % Condition
             continue
         end
 
+        % Adjust vertical stimulus position
+        % Degree-of-visual-angle coordinates can be expressed in different 
+        % reference frames, e.g., relative to the fixation cross position
+        % or relative to the screen center. In the VISUAL SEARCH
+        % experiment, they are expressed relative to the fiaxtion cross,
+        % while in the MANUAL SEARCH experiment, they are expressed
+        % relarive to screen center. Here, we correct coordinates in the
+        % manual search experiment so they are in line with how coordinates
+        % are expressed in the visual search experiment
+        if any(thisCondition == [4, 5]) % Manual search
+            thisSubject.logFile(:,logCol.STIMULUS_POSITION_Y) = ...
+                adjustVerticalCoordinates(thisSubject.logFile(:,logCol.STIMULUS_POSITION_Y), ...
+                                          exper.fixation.location.y.DVA);
+        end
+
         % Recode distractor numbers in single-target condition.
         % In the single-target condition, trials in which the easy
         % target was shown without distractors are coded with 0 in the
@@ -157,6 +172,26 @@ for c = 1:exper.n.CONDITIONS % Condition
                                               thisCondition, t, ...
                                               exper.path.DATA, ...
                                               thisTrial.timestamp.stimOn);
+
+                % Adjust gaze shift coordinates
+                % Degree-of-visual-angle coordinates can be expressed in 
+                % different reference frames, e.g., relative to the 
+                % fixation cross position or relative to the screen center. 
+                % In the VISUAL SEARCH experiment, they are expressed 
+                % relative to the fiaxtion cross, while in the MANUAL 
+                % SEARCH experiment, they are expressed relative to screen 
+                % center. Here, we correct coordinates in the manual search 
+                % experiment so they are in line with how coordinates
+                % are expressed in the visual search experiment
+                thisTrial.gazeShifts.onsets(:,3) = ...
+                    adjustVerticalCoordinates(thisTrial.gazeShifts.onsets(:,3), ...
+                                              exper.fixation.location.y.DVA);
+                thisTrial.gazeShifts.offsets(:,3) = ...
+                    adjustVerticalCoordinates(thisTrial.gazeShifts.offsets(:,3), ...
+                                              exper.fixation.location.y.DVA);
+                thisTrial.gazeShifts.meanGazePos(:,3) = ...
+                    adjustVerticalCoordinates(thisTrial.gazeShifts.meanGazePos(:,3), ...
+                                              exper.fixation.location.y.DVA);
             end
 
             % Get fixated AOIs
