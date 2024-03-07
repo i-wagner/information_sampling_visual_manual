@@ -95,15 +95,16 @@ function comparePipelines(thisSubject, thisTrial, exper, logCol, s, c, t)
     % We round decimals, because floats cannot be compared properly
     % otherwise
     nDecimals = 9;
-    pipelinesEqual = isequaln(round(newPipeline,nDecimals), ...
-                              round(oldPipelineTrial,nDecimals));
+    pipelinesEqual = isequaln(round(newPipeline, nDecimals), ...
+                              round(oldPipelineTrial, nDecimals));
 
     % There are some special rules for a handful of participants, mostly
     % due to the new gaze shift detection algorithm we are using for the
     % new analysis pipeline
     %
     % c: 1; s: 6; t: 118
-    % The old pipeline detects an additional gaze shift for this    % participant, which the new pipeline does not detect. This is because
+    % The old pipeline detects an additional gaze shift for this
+    % participant, which the new pipeline does not detect. This is because
     % the new pipeline labels the gaze shift in question as being part of a
     % blink, while the old pipeline misses to do so
     %
@@ -122,16 +123,154 @@ function comparePipelines(thisSubject, thisTrial, exper, logCol, s, c, t)
     % detects. This is because the old pipeline looks for gaze shifts only
     % between stimulus on- and offset; since the gaze shift in question
     % occurs at the same sample as stimulus onset, the old pipeline misses
-    % it (but detects the offset, which, however, ahs no corresponding
+    % it (but detects the offset, which, however, has no corresponding
     % onset).
     %
+    % c: 1; s: 12; t: 107
+    % Missed gaze shift with onset right on stimulus onset sample 
+    % (see "c: 1; s: 12; t: 34")
+    %
+    % c: 1; s: 19; t: 59
+    % The new pipeline includes two additional gaze shifts, which the old
+    % pipeline excludes. Additionally, the new pipeline excludes a gaze
+    % shift, which the old one includes. This is because, in the old 
+    % pipeline, sampels with dataloss are labeld as "2", while they are 
+    % labeled as "3" in the new pipeline. This causes the saccade detection 
+    % in the old pipeleine to missdetect offsets, whenever the traces 
+    % transitions from a saccade ("1") to a dataloss label ("2"); this does 
+    % not happen in the new pipeline. As a consequence, whether a saccade
+    % is consecutive (which, in turn, depends on the immediately preceeding
+    % and succeeding saccade) might change depending on the pipeline that
+    % we use.
+    %
+    % c: 1; s: 19; t: 94
+    % New pipeline includes a gaze shift that the old one excludes, and new
+    % pipeline excludes a gaze shift that the new one includes (see 
+    % "c: 1; s: 19; t: 59")
+    %
     % c: 2; s: 4; t: 122
-    % Same as participant "c: 1; s: 12; t: 34"
+    % Missed gaze shift with onset right on stimulus onset sample 
+    % (see "c: 1; s: 12; t: 34")
+    %
+    % c: 2; s: 5; t: 36
+    % Missed gaze shift with onset right on stimulus onset sample 
+    % (see "c: 1; s: 12; t: 34")
+    %
+    % c: 2; s: 12; t: 245
+    % The old analysis pipeline stores a gaze shift, which the new one does 
+    % not store. If participants, in the old pipeline, did not make any 
+    % gaze shifts, we created a vector, with the first 18 columns being 
+    % NaN; in the new pipeline, the corresponding vector is just empty.
+    % This is the reason for the additional gaze shift in the old pipeline.
+    %
+    % c: 2; s: 12; t: 247
+    % Placeholder gaze shift in trial without any gaze shift (see 
+    % "c: 2; s: 12; t: 245")
+    %
+    % c: 2; s: 12; t: 248
+    % Placeholder gaze shift in trial without any gaze shift (see 
+    % "c: 2; s: 12; t: 245")
+    %
+    % c: 2; s: 18; t: 156
+    % Missed gaze shift with onset right on stimulus onset sample 
+    % (see "c: 1; s: 12; t: 34")
+    %
+    % c: 2; s: 19; t: 23
+    % The new pipeline detects two gaze shifts, which the old one does not
+    % detect. This is due to the missdetection of gaze shift offset (see
+    % "c: 1; s: 19; t: 59")
+    %
+    % c: 2; s: 19; t: 76
+    % Missmatch in detected gaze shifts between old and new pipeline. DID
+    % NOT CHECK WHY THIS HAPPENS, but most likely due to missdetected gaze
+    % shift offsets in old pipeleine (see "c: 1; s: 19; t: 59")
+    %
+    % c: 2; s: 19; t: 84
+    % Placeholder gaze shift in trial without any gaze shift (see 
+    % "c: 2; s: 12; t: 245")
+    %
+    % c: 3; s: 1; t: 1
+    % The new pipeline calculates latency for a gaze shift, for which the
+    % old pipeline does not calculate a latency. This is because, for this
+    % subject, the first gaze shift is excluded due to a missing offset, so
+    % no latency can be calculate for the next gaze shift. The missing 
+    % offset is probably due to pen dragging. In the old pipeline, latency 
+    % for the next gaze shift was (wrongly) calculated relative to stimulus 
+    % onset
+    %
+    % c: 3; s: 16; t: 17
+    % Placeholder gaze shift in trial without any gaze shift (see 
+    % "c: 2; s: 12; t: 245")
+    %
+    % c: 3; s: 16; t: 19
+    % Wrongly calculated latency of first gaze shift 
+    % (see "c: 3; s: 1; t: 1")
+    %
+    % c: 3; s: 19; t: [4:11, 14:15, 17:55, 57, 65:68, 70, ...]
+    % Placeholder gaze shift in trial without any gaze shift (see 
+    % "c: 2; s: 12; t: 245")
+    %
+    % c: 3; s: 19; t: 92
+    % Wrongly calculated latency of first gaze shift 
+    % (see "c: 3; s: 1; t: 1")
+    %
+    % c: 4; s: 7; t: 1:2:
+    % Wrongly calculated latency of first gaze shift 
+    % (see "c: 3; s: 1; t: 1")
+    %
+    % c: 4; s: 7; t: [34:35, 37:39, 151:153]:
+    % Placeholder gaze shift in trial without any gaze shift (see 
+    % "c: 2; s: 12; t: 245")
+    %
+    % c: 4; s: 8; t: 14:
+    % Placeholder gaze shift in trial without any gaze shift (see 
+    % "c: 2; s: 12; t: 245")
+    %
+    % c: 4; s: 14; t: [8, 16, 19]
+    % Placeholder gaze shift in trial without any gaze shift (see 
+    % "c: 2; s: 12; t: 245")
+    %
+    % c: 4; s: 16; t: 156:
+    % Placeholder gaze shift in trial without any gaze shift (see 
+    % "c: 2; s: 12; t: 245")
+    %
+    % c: 4; s: 19; t: [4:11, 13:17, 20, 30, 33, 39:42, 45:46, 52:53, 81]
+    % Placeholder gaze shift in trial without any gaze shift (see 
+    % "c: 2; s: 12; t: 245")
+    %
     if ~pipelinesEqual & ...
-       (c ~= 1 & s ~= 6 & t ~= 118) & ...
-       (c ~= 1 & s ~= 10 & t ~= 85) & ...
-       (c ~= 1 & s ~= 12 & t ~= 34) & ...
-       (c ~= 2 & s ~= 4 & t ~= 122)
+       ~(c == 1 & s == 6 & t == 118) & ...
+       ~(c == 1 & s == 10 & t == 85) & ...
+       ~(c == 1 & s == 12 & t == 34) & ...
+       ~(c == 1 & s == 12 & t == 107) & ...
+       ~(c == 1 & s == 19 & t == 59) & ...
+       ~(c == 1 & s == 19 & t == 94) & ...
+       ~(c == 2 & s == 4 & t == 122) & ...
+       ~(c == 2 & s == 5 & t == 36) & ...
+       ~(c == 2 & s == 12 & t == 245) & ...
+       ~(c == 2 & s == 12 & t == 247) & ...
+       ~(c == 2 & s == 12 & t == 248) & ...
+       ~(c == 2 & s == 18 & t == 156) & ...
+       ~(c == 2 & s == 19 & t == 23) & ...
+       ~(c == 2 & s == 19 & t == 76) & ...
+       ~(c == 2 & s == 19 & t == 84) & ...
+       ~(c == 3 & s == 1 & t == 1) & ...
+       ~(c == 3 & s == 16 & t == 17) & ...
+       ~(c == 3 & s == 16 & t == 19) & ...
+       ~(c == 3 & s == 19 & any(t == [4:11, 14:15, 17:55, 57, 65:68, 70, ...
+                                      72:76, 79:88, 90, 93:100, 102:113, ...
+                                      117:118, 120:133, 135, 137:138, ...
+                                      141:148, 150:155, 158:162, 164:175, ...
+                                      177:182, 184:191, 193:202, 205:208, ...
+                                      211:213, 215:216, 218:220, 223, ...
+                                      225:226])) & ...
+       ~(c == 3 & s == 19 & t == 92) & ...
+       ~(c == 4 & s == 7 & any(t == 1:2)) & ...
+       ~(c == 4 & s == 7 & any(t == [34:35, 37:39, 151:153])) & ...
+       ~(c == 4 & s == 14 & any(t == [8, 16, 19])) & ...
+       ~(c == 4 & s == 16 & any(t == 156)) & ...
+       ~(c == 4 & s == 19 & any(t == [4:11, 13:17, 20, 30, 33, 39:42, ...
+                                      45:46, 52:53, 81]))
         warning("Difference in results detects, please check pipelines!");
         keyboard
     end
