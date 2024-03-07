@@ -7,15 +7,30 @@ function comparePipelines(thisSubject, thisTrial, exper, logCol, s, c, t)
     nGs = sum(thisTrial.gazeShifts.subset);
     newPipeline = double.empty(0, 29);
     if nGs > 0
+        % In the manual search experiment, some values are defined slightly
+        % different compared to the values from the visual search experiment
         if ismember(c, [1, 2])
+            % - Sample number of on- and offset are expressed relative to
+            %   stimulus onset, because this is how we did it in the old
+            %   pipeline
+            % - Latency is expressed relative to stimulus offset, because
+            %   this is how we did it in the old pipeleine
             sampleOn = thisTrial.gazeShifts.idx(thisTrial.gazeShifts.subset,1) - thisTrial.events(4) + 1;
             sampleOff = thisTrial.gazeShifts.idx(thisTrial.gazeShifts.subset,2) - thisTrial.events(4) + 1;
             latency = thisTrial.gazeTrace(thisTrial.gazeShifts.idx(thisTrial.gazeShifts.subset,1),1) - ...
                       thisTrial.gazeTrace(thisTrial.events(4),1);
+            yOn = thisTrial.gazeShifts.onsets(thisTrial.gazeShifts.subset,3);
+            yOff = thisTrial.gazeShifts.offsets(thisTrial.gazeShifts.subset,3);
+            meanY = thisTrial.gazeShifts.meanGazePos(thisTrial.gazeShifts.subset,3);
         elseif ismember(c, [3, 4])
+            % Gaze coordinates are centered on the stimulus center again,
+            % because that is how we did it in the old pipeline
             sampleOn = thisTrial.gazeShifts.onsets(thisTrial.gazeShifts.subset,1);
             sampleOff = thisTrial.gazeShifts.offsets(thisTrial.gazeShifts.subset,1);
             latency = thisTrial.gazeShifts.latency(thisTrial.gazeShifts.subset);
+            yOn = thisTrial.gazeShifts.onsets(thisTrial.gazeShifts.subset,3) + exper.fixation.location.y.DVA;
+            yOff = thisTrial.gazeShifts.offsets(thisTrial.gazeShifts.subset,3) + exper.fixation.location.y.DVA;
+            meanY = thisTrial.gazeShifts.meanGazePos(thisTrial.gazeShifts.subset,3) + exper.fixation.location.y.DVA;
         end
         newPipeline = [ ...
             sampleOn, ... Sample # onset
@@ -23,22 +38,22 @@ function comparePipelines(thisSubject, thisTrial, exper, logCol, s, c, t)
             zeros(nGs, 1), ... Exclude gaze shift?
             thisTrial.gazeShifts.onsets(thisTrial.gazeShifts.subset,1), ... Timestamp onset
             thisTrial.gazeShifts.onsets(thisTrial.gazeShifts.subset,2), ... x-coordinate onset
-            thisTrial.gazeShifts.onsets(thisTrial.gazeShifts.subset,3), ... y-coordinate onset
+            yOn, ... y-coordinate onset
             thisTrial.gazeShifts.offsets(thisTrial.gazeShifts.subset,1), ... Tmestamp offset
             thisTrial.gazeShifts.offsets(thisTrial.gazeShifts.subset,2), ... x-coordinate offset
-            thisTrial.gazeShifts.offsets(thisTrial.gazeShifts.subset,3), ... y-coordinat eoffset
+            yOff, ... y-coordinate offset
             thisTrial.gazeShifts.duration(thisTrial.gazeShifts.subset), ... Gaze shift duration
             latency, ... Gaze shift latency (relative to stimulus onset)
             (thisTrial.gazeShifts.idx(thisTrial.gazeShifts.subset,3) + 1), ... Saccade or blink?
             thisTrial.gazeShifts.meanGazePos(thisTrial.gazeShifts.subset,1), ... Mean x-pos.
             thisTrial.gazeShifts.meanGazePos(thisTrial.gazeShifts.subset,2), ... Std x-pos.
-            thisTrial.gazeShifts.meanGazePos(thisTrial.gazeShifts.subset,3), ... Mean y-pos.
+            meanY, ... Mean y-pos.
             thisTrial.gazeShifts.meanGazePos(thisTrial.gazeShifts.subset,4), ... Std y-pos.
             thisTrial.gazeShifts.fixatedAois(thisTrial.gazeShifts.subset,1), ... Unique IDs
             thisTrial.gazeShifts.fixatedAois(thisTrial.gazeShifts.subset,2), ... Group IDs
             thisTrial.gazeShifts.informationLoss, ... Information loss due to blinks
             thisTrial.time.dwell, ... Dwell times
-            thisTrial.gazeShifts.wentToClosest, ... Gaze shif to closest stimulus?
+            thisTrial.gazeShifts.wentToClosest, ... Gaze shift to closest stimulus?
             (zeros(nGs, 1) + thisSubject.logFile(t,logCol.N_DISTRACTOR_EASY)), ... n easy distractors
             (zeros(nGs, 1) + thisTrial.chosenTarget.response), ... Chosen target
             NaN(nGs, 1), ... Timelock relative to trial start
