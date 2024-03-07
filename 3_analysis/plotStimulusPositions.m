@@ -35,9 +35,16 @@ function plotStimulusPositions(horEndpoints, vertEndpoints, horStimCenter, vertS
                              (FIX_LOC(2) + 20), (FIX_LOC(2) + 4), ...
                              (FIX_LOC(2) + 4)];
 
-    % Right now the vertical position of stimuli and gaze shifts is aligned
-    % with the fixation cross. To make plotting easier, we center stimuli
-    % on zero (the vertical screen center)
+    % In the VISUAL SEARCH experiment, stimulus coordinates as well
+    % coordinates of gaze shifts are, by default, aligned to the fixation
+    % cross, i.e., a position of [0, 0] corresponds to the location of the
+    % fixation cross. For plotting purposes, this is confusing, and it
+    % would make more sense to align coordinates with stimulus, which we
+    % are doing here
+    %
+    % In the MANUAL SEARCH experiment, on the other hand, stimulus
+    % coordinates as well as coordinates of gaze shifts are, by default,
+    % aligned with screen center, and NOT the fixation cross location
     vertStimCenter = vertStimCenter + FIX_LOC(2);
     vertEndpoints = vertEndpoints + FIX_LOC(2);
 
