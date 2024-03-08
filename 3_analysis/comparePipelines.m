@@ -83,7 +83,7 @@ function comparePipelines(thisSubject, thisTrial, exper, logCol, s, c, t)
                 idxCol = 2;
         end
     end
-    pathToData = strcat("/Users/ilja/Dropbox/12_work/..." + ...
+    pathToData = strcat("/Users/ilja/Dropbox/12_work/", ...
                         "mr_informationSamplingVisualManual/2_data/", ...
                         filename, ".mat");
     oldPipeline = load(pathToData);
@@ -198,6 +198,16 @@ function comparePipelines(thisSubject, thisTrial, exper, logCol, s, c, t)
     % for the next gaze shift was (wrongly) calculated relative to stimulus 
     % onset
     %
+    %
+    % c: 3; s: 13; t: 11
+    % One gaze is flagged as going to the closest stimulus in the old
+    % pipeline, but not in the new pipeline. This is because we re-center
+    % gaze and stimulus coordinates in the new pipeleine, which creates
+    % some rounding differences. Since this particular trial actually
+    % contains two stimuli that are closest to gaze, the old pipeleine
+    % chooses the first minimum, while the new pipeleine think ones minimum
+    % is smaller then the other (because of rounding) and chooses this one
+    %
     % c: 3; s: 16; t: 17
     % Placeholder gaze shift in trial without any gaze shift (see 
     % "c: 2; s: 12; t: 245")
@@ -255,6 +265,7 @@ function comparePipelines(thisSubject, thisTrial, exper, logCol, s, c, t)
        ~(c == 2 & s == 19 & t == 76) & ...
        ~(c == 2 & s == 19 & t == 84) & ...
        ~(c == 3 & s == 1 & t == 1) & ...
+       ~(c == 3 & s == 13 & t == 11) & ...
        ~(c == 3 & s == 16 & t == 17) & ...
        ~(c == 3 & s == 16 & t == 19) & ...
        ~(c == 3 & s == 19 & any(t == [4:11, 14:15, 17:55, 57, 65:68, 70, ...
