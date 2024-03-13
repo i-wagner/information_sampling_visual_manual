@@ -23,18 +23,11 @@ data.ss.fix.atLeastOneAoi = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 data.ss.time.planning = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 data.ss.time.inspection = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 data.ss.time.response = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
-data.ss.time.inspection = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 data.ss.proportion.gazeShifts.toClosest = ...
     cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
-data.ss.nDistractor.easy = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
-data.ss.nDistractor.difficult = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
-data.ss.performance.scoreFinal = NaN(exper.n.SUBJECTS, exper.n.CONDITIONS);
-data.ss.performance.isHit = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
-data.ss.nTrials = NaN(exper.n.SUBJECTS, exper.n.CONDITIONS);
 data.ss.cumulativeTimer = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 data.ss.chosenTarget = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 for c = 1:exper.n.CONDITIONS % Condition
-    thisCondition = exper.num.CONDITIONS(c);
     for s = 1:exper.n.SUBJECTS % Subject
         thisSubject.number = exper.num.SUBJECTS(s);
         thisSubject.logFile = data.ss.logFiles{thisSubject.number, c};
@@ -214,30 +207,8 @@ for c = 1:exper.n.CONDITIONS % Condition
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             comparePipelines(thisSubject, thisTrial, exper, logCol, s, c, t);
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+            clear thisTrial
         end
-        clear t
-
-        % Store data of subject
-        exper.events.stim_onOff{thisSubject.number, c} = trial.events.stim_onOff;  % Timestamps of stimulus on- and offset
-        exper.cum_trialTime{thisSubject.number, c}     = time_trial;               % Time spent on trial
-        stim.chosenTarget{thisSubject.number, c}       = choice_target;            % Target, chosen in trial
-        stim.choiceCorrespond{thisSubject.number, c}   = choice_congruence;        % Correspondece between last fixated and responded on target
-        sacc.gazeShifts{thisSubject.number, c}         = gazeShifts_allTrials;     % Non-consecutive gaze shifts
-        sacc.gazeShifts_zen{thisSubject.number, c}     = gazeShifts_allTrials_zen; % All gaze shifts (for Zenodo)
-        sacc.time.planning{thisSubject.number, c}      = time_planning;            % Planning times (time between first saccade offset and stimulus onset)
-        sacc.time.inspection{thisSubject.number, c}    = time_inspection;          % Inspection times (for each fixated stimulus, time between entering gaze
-                                                                         % shift onset and time leaving gaze shift offset)
-        sacc.time.decision{thisSubject.number, c}      = time_decision;            % Decision times (time between last saccade offset and response)
-        sacc.time.resp_bg{thisSubject.number, c}       = time_respBg;              % Time between last gaze shift in background and response
-        sacc.time.search{thisSubject.number, c}        = inspectedElements_no;     % # inspected elements & time spent searching for targets
-        sacc.propGs.closest{thisSubject.number, c}     = prop_gsClosest;           % Proportion gaze shifts to closest AOI
-        sacc.propGs.further{thisSubject.number, c}     = prop_gsFurther;           % Proportion gaze shifts to closest AOI
-        sacc.propGs.aoiFix{thisSubject.number, c}      = li_atLeastOneGs;          % Flag if at least one defined AOI was fixated in a trial
-        clear thisSubject trial gazeShifts_allTrials choice_target time_planning time_inspection time_decision gazeShifts_allTrials_zen
-        clear prop_gsClosest prop_gsFurther choice_congruence time_respBg inspectedElements_no time_trial li_atLeastOneGs
-
-        cd(exper.name.data);
 
     end
 end
