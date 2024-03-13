@@ -11,8 +11,8 @@ addpath(exper.path.ANALYSIS);
 cd(exper.path.ROOT);
 
 %% Get log files and log-data
-data.ss.logFiles = getLogFiles(exper, logCol);
-data.ss.stimulusCoordinates = getStimCoord(exper, logCol, data.ss.logFiles);
+data.ss.log = getLogFiles(exper, logCol);
+data.ss.stimulusCoordinates = getStimCoord(exper, logCol, data.ss.log.files);
 
 %% Get gaze data
 data.ss.gaze = getGazeData(exper, screen, anal, data.ss.log.nCompletedTrials);

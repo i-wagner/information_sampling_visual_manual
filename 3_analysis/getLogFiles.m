@@ -1,4 +1,4 @@
-function logFiles = getLogFiles(exper, logCol)
+function logs = getLogFiles(exper, logCol)
 
     % Wrapper function
     % Performs various steps to load and process log files of participants
@@ -13,6 +13,7 @@ function logFiles = getLogFiles(exper, logCol)
     %   trial
     % - Recode gap position in the single-target condition, so it is
     %   unambigous which target was shown in a trial
+    % - Determine how many trials a participant completed
     %
     % Input
     % exper:
@@ -24,11 +25,13 @@ function logFiles = getLogFiles(exper, logCol)
     % "settings_log" script
     % 
     % Output
-    % logFiles:
-    % cell-matrix; log-files of participants in conditions
+    % logs:
+    % structure; log-files of participants in conditions as well number of
+    % completed trials
 
     %% Get log files
-    logFiles = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+    logs.files = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+    logs.nCompletedTrials = NaN(exper.n.SUBJECTS, exper.n.CONDITIONS);
     for c = 1:exper.n.CONDITIONS % Condition
         thisCondition = exper.num.CONDITIONS(c);
         for s = 1:exper.n.SUBJECTS % Subject
@@ -40,7 +43,7 @@ function logFiles = getLogFiles(exper, logCol)
             if thisSubject.isMissing
                 continue
             end
-    
+
             % Adjust vertical stimulus position
             % Degree-of-visual-angle coordinates can be expressed in different 
             % reference frames, e.g., relative to the fixation cross position
@@ -94,7 +97,9 @@ function logFiles = getLogFiles(exper, logCol)
                                      thisSubject.logFile(:,logCol.GAP_POSITION_DIFFICULT)]);
     
             % Store data for output
-            logFiles{thisSubject.number,c} = thisSubject.logFile;
+            logs.files{thisSubject.number,c} = thisSubject.logFile;
+            logs.nCompletedTrials(thisSubject.number,c) = ...
+                max(thisSubject.logFile(:,logCol.TRIAL_NO));
             clear thisSubject
         end
     end
