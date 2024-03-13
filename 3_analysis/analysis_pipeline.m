@@ -11,26 +11,24 @@ addpath(exper.path.ANALYSIS);
 cd(exper.path.ROOT);
 
 %% Get data from trials
-data.ss.fixationErrorTrials = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
-data.ss.dataLossTrials = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
-data.ss.flags.atLeastOneStimFixated = ...
-    cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+data.ss.error.fixation.online = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+data.ss.error.dataLoss = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+data.ss.fix.atLeastOneAoi = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 data.ss.time.planning = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 data.ss.time.inspection = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
-data.ss.time.decision = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
-data.ss.time.search = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+data.ss.time.response = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+data.ss.time.inspection = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 data.ss.proportion.gazeShifts.toClosest = ...
     cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 data.ss.nDistractor.easy = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 data.ss.nDistractor.difficult = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 data.ss.performance.scoreFinal = NaN(exper.n.SUBJECTS, exper.n.CONDITIONS);
 data.ss.performance.isHit = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
-data.ss.nCompletedTrials = NaN(exper.n.SUBJECTS, exper.n.CONDITIONS);
+data.ss.nTrials = NaN(exper.n.SUBJECTS, exper.n.CONDITIONS);
 data.ss.cumulativeTimer = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 data.ss.gazeShifts = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 % sacc.gazeShifts_zen = cell(exper.num.subNo, exper.num.condNo);
 data.ss.chosenTarget = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
-data.ss.chosenIsFixated = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 for c = 1:exper.n.CONDITIONS % Condition
     thisCondition = exper.num.CONDITIONS(c);
     for s = 1:exper.n.SUBJECTS % Subject
