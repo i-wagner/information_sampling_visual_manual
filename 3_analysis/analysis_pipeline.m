@@ -31,11 +31,12 @@ for c = 1:exper.n.CONDITIONS % Condition
     for s = 1:exper.n.SUBJECTS % Subject
         thisSubject.number = exper.num.SUBJECTS(s);
         thisSubject.logFile = data.ss.log.files{thisSubject.number, c};
+        thisSubject.nTrials = data.ss.log.nCompletedTrials(thisSubject.number, c);
+        thisSubject.stimulusCoordinates = ...
+            data.ss.stimulusCoordinates{thisSubject.number, c};
         if isempty(thisSubject.logFile)
             continue
         end
-        thisSubject.stimulusCoordinates = ...
-            data.ss.stimulusCoordinates{thisSubject.number, c};
         for t = 1:thisSubject.nTrials % Trial
             thisTrial.idx = ...
                 data.ss.gaze.gazeShifts.trialMap{thisSubject.number,c} == t;
