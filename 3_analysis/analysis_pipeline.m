@@ -10,6 +10,9 @@ settings_log;
 addpath(exper.path.ANALYSIS);
 cd(exper.path.ROOT);
 
+%% Get log files and log-data
+data.ss.logFiles = getLogFiles(exper, logCol);
+
 %% Get data from trials
 data.ss.error.fixation.online = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 data.ss.error.dataLoss = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
@@ -33,67 +36,10 @@ for c = 1:exper.n.CONDITIONS % Condition
     thisCondition = exper.num.CONDITIONS(c);
     for s = 1:exper.n.SUBJECTS % Subject
         thisSubject.number = exper.num.SUBJECTS(s);
-
-        % Load log file
-        [thisSubject.logFile, thisSubject.isMissing] = ...
-            loadLog(thisSubject.number, thisCondition, exper.path.DATA);
-        if thisSubject.isMissing
-            disp(['Skipping missing participant ', ...
-                  num2str(thisSubject.number)])
+        thisSubject.logFile = data.ss.logFiles{thisSubject.number, c};
+        if isempty(thisSubject.logFile)
             continue
         end
-
-        % Adjust vertical stimulus position
-        % Degree-of-visual-angle coordinates can be expressed in different 
-        % reference frames, e.g., relative to the fixation cross position
-        % or relative to the screen center. In the VISUAL SEARCH
-        % experiment, they are expressed relative to the fiaxtion cross,
-        % while in the MANUAL SEARCH experiment, they are expressed
-        % relarive to screen center. Here, we correct coordinates in the
-        % manual search experiment so they are in line with how coordinates
-        % are expressed in the visual search experiment
-        if any(thisCondition == [4, 5]) % Manual search
-            thisSubject.logFile(:,logCol.STIMULUS_POSITION_Y) = ...
-                adjustVerticalCoordinates(thisSubject.logFile(:,logCol.STIMULUS_POSITION_Y), ...
-                                          exper.fixation.location.y.DVA);
-        end
-
-        % Recode distractor numbers in single-target condition.
-        % In the single-target condition, trials in which the easy
-        % target was shown without distractors are coded with 0 in the
-        % column in the column, which logs the number of difficult
-        % distractors in a trial. The same is true for trials where the
-        % difficult target was shown. This is ambigous, because, in this
-        % condition, no distractors from the respective other set where
-        % shown at all! To make it easier to find trials in the
-        % single-target condition, where one of the target was shown
-        % without distractors, we recode the column with the number of
-        % easy/difficult distractors in a trial to be NaN for the
-        % distractor of the non-shown set, i.e., difficult when easy was
-        % shown, and easy when difficult was shown
-        if mod(thisCondition, 2) == 0
-            idx = [logCol.N_DISTRACTOR_EASY, ...
-                   logCol.N_DISTRACTOR_DIFFICULT];
-
-            thisSubject.logFile(:,idx) = ...
-                recodeDistractorNumber(thisSubject.logFile(:,idx), ...
-                                       thisSubject.logFile(:,logCol.DIFFICULTY_TARGET), ...
-                                       [exper.stimulus.id.target.EASY, ...
-                                        exper.stimulus.id.target.DIFFICULT]);
-            clear idx
-        end
-
-        % Recode gap position
-        % In the single-target condition, the gap position of the shown
-        % target is stored in the column, which, in the double-target
-        % condition, houses the gap position on the easy target. We recode
-        % this and align the storage scheme in the single-target with the
-        % scheme in the double-target condition, to make analysis more
-        % straightforward
-        thisSubject.logFile(:,logCol.GAP_POSITION_EASY:logCol.GAP_POSITION_DIFFICULT) = ...
-            recodeGapPosColumns(thisSubject.logFile(:,6), ...
-                                [thisSubject.logFile(:,logCol.GAP_POSITION_EASY), ...
-                                 thisSubject.logFile(:,logCol.GAP_POSITION_DIFFICULT)]);
 
         % Create structure with stimulus locations
         thisSubject.stimulusCoordinates = ...                  
