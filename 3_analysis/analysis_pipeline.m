@@ -30,7 +30,7 @@ data.ss.chosenTarget = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
 for c = 1:exper.n.CONDITIONS % Condition
     for s = 1:exper.n.SUBJECTS % Subject
         thisSubject.number = exper.num.SUBJECTS(s);
-        thisSubject.logFile = data.ss.logFiles{thisSubject.number, c};
+        thisSubject.logFile = data.ss.log.files{thisSubject.number, c};
         if isempty(thisSubject.logFile)
             continue
         end
