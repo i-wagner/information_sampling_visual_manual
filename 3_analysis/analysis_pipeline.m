@@ -12,6 +12,8 @@ cd(exper.path.ROOT);
 
 %% Get log files and log-data
 data.ss.logFiles = getLogFiles(exper, logCol);
+data.ss.stimulusCoordinates = getStimCoord(exper, logCol, data.ss.logFiles);
+
 
 %% Get data from trials
 data.ss.error.fixation.online = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
@@ -40,16 +42,8 @@ for c = 1:exper.n.CONDITIONS % Condition
         if isempty(thisSubject.logFile)
             continue
         end
-
-        % Create structure with stimulus locations
-        thisSubject.stimulusCoordinates = ...                  
-            sortStimLoc(thisSubject.logFile(:,logCol.STIMULUS_POSITION_X), ...
-                        thisSubject.logFile(:,logCol.STIMULUS_POSITION_Y), ...
-                        thisSubject.logFile(:,logCol.N_DISTRACTOR_EASY), ...
-                        thisSubject.logFile(:,logCol.N_DISTRACTOR_DIFFICULT), ...
-                        thisSubject.logFile(:,logCol.N_TARGETS), ...
-                        thisSubject.logFile(:,logCol.DIFFICULTY_TARGET));
-
+        thisSubject.stimulusCoordinates = ...
+            data.ss.stimulusCoordinates{thisSubject.number, c};
         for t = 1:max(thisSubject.logFile(:,logCol.TRIAL_NO)) % Trial
             if any(thisCondition == [2, 3]) % Visual search
                 % Get gaze trace of participant
@@ -61,7 +55,7 @@ for c = 1:exper.n.CONDITIONS % Condition
                 [thisTrial.events, thisTrial.error.eventMissing] = ...
                     getEvents(thisTrial.gazeTrace(:,4), anal.nExpectedEvents);
 
-                % Get tiemstamps of stimulus on- and offset
+                % Get timestamps of stimulus on- and offset
                 thisTrial.timestamp.stimOn = ...
                     thisTrial.gazeTrace(thisTrial.events(4),1);
                 thisTrial.timestamp.stimOff = ...
