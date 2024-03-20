@@ -1,4 +1,4 @@
-function aoiVisits = getFixatedAOI(horEndpoints, vertEndpoints, horStimCoord, vertStimCoord, aoiRadius, bgFlag, edFlag, ddFlag)
+function [uniqueIds, groupIds] = getFixatedAOI(horEndpoints, vertEndpoints, horStimCoord, vertStimCoord, aoiRadius, bgFlag, edFlag, ddFlag)
 
     % Determines if a gaze shift landed within the AOI around one of the
     % shown stimuli, and if yes, which stimulus was targeted
@@ -52,7 +52,7 @@ function aoiVisits = getFixatedAOI(horEndpoints, vertEndpoints, horStimCoord, ve
     % around any of the shown stimuli
     nGazeShifts = numel(horEndpoints);
     nStimuli = numel(horStimCoord);
-    aoiVisits = NaN(nGazeShifts, nStimuli);
+    uniqueIds = NaN(nGazeShifts, nStimuli);
     for g = 1:nGazeShifts % Gaze shift
         for s = 1:nStimuli % Stimulus
             aoiCoordHor = aoiArea(1,:) + horStimCoord(s);
@@ -60,33 +60,33 @@ function aoiVisits = getFixatedAOI(horEndpoints, vertEndpoints, horStimCoord, ve
             gsInAoi = inpolygon(horEndpoints(g), vertEndpoints(g), ...
                                 aoiCoordHor, aoiCoordVert);
             if gsInAoi
-                aoiVisits(g,s) = s;
+                uniqueIds(g,s) = s;
             end
         end
     end
-    aoiVisits = sum(aoiVisits, 2, 'omitnan');
+    uniqueIds = sum(uniqueIds, 2, 'omitnan');
 
     % A gaze shift landed on the background if it has both, an onset and an 
     % offset, and if it did not land on any of the defined AOIs
-    gsOnBackground = (aoiVisits == 0) & ...
+    gsOnBackground = (uniqueIds == 0) & ...
                      ~isnan(horEndpoints) & ...
                      ~isnan(vertEndpoints);
-    aoiVisits(gsOnBackground) = bgFlag;
-    aoiVisits(aoiVisits == 0) = NaN; % Gaze shift without offset
+    uniqueIds(gsOnBackground) = bgFlag;
+    uniqueIds(uniqueIds == 0) = NaN; % Gaze shift without offset
 
     %% Assign a group variable to each fixated AOI
     % Initially, stimulus in a trial has a unique identifier, which
     % corresponds to the index of it's position in the location matrix. In
     % addition to this, we assign a high-level identifier, which marks the
     % group a stimulus belong to, i.e., easy/difficult distractor
-    fixatedEasyDistractor = aoiVisits > 2 & aoiVisits <= 10;
-    fixatedDifficultDistractor = aoiVisits > 10 & aoiVisits <= 18;
+    fixatedEasyDistractor = uniqueIds > 2 & uniqueIds <= 10;
+    fixatedDifficultDistractor = uniqueIds > 10 & uniqueIds <= 18;
     fixatedDistractor = ...
         sum([fixatedEasyDistractor, fixatedDifficultDistractor], 2);
 
-    aoiVisits = [aoiVisits, zeros(nGazeShifts,1)];
-    aoiVisits(fixatedEasyDistractor,2) = edFlag;
-    aoiVisits(fixatedDifficultDistractor,2) = ddFlag;
-    aoiVisits(~fixatedDistractor,2) = aoiVisits(~fixatedDistractor,1);
+    groupIds = zeros(nGazeShifts,1);
+    groupIds(fixatedEasyDistractor) = edFlag;
+    groupIds(fixatedDifficultDistractor) = ddFlag;
+    groupIds(~fixatedDistractor) = uniqueIds(~fixatedDistractor);
 
 end
