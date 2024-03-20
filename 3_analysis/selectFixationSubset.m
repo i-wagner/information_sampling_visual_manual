@@ -76,7 +76,7 @@ function [subset, passedQualityCheck] = ...
     subset(subset) = getUniqueFix(fixatedAois(subset));
 
     % Check whether last unique gaze shift landed on the background
-    % Only do this for cases where participants actually made any agze
+    % Only do this for cases where participants actually made any gaze
     % shifts to something other than the background (or made any gaze
     % shifts at all)
     if ~all(~subset)
