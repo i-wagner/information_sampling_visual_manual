@@ -11,6 +11,15 @@ function gaze = getGazeData(exper, screen, anal, nTrials)
     % - Re-center gaze shift coordinates to location of fixation cross
     %   (only manual search experiment)
     %
+    % NOTE:
+    % In the manual search condition, gaze shift offsets can sometimes be
+    % missing. If this happens for the first gaze shift in a trial, this
+    % trial likely contained pen-dragging (participants never lifted the
+    % pen, but dragged it across the screen). If the offset of the last
+    % gaze shit is missing, participants likely lifted their arm before
+    % placing a response (this way, an offset would be recorded but no
+    % offset, since the arm was never lowered again).
+    %
     % Input
     % exper:
     % structure; general experiment settings, as returned by the
