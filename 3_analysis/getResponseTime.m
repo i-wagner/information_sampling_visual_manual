@@ -34,18 +34,19 @@ function responseTime = getResponseTime(fixatedAoiIds, timestampsGazeShiftOffset
     % integer; response time
 
     %% Calculate response time
-    targetFixations = any(fixatedAoiIds == flagTarget, 2);
-    idxLastTargetFixation = find(targetFixations, 1, 'last');
-
     responseTime = NaN;
-    if ~isempty(idxLastTargetFixation)
-        isSubsequentTargetFixation = ...
-            any(fixatedAoiIds(idxLastTargetFixation:end) == flagTarget, 2);
-        isSubsequentBgFixation = ...
-            fixatedAoiIds(idxLastTargetFixation:end) == flagBg;
-        if all(isSubsequentTargetFixation | isSubsequentBgFixation)
-            responseTime = timestampResponse - ...
-                           timestampsGazeShiftOffset(idxLastTargetFixation);
+    if ~isempty(fixatedAoiIds)
+        targetFixations = any(fixatedAoiIds == flagTarget, 2);
+        idxLastTargetFixation = find(targetFixations, 1, 'last');
+        if ~isempty(idxLastTargetFixation)
+            isSubsequentTargetFixation = ...
+                any(fixatedAoiIds(idxLastTargetFixation:end) == flagTarget, 2);
+            isSubsequentBgFixation = ...
+                fixatedAoiIds(idxLastTargetFixation:end) == flagBg;
+            if all(isSubsequentTargetFixation | isSubsequentBgFixation)
+                responseTime = timestampResponse - ...
+                               timestampsGazeShiftOffset(idxLastTargetFixation);
+            end
         end
     end
 
