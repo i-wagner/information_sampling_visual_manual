@@ -1,4 +1,4 @@
-function [inspectionTime, dwellTimes] = getInspectionTime(fixatedUniqueAoi, targetIds, bgId, timestampOffset, adjustmentAmount, leavingTimes, useTargets)
+function [inspectionTime, dwellTimes] = getInspectionTime(fixatedAoi, targetIds, bgId, timestampOffset, adjustmentAmount, leavingTimes, useTargets)
 
     % Calculates dwell-times of fixation and inspection time
     %
@@ -20,26 +20,22 @@ function [inspectionTime, dwellTimes] = getInspectionTime(fixatedUniqueAoi, targ
     % inspectionTime:
     % float; average dwell time across all AOI fixations
 
-    %% Calculate dwell times
-    useFixation = (fixatedUniqueAoi ~= bgId);
-    if ~useTargets
-        useFixation = useFixation & ...
-                      all(fixatedUniqueAoi ~= targetIds, 2);        
-    end
-
+    %% Calculate dwell times and inspection time
     % Only works if we have at least one fixation, i.e., if participants
-    % made at least one gaze shift
+    % made at least one gaze shift to something other than the background
+    useFixation = (fixatedAoi ~= bgId);
     if ~isempty(useFixation)
+        if ~useTargets
+            useFixation = useFixation & ...
+                          all(fixatedAoi ~= targetIds, 2);        
+        end
         useFixation(end) = false; % Last fixation is not considered by default
     end
-
-    nGazeShifts = numel(fixatedUniqueAoi);
+    nGazeShifts = numel(fixatedAoi);
     dwellTimes = NaN(nGazeShifts, 1);
     dwellTimes(useFixation) = leavingTimes(useFixation) - ...
                               timestampOffset(useFixation) - ...
                               adjustmentAmount(useFixation);
-
-    %% Calculate inspection time
     inspectionTime = mean(dwellTimes, 'omitnan');
 
 end
