@@ -49,17 +49,17 @@ function comparePipelines(thisSubject, thisTrial, exper, logCol, s, c, t)
             thisTrial.gazeShifts.meanGazePos(thisTrial.gazeShifts.subset,2), ... Std x-pos.
             meanY, ... Mean y-pos.
             thisTrial.gazeShifts.meanGazePos(thisTrial.gazeShifts.subset,4), ... Std y-pos.
-            thisTrial.gazeShifts.fixatedAois(thisTrial.gazeShifts.subset,1), ... Unique IDs
-            thisTrial.gazeShifts.fixatedAois(thisTrial.gazeShifts.subset,2), ... Group IDs
-            thisTrial.gazeShifts.informationLoss, ... Information loss due to blinks
+            thisTrial.fixatedAois.uniqueIds(thisTrial.gazeShifts.subset), ... Unique IDs
+            thisTrial.fixatedAois.groupIds(thisTrial.gazeShifts.subset), ... Group IDs
+            thisTrial.gazeShifts.informationLoss(thisTrial.gazeShifts.subset), ... Information loss due to blinks
             thisTrial.time.dwell, ... Dwell times
-            thisTrial.gazeShifts.wentToClosest, ... Gaze shift to closest stimulus?
+            thisTrial.gazeShifts.wentToClosest(thisTrial.gazeShifts.subset), ... Gaze shift to closest stimulus?
             (zeros(nGs, 1) + thisSubject.logFile(t,logCol.N_DISTRACTOR_EASY)), ... n easy distractors
             (zeros(nGs, 1) + thisTrial.chosenTarget.response), ... Chosen target
             NaN(nGs, 1), ... Timelock relative to trial start
             NaN(nGs, 1), ... Timelock relative to trial end
             (zeros(nGs, 1) + t), ... Trial number
-            thisTrial.gazeShifts.distanceCurrent, ... Distance to currently fixated stimulus
+            thisTrial.gazeShifts.distanceCurrent(thisTrial.gazeShifts.subset), ... Distance to currently fixated stimulus
             (zeros(nGs, 1) + thisSubject.logFile(t,logCol.N_DISTRACTOR_DIFFICULT)), ... n difficult distractors
             (zeros(nGs, 1) + thisTrial.nDistractorsChosenSet)]; % n distractors in chosen set
 
