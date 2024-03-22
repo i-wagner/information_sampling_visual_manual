@@ -98,6 +98,23 @@ function comparePipelines(thisSubject, thisTrial, exper, logCol, s, c, t)
     pipelinesEqual = isequaln(round(newPipeline, nDecimals), ...
                               round(oldPipelineTrial, nDecimals));
 
+% In the old pipeline, whether a gaze shift went to the closest stimulus
+% relative to fixation was determined by using the subset of gaze shifts
+% (i.e., after excluding gaze shifts that did not pass the quality check).
+% In some cases, this resulted in an inaccurate result, because the current
+% fixation location was determined wrongly after excluding gaze shifts 
+% (e.g., a gaze shift was made before stimulus onset, which was not caught 
+% properly, or the initial gaze shift to an AOI was excluded, while a 
+% consecutive gaze shift was included). In
+% the new pipeline, this analysis is conducted using all gaze shifts.
+wentToClosestMismatch = ~isequaln(round(newPipeline(:,21), nDecimals), ...
+                                  round(oldPipelineTrial(:,21), nDecimals));
+restMatch = isequaln(round(newPipeline(:,[1:20, 22:end]), nDecimals), ...
+                     round(oldPipelineTrial(:,[1:20, 22:end]), nDecimals));
+if wentToClosestMismatch & restMatch
+    pipelinesEqual = true;
+end     
+
     % There are some special rules for a handful of participants, mostly
     % due to the new gaze shift detection algorithm we are using for the
     % new analysis pipeline
