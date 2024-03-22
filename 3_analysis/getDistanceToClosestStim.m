@@ -53,7 +53,10 @@ function [wentToClosest, wentNotToClosest, distanceToClosest] = ...
     % fixation, because, by definition, we cannot calculate whether gaze
     % went to the closest stimulus for the fixation after the last one
     % (since there is none)
-    currentAoi = [NaN; fixatedAoi(1:end-1)];
+    currentAoi = fixatedAoi(1:end-1);
+    if ~isempty(fixatedAoi)
+        currentAoi = [NaN; currentAoi];
+    end
     nextAoi = fixatedAoi;
     nFixations = numel(currentAoi);
     nStimuli = numel(horStimCoord);
