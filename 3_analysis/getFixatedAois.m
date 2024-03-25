@@ -51,11 +51,11 @@ function fixations = getFixatedAois(exper, screen, anal, gaze, stimCoords, nTria
     % returned by the "settings_screen" script
     %
     % anal:
-    %
+    % structure; various analysis settings, as returned by the
+    % "settings_analysis" script
     %
     % gaze:
-    % structure; vairous analysis settings, as returned by the
-    % "settings_analysis" script
+    % structure; gaze data of participants in conditions
     %
     % stimCoords:
     % cell-matrix; coordinates of stimuli, as returned by the
