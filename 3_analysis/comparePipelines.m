@@ -52,7 +52,7 @@ function comparePipelines(thisSubject, thisTrial, exper, logCol, s, c, t)
             thisTrial.fixatedAois.uniqueIds(thisTrial.gazeShifts.subset), ... Unique IDs
             thisTrial.fixatedAois.groupIds(thisTrial.gazeShifts.subset), ... Group IDs
             thisTrial.gazeShifts.informationLoss(thisTrial.gazeShifts.subset), ... Information loss due to blinks
-            thisTrial.time.dwell, ... Dwell times
+            thisTrial.time.dwell(thisTrial.gazeShifts.subset), ... Dwell times
             thisTrial.gazeShifts.wentToClosest(thisTrial.gazeShifts.subset), ... Gaze shift to closest stimulus?
             (zeros(nGs, 1) + thisSubject.logFile(t,logCol.N_DISTRACTOR_EASY)), ... n easy distractors
             (zeros(nGs, 1) + thisTrial.chosenTarget.response), ... Chosen target
