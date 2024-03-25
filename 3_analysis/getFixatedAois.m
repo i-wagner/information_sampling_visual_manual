@@ -1,21 +1,45 @@
-function fixations = analyseFixations(exper, screen, anal, gaze, stimCoords, nTrials, showFix)
+function fixations = getFixatedAois(exper, screen, anal, gaze, stimCoords, nTrials, showFix)
 
     % Wrapper function
-    % Processes fixations and determines fixated areas of interest.
-    % The following analysi steps are performed:
+    % Extracts fixated areas of interest.
+    % The following analysis steps are performed:
     % - Get fixated AOIs
-    % - Determine which fixations should be included in analysis
-    % - Check for blinks during AOI vists
+    % - Selects a subset of gaze shifts to use for subsequent analysis.
+    %   This selection is, for one, based on quality criteria (see below),
+    %   and on some task-related selection criteria
+    % - Check for blinks during AOI vists, and calculate information loss
+    %   during blinks
     % - Check whether at least one gaze shift was made to any AOI
-    % - Check whether gaze shifts went to closest AOI
+    % - Check whether gaze shifts went to closest AOI, relative to the
+    %   current fixation location
     % - Check the distance between gaze and the currently viewed AOI
     %
-    % NOTE:
-    % We are excluding gaze shifts in this function for two reasons: first,
-    % one of the exclusion criteria is the fixated AOI and this is
-    % determined within this function. Second, most analysis are performed
-    % on the subset of non-excluded fixations, so it wouldnt make sense to
-    % perform the exclusion outside of this function
+    % NOTE 1:
+    % Selection of gaze shift subset happens here, instead of some seperate
+    % function, because of two reasons: first, one of the criteria (see
+    % below) for including gaze shifts in the subset is the fixated AOI,
+    % which also determined within this wrapper function. Second, some
+    % fixation-related  analysis, performed within this wrapper function,
+    % need information about the selected subset
+    %
+    % NOTE 2:
+    % The following quality criteria are applied to select gaze shift
+    % subset:
+    % - Gaze shift is longer than some minimum duration
+    % - Gaze shift has both, on- and offset
+    % - Gaze shift offset occurs before a response is placed (i.e., before
+    %   the end of a trial)
+    % - Gaze shift on- and offset coordinate are within the measurable
+    %   screen area
+    %
+    % NOTE 3:
+    % Additionally, the following task-related criteria are applied when
+    % selecting a subset of gaze shifts
+    % - Gaze shift onset occured after stimulus onset
+    % - Consecutive gaze shifts within an AOI are excluded (i.e., gaze
+    %   shifts that occured within an AOI)
+    % - If the last gaze shift in a trial landed on the background (i.e.,
+    %   outside any AOI), this gaze shift is excluded
     %
     % Input
     % exper:
