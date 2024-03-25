@@ -104,6 +104,9 @@ for c = 1:exper.n.CONDITIONS % Condition
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             clear thisTrial
         end
+%% Get chosen target
+data.ss.choice = getChoices(exper, logCol, data.ss.log, data.ss.gaze, ...
+                            data.ss.fixations);
 
     end
 end
