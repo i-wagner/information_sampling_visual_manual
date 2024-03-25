@@ -1,4 +1,4 @@
-function checkPipelines(exper, logCol, gaze, fixations, time, choice)
+function checkPipelines(exper, logCol, logFiles, gaze, fixations, time, choice)
 
     % Wrapper function
     % Compares results from old to results from new pipeleine. 
@@ -39,8 +39,8 @@ function checkPipelines(exper, logCol, gaze, fixations, time, choice)
     for c = 1:exper.n.CONDITIONS % Condition
         for s = 1:exper.n.SUBJECTS % Subject
             thisSubject.number = exper.num.SUBJECTS(s);
-            thisSubject.logFile = data.ss.log.files{thisSubject.number,c};
-            thisSubject.nTrials = data.ss.log.nCompletedTrials(thisSubject.number,c);
+            thisSubject.logFile = logFiles.files{thisSubject.number,c};
+            thisSubject.nTrials = logFiles.nCompletedTrials(thisSubject.number,c);
             if isempty(thisSubject.logFile)
                 continue
             end

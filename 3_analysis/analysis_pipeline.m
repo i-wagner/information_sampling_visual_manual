@@ -33,8 +33,8 @@ data.ss.choice = getChoices(exper, logCol, data.ss.log, data.ss.gaze, ...
                             data.ss.fixations);
 
 %% DEBUG: check whether results from new match old pipeline
-checkPipelines(exper, logCol, data.ss.gaze, data.ss.fixations, ...
-               data.ss.time, data.ss.choice);
+checkPipelines(exper, logCol, data.ss.log, data.ss.gaze, ...
+               data.ss.fixations, data.ss.time, data.ss.choice);
 
 %% Export for Zenodo
 % for c = 1:exper.num.condNo % Condition
@@ -44,7 +44,6 @@ checkPipelines(exper, logCol, data.ss.gaze, data.ss.fixations, ...
 % 
 % end
 % sacc = rmfield(sacc, 'gazeShifts_zen'); 
-
 
 %% Exclude invalid trials and check data quality
 exper.prop.val_trials     = NaN(exper.num.subNo, exper.num.condNo);
