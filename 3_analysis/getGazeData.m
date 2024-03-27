@@ -72,9 +72,9 @@ function gaze = getGazeData(exper, screen, anal, nTrials)
 
             thisSubject.gazeTrace = cell(thisSubject.nTrials, 1);
             thisSubject.events = NaN(thisSubject.nTrials, 5);
-            thisSubject.error.dataLoss = NaN(thisSubject.nTrials, 1);
-            thisSubject.error.eventMissing = NaN(thisSubject.nTrials, 1);
-            thisSubject.error.fixation.offline = NaN(thisSubject.nTrials, 1);
+            thisSubject.error.dataLoss = false(thisSubject.nTrials, 1);
+            thisSubject.error.eventMissing = false(thisSubject.nTrials, 1);
+            thisSubject.error.fixation.offline = false(thisSubject.nTrials, 1);
             thisSubject.timestamp.stimOn = NaN(thisSubject.nTrials, 1);
             thisSubject.timestamp.stimOff = NaN(thisSubject.nTrials, 1);
             thisSubject.gazeShifts.idx = [];
