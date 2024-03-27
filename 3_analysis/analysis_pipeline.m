@@ -14,6 +14,9 @@ cd(exper.path.ROOT);
 data.ss.log = getLogFiles(exper, logCol);
 data.ss.stimulusCoordinates = getStimCoord(exper, logCol, data.ss.log.files);
 data.ss.gaze = getGazeData(exper, screen, anal, data.ss.log.nCompletedTrials);
+data.ss.badTrials = ...
+    getBadTrials(exper, data.ss.log.nCompletedTrials, exper.path.DATA);
+
 
 %% Get fixated areas of interest
 data.ss.fixations = ...
