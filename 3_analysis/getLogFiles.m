@@ -6,6 +6,8 @@ function logs = getLogFiles(exper, logCol)
     %
     % The following steps are performed:
     % - Load log file
+    % - Recode fixation error column in log file of conditions in manual
+    %   search experiment from NaN to Boolean
     % - Re-adjust vertical stimulus coordinates so they are centered on the
     %   fixation location (only manual search experiment)
     % - Recode number of distractors in single-target condition so it is
@@ -44,22 +46,27 @@ function logs = getLogFiles(exper, logCol)
                 continue
             end
 
+            %  Recode fixation error column in conditions of manual search
+            %  condition. This is done so the data is line with the visual
+            %  search condition, and to simplify analysis later on
+            if ismember(c, [3, 4])
+                thisSubject.logFile(:,logCol.IS_FIXATION_ERROR) = false;
+            end
+
             % Adjust vertical stimulus position
             % Degree-of-visual-angle coordinates can be expressed in different 
             % reference frames, e.g., relative to the fixation cross position
             % or relative to the screen center. In the VISUAL SEARCH
             % experiment, they are expressed relative to the fiaxtion cross,
             % while in the MANUAL SEARCH experiment, they are expressed
-            % relarive to screen center. Here, we correct coordinates in the
-            % manual search experiment so they are in line with how coordinates
+            % relarive to screen center. Here, we correct coordinates in the            % manual search experiment so they are in line with how coordinates
             % are expressed in the visual search experiment
             if any(thisCondition == [4, 5]) % Manual search
                 thisSubject.logFile(:,logCol.STIMULUS_POSITION_Y) = ...
                     adjustVerticalCoordinates(thisSubject.logFile(:,logCol.STIMULUS_POSITION_Y), ...
                                               exper.fixation.location.y.DVA);
             end
-    
-            % Recode distractor numbers in single-target condition.
+                % Recode distractor numbers in single-target condition.
             % In the single-target condition, trials in which the easy
             % target was shown without distractors are coded with 0 in the
             % column in the column, which logs the number of difficult
