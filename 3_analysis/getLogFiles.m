@@ -16,6 +16,8 @@ function logs = getLogFiles(exper, logCol)
     % - Recode gap position in the single-target condition, so it is
     %   unambigous which target was shown in a trial
     % - Determine how many trials a participant completed
+    % - Save some relevant columns from the log file in their own variable
+    %   (for easier processing later on)
     %
     % Input
     % exper:
@@ -29,11 +31,12 @@ function logs = getLogFiles(exper, logCol)
     % Output
     % logs:
     % structure; log-files of participants in conditions as well number of
-    % completed trials
+    % completed trials and variables with data from relevant columns
 
     %% Get log files
     logs.files = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
     logs.nCompletedTrials = NaN(exper.n.SUBJECTS, exper.n.CONDITIONS);
+    logs.error.fixation.online = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
     for c = 1:exper.n.CONDITIONS % Condition
         thisCondition = exper.num.CONDITIONS(c);
         for s = 1:exper.n.SUBJECTS % Subject
@@ -59,14 +62,16 @@ function logs = getLogFiles(exper, logCol)
             % or relative to the screen center. In the VISUAL SEARCH
             % experiment, they are expressed relative to the fiaxtion cross,
             % while in the MANUAL SEARCH experiment, they are expressed
-            % relarive to screen center. Here, we correct coordinates in the            % manual search experiment so they are in line with how coordinates
+            % relarive to screen center. Here, we correct coordinates in the
+            % manual search experiment so they are in line with how coordinates
             % are expressed in the visual search experiment
             if any(thisCondition == [4, 5]) % Manual search
                 thisSubject.logFile(:,logCol.STIMULUS_POSITION_Y) = ...
                     adjustVerticalCoordinates(thisSubject.logFile(:,logCol.STIMULUS_POSITION_Y), ...
                                               exper.fixation.location.y.DVA);
             end
-                % Recode distractor numbers in single-target condition.
+    
+            % Recode distractor numbers in single-target condition.
             % In the single-target condition, trials in which the easy
             % target was shown without distractors are coded with 0 in the
             % column in the column, which logs the number of difficult
@@ -107,6 +112,8 @@ function logs = getLogFiles(exper, logCol)
             logs.files{thisSubject.number,c} = thisSubject.logFile;
             logs.nCompletedTrials(thisSubject.number,c) = ...
                 max(thisSubject.logFile(:,logCol.TRIAL_NO));
+            logs.error.fixation.online{thisSubject.number,c} = ...
+                thisSubject.logFile(:,logCol.IS_FIXATION_ERROR);
             clear thisSubject
         end
     end
