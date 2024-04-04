@@ -13,7 +13,7 @@ cd(exper.path.ROOT);
 %% Extract data from files
 data.ss.log = getLogFiles(exper, logCol);
 data.ss.stimulusCoordinates = getStimCoord(exper, logCol, data.ss.log.files);
-data.ss.gaze = getGazeData(exper, screen, anal, data.ss.log.nCompletedTrials);
+data.ss.gaze = getDatFiles(exper, screen, anal, data.ss.log.nCompletedTrials);
 data.ss.badTrials = ...
     getBadTrials(exper, data.ss.log.nCompletedTrials, exper.path.DATA);
 
@@ -25,6 +25,10 @@ quality.excludedTrials = ...
                   data.ss.gaze.error.dataLoss, ...
                   data.ss.gaze.error.eventMissing, ...
                   data.ss.badTrials);
+
+%% Get gaze shifts
+data.ss.gaze.gazeShifts = ...
+    getGazeShifts(exper, data.ss.gaze, data.ss.log.nCompletedTrials);
 
 %% Get fixated areas of interest
 data.ss.fixations = ...
