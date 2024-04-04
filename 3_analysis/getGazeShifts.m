@@ -1,8 +1,8 @@
 function gazeShifts = getGazeShifts(exper, gaze, nTrials)
 
     % Wrapper function
-    % Extracts gaze data from gaze trace files. The following analysis
-    % steps are performed:
+    % Extracts gaze shifts from gaze traces. The following analysis steps
+    % are performed:
     % - Get gaze shifts in trial
     % - Calculate gaze shift metrics
     % - Re-center gaze shift coordinates to location of fixation cross
@@ -22,12 +22,15 @@ function gazeShifts = getGazeShifts(exper, gaze, nTrials)
     % structure; general experiment settings, as returned by the
     % "settings_exper" script
     %
+    % gaze:
+    % structure; gaze data of participants in conditions
+    %
     % nTrials:
     % matrix; number of trials that participants completed in conditions
     %
     % Output
-    % gaze:
-    % structure; gaze data of participants in conditions
+    % gazeShifts:
+    % structure; gaze shifts of participants in conditions
 
     %% Get gaze data
     % In the manual search experiment, events and "gaze shifts" are stored 
