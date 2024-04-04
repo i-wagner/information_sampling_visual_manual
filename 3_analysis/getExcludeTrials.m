@@ -1,13 +1,6 @@
-function excludedTrials = excludeTrials(exper, isOnlineFixErr, isOfflineFixErr, isDataLoss, isMissingEvent, isPenDragging)
+function excludedTrials = getExcludeTrials(exper, isOnlineFixErr, isOfflineFixErr, isDataLoss, isMissingEvent, isPenDragging)
 
     % Determine which trials to exclude from subsequent analysis
-    %
-    % The following data-exclusion-criteria are applied
-    % - Participants did not look at fixation cross at trial start
-    % - Samples are missing in the gaze-trace-file
-    % - Eye Link events missing in the gaze-trace-file
-    % - Only for manual search: pen-dragging occured (trials were
-    %   determined by Jan, and are stored in seperate files)
     %
     % Input
     % exper:
