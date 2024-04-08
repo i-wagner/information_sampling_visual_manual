@@ -33,28 +33,32 @@ data.ss.stimulusCoordinates = getStimCoord(exper, logCol, data.ss.log.files);
 
 %% Get gaze shifts
 data.ss.gaze.gazeShifts = ...
-    getGazeShifts(exper, data.ss.gaze, data.ss.log.nCompletedTrials);
+    getGazeShifts(exper, data.ss.gaze, data.ss.log.nCompletedTrials, ...
+                  quality.excludedTrials);
 
 %% Get fixated areas of interest
 data.ss.fixations = ...
     getFixatedAois(exper, screen, anal, data.ss.gaze, ...
                    data.ss.stimulusCoordinates, ...
                    data.ss.log.nCompletedTrials, ...
+                   quality.excludedTrials, ...
                    fig.toggle.debug.SHOW_FIXATIONS);
 
 %% Get time-related variables
 % Planning, inspection, and response times as well as trial durations
 data.ss.time = getTimes(exper, anal, data.ss.log.nCompletedTrials, ...
                         data.ss.gaze, ...
-                        data.ss.fixations);
+                        data.ss.fixations, ...
+                        quality.excludedTrials);
 
 %% Get chosen target
 data.ss.choice = getChoices(exper, logCol, data.ss.log, data.ss.gaze, ...
-                            data.ss.fixations);
+                            data.ss.fixations, quality.excludedTrials);
 
 %% DEBUG: check whether results from new match old pipeline
 checkPipelines(exper, logCol, data.ss.log, data.ss.gaze, ...
-               data.ss.fixations, data.ss.time, data.ss.choice);
+               data.ss.fixations, data.ss.time, data.ss.choice, ...
+               data.ss.badTrials, quality.excludedTrials, "_withExclusion");
 
 %% Export for Zenodo
 % for c = 1:exper.num.condNo % Condition
@@ -64,63 +68,6 @@ checkPipelines(exper, logCol, data.ss.log, data.ss.gaze, ...
 % 
 % end
 % sacc = rmfield(sacc, 'gazeShifts_zen'); 
-
-%% Exclude invalid trials and check data quality
-exper.prop.val_trials     = NaN(exper.num.subNo, exper.num.condNo);
-exper.timeLostExcldTrials = zeros(exper.num.subNo, exper.num.condNo);
-exper.noExcludedTrial     = NaN(exper.num.subNo, exper.num.condNo);
-sacc.propGs.aoiFix_mean   = NaN(exper.num.subNo, exper.num.condNo);
-for c = 1:exper.num.condNo % Condition
-
-    for s = 1:exper.num.subNo % Subject
-
-        thisSubject  = exper.num.subs(s);
-        idx_excld = sort(unique(exper.excl_trials{thisSubject, c}));
-
-        exper.events.stim_onOff{thisSubject, c}(idx_excld, :) = NaN;
-        sacc.time.planning{thisSubject, c}(idx_excld, :)      = NaN;
-        sacc.time.inspection{thisSubject, c}(idx_excld, :)    = NaN;
-        sacc.time.decision{thisSubject, c}(idx_excld, :)      = NaN;
-        sacc.time.resp_bg{thisSubject, c}(idx_excld, :)       = NaN;
-        sacc.time.search{thisSubject, c}(idx_excld, :)        = NaN;
-        sacc.propGs.closest{thisSubject, c}(idx_excld, :)     = NaN;
-        sacc.propGs.further{thisSubject, c}(idx_excld, :)     = NaN;
-        sacc.propGs.aoiFix{thisSubject, c}(idx_excld, :)      = NaN;
-        stim.chosenTarget{thisSubject, c}(idx_excld, :)       = NaN;
-        stim.choiceCorrespond{thisSubject, c}(idx_excld, :)   = NaN;
-        stim.no_easyDis{thisSubject, c}(idx_excld, :)         = NaN;
-        stim.no_hardDis{thisSubject, c}(idx_excld, :)         = NaN;
-        perf.hitMiss{thisSubject, c}(idx_excld, :)            = NaN;
-
-        gazeShifts = sacc.gazeShifts{thisSubject, c};
-        if ~isempty(gazeShifts)
-
-            li_excld = ismember(gazeShifts(:, 26), idx_excld);
-            gazeShifts(li_excld, :) = NaN;
-            sacc.gazeShifts{thisSubject, c} = gazeShifts;
-
-        end
-        clear gazeShifts gazeShifts_zen li_excld li_excld_zen
-
-        % Calculat proportion valid trials
-        exper.prop.val_trials(thisSubject, c) = 1 - numel(idx_excld) / exper.trialNo(thisSubject, c);
-
-        % Calculate proportion trials with at least one fixated AOI
-        sacc.propGs.aoiFix_mean(thisSubject, c) = ...
-            sum(sacc.propGs.aoiFix{thisSubject, c}, 'omitnan') / (exper.trialNo(thisSubject, c) - numel(idx_excld));
-
-        % Calculate time lost due to excluded trials and store # excluded trials
-        exper.timeLostExcldTrials(thisSubject, c) = ...
-            exper.timeLostExcldTrials(thisSubject, c) + sum(exper.cum_trialTime{thisSubject, c}(idx_excld)) / 1000;
-        exper.noExcludedTrial(thisSubject, c) = numel(idx_excld);
-        clear idx_excld
-
-    end
-    clear s thisSubject
-
-end
-clear c
-
 
 %% Exclude subjects
 % We exclude subjects based on the following criteria:

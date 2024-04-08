@@ -1,4 +1,4 @@
-function checkPipelines(exper, logCol, logFiles, gaze, fixations, time, choice)
+function checkPipelines(exper, logCol, logFiles, gaze, fixations, time, choice, badTrials, excludedTrials, suffix)
 
     % Wrapper function
     % Compares results from old to results from new pipeleine. 
@@ -15,7 +15,11 @@ function checkPipelines(exper, logCol, logFiles, gaze, fixations, time, choice)
     % logCol:
     % structure; column indices for log files, as returned by the
     % "settings_log" script
-    % 
+    %
+    % logFiles:
+    % structure; log-files of participants in conditions, as returned by
+    % the "getLogFiles" function
+    %
     % gaze:
     % structure; gaze data of participants in conditions, as returned by
     % the "getGazeData" function
@@ -32,6 +36,17 @@ function checkPipelines(exper, logCol, logFiles, gaze, fixations, time, choice)
     % structure; choice-related variables across participants and
     % conditions, as returned by the "getChoices" function
     %
+    % badTrials:
+    % cell matrix; numbers of trials that are flagged for exclusion, as
+    % returned by the "getBadTrials" function (only manual search)
+    %
+    % excludedTrials:
+    % matrix; numbers of trials which are flagged for exclusion as
+    % returned by the "getExcludeTrials" (manual and visual search)
+    %
+    % suffix:
+    % string; suffix for data-file of old pipeline
+    %
     % Ouput
     % --
 
@@ -41,6 +56,8 @@ function checkPipelines(exper, logCol, logFiles, gaze, fixations, time, choice)
             thisSubject.number = exper.num.SUBJECTS(s);
             thisSubject.logFile = logFiles.files{thisSubject.number,c};
             thisSubject.nTrials = logFiles.nCompletedTrials(thisSubject.number,c);
+            thisSubject.excludedTrials = excludedTrials{thisSubject.number,c};
+            thisSubject.badTrials = find(badTrials{thisSubject.number,c});
             if isempty(thisSubject.logFile)
                 continue
             end
@@ -86,9 +103,9 @@ function checkPipelines(exper, logCol, logFiles, gaze, fixations, time, choice)
                     choice.target{thisSubject.number,c}(t);
                 thisTrial.nDistractorsChosenSet = ...
                     choice.nDistractorsChosenSet{thisSubject.number,c}(t);
-    
+
                 % Compare pipelines
-                comparePipelines(thisSubject, thisTrial, exper, logCol, s, c, t);
+                comparePipelines(thisSubject, thisTrial, exper, logCol, s, c, t, suffix);
                 clear thisTrial
             end
         end

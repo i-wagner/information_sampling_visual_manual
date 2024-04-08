@@ -1,4 +1,4 @@
-function fixations = getFixatedAois(exper, screen, anal, gaze, stimCoords, nTrials, showFix)
+function fixations = getFixatedAois(exper, screen, anal, gaze, stimCoords, nTrials, excludedTrials, showFix)
 
     % Wrapper function
     % Extracts fixated areas of interest.
@@ -64,6 +64,9 @@ function fixations = getFixatedAois(exper, screen, anal, gaze, stimCoords, nTria
     % nTrials:
     % matrix; number of completed trials per participant and condition
     %
+    % excludedTrials:
+    % matrix; numbers of trials that where excluded from analysis
+    %
     % showFix:
     % Boolean; visualise shown stimuli and fixated AOI?
     %
@@ -84,19 +87,27 @@ function fixations = getFixatedAois(exper, screen, anal, gaze, stimCoords, nTria
         for s = 1:exper.n.SUBJECTS % Subject
             thisSubject.number = exper.num.SUBJECTS(s);
             thisSubject.nTrials = nTrials(thisSubject.number,c);
+            thisSubject.excludedTrials = excludedTrials{thisSubject.number,c};
+            thisSubject.nGazeShifts = numel(gaze.gazeShifts.trialMap{thisSubject.number,c});
             if isnan(thisSubject.nTrials)
                 continue
             end
 
-            thisSubject.fixatedAois.groupIds = [];
-            thisSubject.fixatedAois.uniqueIds = [];
-            thisSubject.fixationSubset = [];
-            thisSubject.informationLoss = [];
+            thisSubject.fixatedAois.groupIds = NaN(thisSubject.nGazeShifts,1);
+            thisSubject.fixatedAois.uniqueIds = NaN(thisSubject.nGazeShifts,1);
+            thisSubject.fixationSubset = false(thisSubject.nGazeShifts,1);
+            thisSubject.informationLoss = NaN(thisSubject.nGazeShifts,1);
             thisSubject.atLeastOneFixatedAoi = NaN(thisSubject.nTrials, 1);
-            thisSubject.wentToClosest = [];
+            thisSubject.wentToClosest = NaN(thisSubject.nGazeShifts,1);
             thisSubject.propToClosest = NaN(thisSubject.nTrials, 1);
-            thisSubject.distanceCurrent = [];
+            thisSubject.distanceCurrent = NaN(thisSubject.nGazeShifts,1);
+            thisSubject.gazeShiftCounter = 0;
             for t = 1:thisSubject.nTrials % Trial
+                % Check whether to skip excluded trial
+                if ismember(t, thisSubject.excludedTrials)
+                    continue
+                end
+
                 % Unpack trial data
                 thisTrial.idx = ...
                     gaze.gazeShifts.trialMap{thisSubject.number,c} == t;
@@ -116,6 +127,7 @@ function fixations = getFixatedAois(exper, screen, anal, gaze, stimCoords, nTria
                     gaze.timestamps.stimOn{thisSubject.number,c}(t,:);
                 thisTrial.timestamp.stimOff = ...
                     gaze.timestamps.stimOff{thisSubject.number,c}(t,:);
+                thisTrial.nGazeShifts = size(thisTrial.gazeShifts.idx, 1);
 
                 % Get fixated AOIs
                 % We are using the mean gaze position inbetween gaze shifts
@@ -209,20 +221,25 @@ function fixations = getFixatedAois(exper, screen, anal, gaze, stimCoords, nTria
                                              false);
 
                 % Store data
-                thisSubject.fixatedAois.groupIds = ...
-                    [thisSubject.fixatedAois.groupIds; thisTrial.fixatedAois.groupIds];
-                thisSubject.fixatedAois.uniqueIds = ...
-                    [thisSubject.fixatedAois.uniqueIds; thisTrial.fixatedAois.uniqueIds];
-                thisSubject.fixationSubset = ...
-                    [thisSubject.fixationSubset; thisTrial.fixationSubset];
-                thisSubject.informationLoss = ...
-                    [thisSubject.informationLoss; thisTrial.informationLoss];
+                thisTrial.storeIdx = ...
+                    (thisSubject.gazeShiftCounter + 1):(thisSubject.gazeShiftCounter + thisTrial.nGazeShifts);
+                thisSubject.gazeShiftCounter = ...
+                    thisSubject.gazeShiftCounter + thisTrial.nGazeShifts;
+
+                thisSubject.fixatedAois.groupIds(thisTrial.storeIdx) = ...
+                    thisTrial.fixatedAois.groupIds;
+                thisSubject.fixatedAois.uniqueIds(thisTrial.storeIdx) = ...
+                    thisTrial.fixatedAois.uniqueIds;
+                thisSubject.fixationSubset(thisTrial.storeIdx) = ...
+                    thisTrial.fixationSubset;
+                thisSubject.informationLoss(thisTrial.storeIdx) = ...
+                    thisTrial.informationLoss;
                 thisSubject.atLeastOneFixatedAoi(t) = thisTrial.atLeastOneFixatedAoi;
-                thisSubject.wentToClosest = ...
-                    [thisSubject.wentToClosest; thisTrial.wentToClosest];
+                thisSubject.wentToClosest(thisTrial.storeIdx) = ...
+                    thisTrial.wentToClosest;
                 thisSubject.propToClosest(t) = thisTrial.propToClosest;
-                thisSubject.distanceCurrent = ... 
-                    [thisSubject.distanceCurrent; thisTrial.distanceCurrent];
+                thisSubject.distanceCurrent(thisTrial.storeIdx) = ... 
+                    thisTrial.distanceCurrent;
                 clear thisTrial
             end
 

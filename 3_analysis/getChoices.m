@@ -1,4 +1,4 @@
-function choice = getChoices(exper, logCol, logFiles, gaze, fixations)
+function choice = getChoices(exper, logCol, logFiles, gaze, fixations, excludedTrials)
 
     % Wrapper function
     % Extracts target choices
@@ -31,6 +31,9 @@ function choice = getChoices(exper, logCol, logFiles, gaze, fixations)
     % structure; fixated AOIs across participants and conditions, as
     % returned by the "getFixatedAois" function
     %
+    % excludedTrials:
+    % matrix; numbers of trials that where excluded from analysis
+    %
     % Output
     % choice:
     % structure; choice-related data of participants
@@ -47,6 +50,7 @@ function choice = getChoices(exper, logCol, logFiles, gaze, fixations)
             thisSubject.number = exper.num.SUBJECTS(s);
             thisSubject.nTrials = logFiles.nCompletedTrials(thisSubject.number,c);
             thisSubject.logFile = logFiles.files{thisSubject.number,c};
+            thisSubject.excludedTrials = excludedTrials{thisSubject.number,c};
             if isnan(thisSubject.nTrials)
                 continue
             end
@@ -55,6 +59,11 @@ function choice = getChoices(exper, logCol, logFiles, gaze, fixations)
             thisSubject.responseCongruency = NaN(thisSubject.nTrials, 1);
             thisSubject.nDistractorsChosenSet = NaN(thisSubject.nTrials, 1);
             for t = 1:thisSubject.nTrials % Trial
+                % Check whether to skip excluded trial
+                if ismember(t, thisSubject.excludedTrials)
+                    continue
+                end
+
                 % Unpack trial data
                 thisTrial.idx = ...
                     gaze.gazeShifts.trialMap{thisSubject.number,c} == t;

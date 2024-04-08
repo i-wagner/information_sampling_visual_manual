@@ -1,4 +1,4 @@
-function time = getTimes(exper, anal, nTrials, gaze, fixations)
+function time = getTimes(exper, anal, nTrials, gaze, fixations, excludedTrials)
 
     % Wrapper function
     % Extracts planning, dwell, inspection, and response time as well as
@@ -53,16 +53,24 @@ function time = getTimes(exper, anal, nTrials, gaze, fixations)
         for s = 1:exper.n.SUBJECTS % Subject
             thisSubject.number = exper.num.SUBJECTS(s);
             thisSubject.nTrials = nTrials(thisSubject.number,c);
+            thisSubject.excludedTrials = excludedTrials{thisSubject.number,c};
+            thisSubject.nGazeShifts = numel(gaze.gazeShifts.trialMap{thisSubject.number,c});
             if isnan(thisSubject.nTrials)
                 continue
             end
 
             thisSubject.inspectionTime = NaN(thisSubject.nTrials, 1);
-            thisSubject.dwellTimes = [];
+            thisSubject.dwellTimes = NaN(thisSubject.nGazeShifts,1);
             thisSubject.planningTime = NaN(thisSubject.nTrials, 1);
             thisSubject.responseTime = NaN(thisSubject.nTrials, 1);
             thisSubject.trialDuration = NaN(thisSubject.nTrials, 1);
+            thisSubject.gazeShiftCounter = 0;
             for t = 1:thisSubject.nTrials % Trial
+                % Check whether to skip excluded trial
+                if ismember(t, thisSubject.excludedTrials)
+                    continue
+                end
+
                 % Unpack trial data
                 thisTrial.idx = ...
                     gaze.gazeShifts.trialMap{thisSubject.number,c} == t;
@@ -84,6 +92,7 @@ function time = getTimes(exper, anal, nTrials, gaze, fixations)
                     fixations.fixatedAois.uniqueIds{thisSubject.number,c}(thisTrial.idx,:);
                 thisTrial.gazeShifts.informationLoss = ...
                     fixations.informationLoss{thisSubject.number,c}(thisTrial.idx,:);
+                thisTrial.nGazeShifts = size(thisTrial.gazeShifts.idx, 1);
 
                 % Get leaving times of AOIs
                 thisTrial.leavingTimes = ...
@@ -122,9 +131,13 @@ function time = getTimes(exper, anal, nTrials, gaze, fixations)
                     thisTrial.timestamp.stimOff - thisTrial.timestamp.stimOn;
 
                 % Store data
+                thisTrial.storeIdx = ...
+                    (thisSubject.gazeShiftCounter + 1):(thisSubject.gazeShiftCounter + thisTrial.nGazeShifts);
+                thisSubject.gazeShiftCounter = ...
+                    thisSubject.gazeShiftCounter + thisTrial.nGazeShifts;
+
                 thisSubject.inspectionTime(t) = thisTrial.inspectionTime;
-                thisSubject.dwellTimes = [thisSubject.dwellTimes; ...
-                                          thisTrial.dwellTimes];
+                thisSubject.dwellTimes(thisTrial.storeIdx) = thisTrial.dwellTimes;
                 thisSubject.planningTime(t) = thisTrial.planningTime;
                 thisSubject.responseTime(t) = thisTrial.responseTime;
                 thisSubject.trialDuration(t) = thisTrial.trialDuration;

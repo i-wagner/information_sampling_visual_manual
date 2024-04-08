@@ -1,4 +1,4 @@
-function gazeShifts = getGazeShifts(exper, gaze, nTrials)
+function gazeShifts = getGazeShifts(exper, gaze, nTrials, excludedTrials)
 
     % Wrapper function
     % Extracts gaze shifts from gaze traces. The following analysis steps
@@ -54,6 +54,7 @@ function gazeShifts = getGazeShifts(exper, gaze, nTrials)
             thisSubject.gazeTrace = gaze.trace{thisSubject.number,c};
             thisSubject.events = gaze.events{thisSubject.number,c};
             thisSubject.timestamp.stimOn = gaze.timestamps.stimOn{thisSubject.number,c};
+            thisSubject.excludedTrials = excludedTrials{thisSubject.number,c};
             if isnan(thisSubject.nTrials)
                 continue
             end
@@ -66,6 +67,10 @@ function gazeShifts = getGazeShifts(exper, gaze, nTrials)
             thisSubject.gazeShifts.meanGazePos = [];
             thisSubject.gazeShifts.trialMap = [];
             for t = 1:thisSubject.nTrials % Trial
+                % Check whether to skip excluded trial
+                if ismember(t, thisSubject.excludedTrials)
+                    continue
+                end
                 if any(thisCondition == [2, 3]) % Visual search
                     % Get gaze shift on- and offsets in trial
                     thisTrial.gazeShifts.idx = ...

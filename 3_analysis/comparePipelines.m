@@ -1,4 +1,4 @@
-function comparePipelines(thisSubject, thisTrial, exper, logCol, s, c, t)
+function comparePipelines(thisSubject, thisTrial, exper, logCol, s, c, t, suffix)
 
     %% Recreate the datastructure of the old pipeline, using the result of the new pipeline
     % If no gaze shift was detected, create an empty double array with the
@@ -85,11 +85,22 @@ function comparePipelines(thisSubject, thisTrial, exper, logCol, s, c, t)
     end
     pathToData = strcat("/Users/ilja/Dropbox/12_work/", ...
                         "mr_informationSamplingVisualManual/2_data/", ...
-                        filename, ".mat");
+                        filename, suffix, ".mat");
     oldPipeline = load(pathToData);
+    if strcmp(suffix, "_withExclusion")
+        oldPipeline = oldPipeline.sacc;
+    end
 
     idx = oldPipeline.gazeShifts{s,idxCol}(:,26) == t;
     oldPipelineTrial = oldPipeline.gazeShifts{s,idxCol}(idx,:);
+    if ismember(c, [3, 4])
+        % When the data was exported from the old pipeline, the badTrial
+        % was exclusion was not implemented, so we need to account for this
+        % here
+        if ismember(t, thisSubject.badTrials)
+            oldPipelineTrial = double.empty(0, 29);
+        end
+    end
 
     %% Compare results
     % We round decimals, because floats cannot be compared properly
@@ -98,22 +109,22 @@ function comparePipelines(thisSubject, thisTrial, exper, logCol, s, c, t)
     pipelinesEqual = isequaln(round(newPipeline, nDecimals), ...
                               round(oldPipelineTrial, nDecimals));
 
-% In the old pipeline, whether a gaze shift went to the closest stimulus
-% relative to fixation was determined by using the subset of gaze shifts
-% (i.e., after excluding gaze shifts that did not pass the quality check).
-% In some cases, this resulted in an inaccurate result, because the current
-% fixation location was determined wrongly after excluding gaze shifts 
-% (e.g., a gaze shift was made before stimulus onset, which was not caught 
-% properly, or the initial gaze shift to an AOI was excluded, while a 
-% consecutive gaze shift was included). In
-% the new pipeline, this analysis is conducted using all gaze shifts.
-wentToClosestMismatch = ~isequaln(round(newPipeline(:,21), nDecimals), ...
-                                  round(oldPipelineTrial(:,21), nDecimals));
-restMatch = isequaln(round(newPipeline(:,[1:20, 22:end]), nDecimals), ...
-                     round(oldPipelineTrial(:,[1:20, 22:end]), nDecimals));
-if wentToClosestMismatch & restMatch
-    pipelinesEqual = true;
-end     
+    % In the old pipeline, whether a gaze shift went to the closest stimulus
+    % relative to fixation was determined by using the subset of gaze shifts
+    % (i.e., after excluding gaze shifts that did not pass the quality check).
+    % In some cases, this resulted in an inaccurate result, because the current
+    % fixation location was determined wrongly after excluding gaze shifts 
+    % (e.g., a gaze shift was made before stimulus onset, which was not caught 
+    % properly, or the initial gaze shift to an AOI was excluded, while a 
+    % consecutive gaze shift was included). In
+    % the new pipeline, this analysis is conducted using all gaze shifts.
+    wentToClosestMismatch = ~isequaln(round(newPipeline(:,21), nDecimals), ...
+                                      round(oldPipelineTrial(:,21), nDecimals));
+    restMatch = isequaln(round(newPipeline(:,[1:20, 22:end]), nDecimals), ...
+                         round(oldPipelineTrial(:,[1:20, 22:end]), nDecimals));
+    if wentToClosestMismatch & restMatch
+        pipelinesEqual = true;
+    end     
 
     % There are some special rules for a handful of participants, mostly
     % due to the new gaze shift detection algorithm we are using for the
@@ -206,16 +217,6 @@ end
     % Placeholder gaze shift in trial without any gaze shift (see 
     % "c: 2; s: 12; t: 245")
     %
-    % c: 3; s: 1; t: 1
-    % The new pipeline calculates latency for a gaze shift, for which the
-    % old pipeline does not calculate a latency. This is because, for this
-    % subject, the first gaze shift is excluded due to a missing offset, so
-    % no latency can be calculate for the next gaze shift. The missing 
-    % offset is probably due to pen dragging. In the old pipeline, latency 
-    % for the next gaze shift was (wrongly) calculated relative to stimulus 
-    % onset
-    %
-    %
     % c: 3; s: 13; t: 11
     % One gaze is flagged as going to the closest stimulus in the old
     % pipeline, but not in the new pipeline. This is because we re-center
@@ -225,26 +226,6 @@ end
     % chooses the first minimum, while the new pipeleine think ones minimum
     % is smaller then the other (because of rounding) and chooses this one
     %
-    % c: 3; s: 16; t: 17
-    % Placeholder gaze shift in trial without any gaze shift (see 
-    % "c: 2; s: 12; t: 245")
-    %
-    % c: 3; s: 16; t: 19
-    % Wrongly calculated latency of first gaze shift 
-    % (see "c: 3; s: 1; t: 1")
-    %
-    % c: 3; s: 19; t: [4:11, 14:15, 17:55, 57, 65:68, 70, ...]
-    % Placeholder gaze shift in trial without any gaze shift (see 
-    % "c: 2; s: 12; t: 245")
-    %
-    % c: 3; s: 19; t: 92
-    % Wrongly calculated latency of first gaze shift 
-    % (see "c: 3; s: 1; t: 1")
-    %
-    % c: 4; s: 7; t: 1:2:
-    % Wrongly calculated latency of first gaze shift 
-    % (see "c: 3; s: 1; t: 1")
-    %
     % c: 4; s: 7; t: [34:35, 37:39, 151:153]:
     % Placeholder gaze shift in trial without any gaze shift (see 
     % "c: 2; s: 12; t: 245")
@@ -252,19 +233,6 @@ end
     % c: 4; s: 8; t: 14:
     % Placeholder gaze shift in trial without any gaze shift (see 
     % "c: 2; s: 12; t: 245")
-    %
-    % c: 4; s: 14; t: [8, 16, 19]
-    % Placeholder gaze shift in trial without any gaze shift (see 
-    % "c: 2; s: 12; t: 245")
-    %
-    % c: 4; s: 16; t: 156:
-    % Placeholder gaze shift in trial without any gaze shift (see 
-    % "c: 2; s: 12; t: 245")
-    %
-    % c: 4; s: 19; t: [4:11, 13:17, 20, 30, 33, 39:42, 45:46, 52:53, 81]
-    % Placeholder gaze shift in trial without any gaze shift (see 
-    % "c: 2; s: 12; t: 245")
-    %
     if ~pipelinesEqual & ...
        ~(c == 1 & s == 6 & t == 118) & ...
        ~(c == 1 & s == 10 & t == 85) & ...
@@ -281,24 +249,9 @@ end
        ~(c == 2 & s == 19 & t == 23) & ...
        ~(c == 2 & s == 19 & t == 76) & ...
        ~(c == 2 & s == 19 & t == 84) & ...
-       ~(c == 3 & s == 1 & t == 1) & ...
        ~(c == 3 & s == 13 & t == 11) & ...
-       ~(c == 3 & s == 16 & t == 17) & ...
-       ~(c == 3 & s == 16 & t == 19) & ...
-       ~(c == 3 & s == 19 & any(t == [4:11, 14:15, 17:55, 57, 65:68, 70, ...
-                                      72:76, 79:88, 90, 93:100, 102:113, ...
-                                      117:118, 120:133, 135, 137:138, ...
-                                      141:148, 150:155, 158:162, 164:175, ...
-                                      177:182, 184:191, 193:202, 205:208, ...
-                                      211:213, 215:216, 218:220, 223, ...
-                                      225:226])) & ...
        ~(c == 3 & s == 19 & t == 92) & ...
-       ~(c == 4 & s == 7 & any(t == 1:2)) & ...
-       ~(c == 4 & s == 7 & any(t == [34:35, 37:39, 151:153])) & ...
-       ~(c == 4 & s == 14 & any(t == [8, 16, 19])) & ...
-       ~(c == 4 & s == 16 & any(t == 156)) & ...
-       ~(c == 4 & s == 19 & any(t == [4:11, 13:17, 20, 30, 33, 39:42, ...
-                                      45:46, 52:53, 81]))
+       ~(c == 4 & s == 7 & any(t == [34:35, 37:39, 151:153]))
         warning("Difference in results detects, please check pipelines!");
         keyboard
     end
