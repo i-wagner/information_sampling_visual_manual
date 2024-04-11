@@ -87,7 +87,7 @@ function comparePipelines(thisSubject, thisTrial, exper, logCol, s, c, t, suffix
                         "mr_informationSamplingVisualManual/2_data/", ...
                         filename, suffix, ".mat");
     oldPipeline = load(pathToData);
-    if strcmp(suffix, "_withExclusion")
+    if strcmp(suffix, "_withExclusion") | strcmp(suffix, "_allExclusions")
         oldPipeline = oldPipeline.sacc;
     end
 
