@@ -72,6 +72,9 @@ data.ss.choice = getChoices(exper, anal, logCol, data.ss.log, data.ss.gaze, ...
                             data.ss.fixations, quality.excludedTrials);
 
 %% DEBUG: check whether results from new match old pipeline
+% Check which version of old pipeline data to load
+oldDataVersion = "_allExclusions";
+
 checkPipelines(exper, logCol, data.ss.log, data.ss.gaze, ...
                data.ss.fixations, data.ss.time, data.ss.choice, ...
                data.ss.badTrials, quality.excludedTrials, oldDataVersion);
