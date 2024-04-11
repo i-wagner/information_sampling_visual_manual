@@ -14,7 +14,7 @@ cd(exper.path.ROOT);
 data.ss.log = getLogFiles(exper, anal, logCol);
 data.ss.gaze = getDatFiles(exper, screen, anal, data.ss.log.nCompletedTrials);
 data.ss.badTrials = ...
-    getBadTrials(exper, data.ss.log.nCompletedTrials, exper.path.DATA);
+    getBadTrials(exper, anal, data.ss.log.nCompletedTrials, exper.path.DATA);
 
 %% Asses data quality
 quality.excludedTrials = ...
