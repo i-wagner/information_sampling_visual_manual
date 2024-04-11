@@ -32,3 +32,15 @@ anal.dwellTimes.useTargets = [false, true, false, true];
 % In manual search, we have NO sample numbers, instead, we only have access
 % to the timestamps of events
 anal.nExpectedEvents = 5;
+
+%% Subject exclusion
+% Subject 19
+% This one peformed very poorly in the double-target condition of the
+% eye tracking experiment (having a negative final score), while also
+% having a comparetively large number of excluded trials in this
+% condition.
+% 
+% Subject 20
+% This one had problems during eye tracking calibration (reported by HiWi), 
+% so we only have data for the manual search condition.
+anal.excludedSubjects = 19:20;

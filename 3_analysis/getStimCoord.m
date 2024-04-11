@@ -1,4 +1,4 @@
-function stimulusCoordinates = getStimCoord(exper, logCol, logFiles)
+function stimulusCoordinates = getStimCoord(exper, anal, logCol, logFiles)
 
     % Wrapper function
     % Extracts sorted stimulus coordinates of participants in conditions
@@ -14,6 +14,10 @@ function stimulusCoordinates = getStimCoord(exper, logCol, logFiles)
     % exper:
     % structure; general experiment settings, as returned by the
     % "settings_exper" script
+    %
+    % anal:
+    % structure; vairous analysis settings, as returned by the
+    % "settings_analysis" script
     %
     % logCol:
     % structure; column indices for log files, as returned by the
@@ -31,14 +35,18 @@ function stimulusCoordinates = getStimCoord(exper, logCol, logFiles)
     stimulusCoordinates =cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
     for c = 1:exper.n.CONDITIONS % Condition
         for s = 1:exper.n.SUBJECTS % Subject
-            thisSubject = exper.num.SUBJECTS(s);
-            logFile = logFiles{thisSubject, c};
+            thisSubject.number = exper.num.SUBJECTS(s);
+            if ismember(thisSubject.number, anal.excludedSubjects)
+                continue
+            end
+
+            logFile = logFiles{thisSubject.number, c};
             if isempty(logFile)
                 continue
             end
     
             % Create structure with stimulus locations
-            stimulusCoordinates{thisSubject,c} = ...                  
+            stimulusCoordinates{thisSubject.number,c} = ...                  
                 sortStimLoc(logFile(:,logCol.STIMULUS_POSITION_X), ...
                             logFile(:,logCol.STIMULUS_POSITION_Y), ...
                             logFile(:,logCol.N_DISTRACTOR_EASY), ...

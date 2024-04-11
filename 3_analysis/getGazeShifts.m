@@ -1,4 +1,4 @@
-function gazeShifts = getGazeShifts(exper, gaze, nTrials, excludedTrials)
+function gazeShifts = getGazeShifts(exper, anal, gaze, nTrials, excludedTrials)
 
     % Wrapper function
     % Extracts gaze shifts from gaze traces. The following analysis steps
@@ -21,6 +21,10 @@ function gazeShifts = getGazeShifts(exper, gaze, nTrials, excludedTrials)
     % exper:
     % structure; general experiment settings, as returned by the
     % "settings_exper" script
+    %
+    % anal:
+    % structure; vairous analysis settings, as returned by the
+    % "settings_analysis" script
     %
     % gaze:
     % structure; gaze data of participants in conditions
@@ -50,6 +54,10 @@ function gazeShifts = getGazeShifts(exper, gaze, nTrials, excludedTrials)
         thisCondition = exper.num.CONDITIONS(c);
         for s = 1:exper.n.SUBJECTS % Subject
             thisSubject.number = exper.num.SUBJECTS(s);
+            if ismember(thisSubject.number, anal.excludedSubjects)
+                continue
+            end
+
             thisSubject.nTrials = nTrials(thisSubject.number,c);
             thisSubject.gazeTrace = gaze.trace{thisSubject.number,c};
             thisSubject.events = gaze.events{thisSubject.number,c};

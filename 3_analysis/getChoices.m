@@ -1,4 +1,4 @@
-function choice = getChoices(exper, logCol, logFiles, gaze, fixations, excludedTrials)
+function choice = getChoices(exper, anal, logCol, logFiles, gaze, fixations, excludedTrials)
 
     % Wrapper function
     % Extracts target choices
@@ -14,6 +14,10 @@ function choice = getChoices(exper, logCol, logFiles, gaze, fixations, excludedT
     % exper:
     % structure; general experiment settings, as returned by the
     % "settings_exper" script
+    %
+    % anal:
+    % structure; vairous analysis settings, as returned by the
+    % "settings_analysis" script
     % 
     % logCol:
     % structure; column indices for log files, as returned by the
@@ -48,6 +52,10 @@ function choice = getChoices(exper, logCol, logFiles, gaze, fixations, excludedT
     for c = 1:exper.n.CONDITIONS % Condition
         for s = 1:exper.n.SUBJECTS % Subject
             thisSubject.number = exper.num.SUBJECTS(s);
+            if ismember(thisSubject.number, anal.excludedSubjects)
+                continue
+            end
+
             thisSubject.nTrials = logFiles.nCompletedTrials(thisSubject.number,c);
             thisSubject.logFile = logFiles.files{thisSubject.number,c};
             thisSubject.excludedTrials = excludedTrials{thisSubject.number,c};

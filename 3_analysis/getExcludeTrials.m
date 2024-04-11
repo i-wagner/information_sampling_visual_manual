@@ -1,4 +1,4 @@
-function excludedTrials = getExcludeTrials(exper, isOnlineFixErr, isOfflineFixErr, isDataLoss, isMissingEvent, isPenDragging)
+function excludedTrials = getExcludeTrials(exper, anal, isOnlineFixErr, isOfflineFixErr, isDataLoss, isMissingEvent, isPenDragging)
 
     % Determine which trials to exclude from subsequent analysis
     %
@@ -6,6 +6,10 @@ function excludedTrials = getExcludeTrials(exper, isOnlineFixErr, isOfflineFixEr
     % exper:
     % structure; general experiment settings, as returned by the
     % "settings_exper" script
+    %
+    % anal:
+    % structure; vairous analysis settings, as returned by the
+    % "settings_analysis" script
     % 
     % isOnlineFixErr:
     % matrix; Booleans indicating which trial for which subject in which
@@ -36,6 +40,9 @@ function excludedTrials = getExcludeTrials(exper, isOnlineFixErr, isOfflineFixEr
     for c = 1:exper.n.CONDITIONS % Condition
         for s = 1:exper.n.SUBJECTS % Subject
             thisSubject.number = exper.num.SUBJECTS(s);
+            if ismember(thisSubject.number, anal.excludedSubjects)
+                continue
+            end
 
             idx.fixErr.online = find(isOnlineFixErr{thisSubject.number,c});
             idx.fixErr.offline = find(isOfflineFixErr{thisSubject.number,c});

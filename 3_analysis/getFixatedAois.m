@@ -86,6 +86,10 @@ function fixations = getFixatedAois(exper, screen, anal, gaze, stimCoords, nTria
     for c = 1:exper.n.CONDITIONS % Condition
         for s = 1:exper.n.SUBJECTS % Subject
             thisSubject.number = exper.num.SUBJECTS(s);
+            if ismember(thisSubject.number, anal.excludedSubjects)
+                continue
+            end
+
             thisSubject.nTrials = nTrials(thisSubject.number,c);
             thisSubject.excludedTrials = excludedTrials{thisSubject.number,c};
             thisSubject.nGazeShifts = numel(gaze.gazeShifts.trialMap{thisSubject.number,c});
