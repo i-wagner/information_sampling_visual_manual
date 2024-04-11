@@ -1,4 +1,4 @@
-function badTrials = getBadTrials(exper, anal, nTrials, pathToData)
+function badTrials = getBadTrials(exper, nTrials, pathToData)
 
     % Checks for "bad trials" in conditions of the manual search
     % experiment
@@ -15,10 +15,6 @@ function badTrials = getBadTrials(exper, anal, nTrials, pathToData)
     % exper:
     % structure; general experiment settings, as returned by the
     % "settings_exper" script
-    %
-    % anal:
-    % structure; vairous analysis settings, as returned by the
-    % "settings_analysis" script
     %
     % nTrials:
     % matrix; number of trials that participants completed in conditions
@@ -46,9 +42,9 @@ function badTrials = getBadTrials(exper, anal, nTrials, pathToData)
      
         for s = 1:exper.n.SUBJECTS % Subject
             thisSubject.number = exper.num.SUBJECTS(s);
-            if ismember(thisSubject.number, anal.excludedSubjects)
-                continue
-            end
+%             if ismember(thisSubject.number, anal.excludedSubjects)
+%                 continue
+%             end
 
             thisSubject.nTrials = nTrials(thisSubject.number,c);
             if isnan(thisSubject.nTrials)
