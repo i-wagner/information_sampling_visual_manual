@@ -1,8 +1,8 @@
 function time = getTimes(exper, anal, nTrials, gaze, fixations, excludedTrials)
 
     % Wrapper function
-    % Extracts planning, dwell, inspection, and response time as well as
-    % trial durations for each subject in conditions
+    % Extracts planning, dwell, inspection, and response time for each 
+    % subject in conditions
     %
     % NOTE 1:
     % This wrapper function uses the SUBSET of fixation, as determined in
@@ -48,7 +48,6 @@ function time = getTimes(exper, anal, nTrials, gaze, fixations, excludedTrials)
     time.dwell = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
     time.planning = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
     time.response = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
-    time.trialDuration = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
     for c = 1:exper.n.CONDITIONS % Condition
         for s = 1:exper.n.SUBJECTS % Subject
             thisSubject.number = exper.num.SUBJECTS(s);
@@ -67,7 +66,6 @@ function time = getTimes(exper, anal, nTrials, gaze, fixations, excludedTrials)
             thisSubject.dwellTimes = NaN(thisSubject.nGazeShifts,1);
             thisSubject.planningTime = NaN(thisSubject.nTrials, 1);
             thisSubject.responseTime = NaN(thisSubject.nTrials, 1);
-            thisSubject.trialDuration = NaN(thisSubject.nTrials, 1);
             thisSubject.gazeShiftCounter = 0;
             for t = 1:thisSubject.nTrials % Trial
                 % Check whether to skip excluded trial
@@ -129,10 +127,6 @@ function time = getTimes(exper, anal, nTrials, gaze, fixations, excludedTrials)
                                     thisTrial.timestamp.stimOff, ...
                                     [exper.stimulus.id.target.EASY, exper.stimulus.id.target.DIFFICULT], ...
                                     exper.stimulus.id.BACKGROUND);
-                
-                % Get trial duration
-                thisTrial.trialDuration = ...
-                    thisTrial.timestamp.stimOff - thisTrial.timestamp.stimOn;
 
                 % Store data
                 thisTrial.storeIdx = ...
@@ -144,7 +138,6 @@ function time = getTimes(exper, anal, nTrials, gaze, fixations, excludedTrials)
                 thisSubject.dwellTimes(thisTrial.storeIdx) = thisTrial.dwellTimes;
                 thisSubject.planningTime(t) = thisTrial.planningTime;
                 thisSubject.responseTime(t) = thisTrial.responseTime;
-                thisSubject.trialDuration(t) = thisTrial.trialDuration;
                 clear thisTrial
             end
 
@@ -153,7 +146,6 @@ function time = getTimes(exper, anal, nTrials, gaze, fixations, excludedTrials)
             time.dwell{thisSubject.number,c} = thisSubject.dwellTimes;
             time.planning{thisSubject.number,c} = thisSubject.planningTime;
             time.response{thisSubject.number,c} = thisSubject.responseTime;
-            time.trialDuration{thisSubject.number,c} = thisSubject.trialDuration;
             clear thisSubject
         end
     end
