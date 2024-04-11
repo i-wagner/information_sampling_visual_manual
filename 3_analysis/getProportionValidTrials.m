@@ -1,4 +1,4 @@
-function proportionValidTrials = getProportionValidTrials(exper, anal, nTrials, excludedTrials)
+function [proportionValidTrials, nValidTrials] = getProportionValidTrials(exper, anal, nTrials, excludedTrials)
 
     % Calculate proportion valid trials
     %
@@ -21,9 +21,13 @@ function proportionValidTrials = getProportionValidTrials(exper, anal, nTrials, 
     % proportionValidTrials:
     % matrix; proportion of valid (i.e., not excluded) trials for each
     % subject and condition
+    %
+    % nValidTrials:
+    % matrix; numberof trials that are considered for analysis
 
     %% Calculat proportion valid trials
     proportionValidTrials = NaN(exper.n.SUBJECTS, exper.n.CONDITIONS);
+    nValidTrials = NaN(exper.n.SUBJECTS, exper.n.CONDITIONS);
      for c = 1:exper.n.CONDITIONS % Condition
         for s = 1:exper.n.SUBJECTS % Subject
             thisSubject.number = exper.num.SUBJECTS(s);
@@ -37,6 +41,8 @@ function proportionValidTrials = getProportionValidTrials(exper, anal, nTrials, 
 
             proportionValidTrials(thisSubject.number,c) = ...
                 1 - (thisSubject.nExcludedTrials / thisSubject.nTrials);
+            nValidTrials(thisSubject.number,c) = ...
+                thisSubject.nTrials - thisSubject.nExcludedTrials; 
         end
      end
 end
