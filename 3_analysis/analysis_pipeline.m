@@ -75,10 +75,21 @@ data.ss.choice = getChoices(exper, anal, logCol, data.ss.log, data.ss.gaze, ...
 % Check which version of old pipeline data to load
 oldDataVersion = "_allExclusions";
 
+% For check of gaze data matrix: can run with bad trials excluded, because
+% those are taken care of within the checkPipelines function
+% 
+% For check of individual variables: needs to run without bad trials
+%  exclusion, because this was not taken into account in the old pipeline,
+% and thus, the data from there does not match
 checkPipelines(exper, logCol, data.ss.log, data.ss.gaze, ...
                data.ss.fixations, data.ss.time, data.ss.choice, ...
                data.ss.badTrials, quality.excludedTrials, oldDataVersion);
-
+compareVariableOfInterest(quality.proportionValidTrials, ...
+                          "proportionValid", oldDataVersion);
+compareVariableOfInterest(data.ss.time.propTrialsWithResp, ...
+                          "proportionTrialsWithResponse", oldDataVersion);
+compareVariableOfInterest(data.ss.time.lostTime, ...
+                          "timeLostExcldTrials", oldDataVersion);
 
 %% Proportion correct
 perf.hitrates             = NaN(exper.num.subNo, exper.num.condNo, 3);
