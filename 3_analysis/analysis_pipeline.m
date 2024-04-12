@@ -59,15 +59,15 @@ data.fixations.propTrialOneAoiFix = ...
                    quality.nValidTrials, []);
 
 %% Get time-related variables
-% Trial durations
-data.time.trialDurations = ...
-    getTrialDurations(exper, anal, data.log.nCompletedTrials, data.gaze);
-
 % Planning, inspection, and response times
 data.time = getTimes(exper, anal, data.log.nCompletedTrials, ...
                         data.gaze, ...
                         data.fixations, ...
                         quality.excludedTrials);
+
+% Trial durations
+data.time.trialDurations = ...
+    getTrialDurations(exper, anal, data.log.nCompletedTrials, data.gaze);
 
 % Proportion trials for which response time could be calculated
 % if the last gaze shift was located in the AOI around a distractor, no
@@ -83,7 +83,8 @@ data.time.lostTime = ...
 
 %% Get chosen target
 data.choice = getChoices(exper, anal, logCol, data.log, data.gaze, ...
-                            data.fixations, quality.excludedTrials);
+                         data.fixations, quality.excludedTrials);
+
 
 %% DEBUG: check whether results from new match old pipeline
 % Check which version of old pipeline data to load
