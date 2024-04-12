@@ -60,7 +60,8 @@ data.ss.time = getTimes(exper, anal, data.ss.log.nCompletedTrials, ...
 % if the last gaze shift was located in the AOI around a distractor, no
 % response time was calculated
 data.ss.time.propTrialsWithResp = ...
-    getPropRespTime(exper, anal, data.ss.time.response, quality.nValidTrials);
+    getProportions(exper, anal, data.ss.time.response, ....
+                   quality.nValidTrials, "numeric");
 
 % Time lost due to exclusion of trials
 % Calculate time lost due to excluded trials and store # excluded trials
