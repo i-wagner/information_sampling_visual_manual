@@ -29,6 +29,16 @@ quality.excludedTrials = ...
     getProportionValidTrials(exper, anal, data.log.nCompletedTrials, ...
                              quality.excludedTrials);
 
+%% Drop excluded trials from variables
+% Log files contain all trials, and thus, do not yet account for excluded
+% trials. This step is not necessary for everything but the stuff from log
+% files, because functions are designed to skip over excluded trials
+% data.log.hitOrMiss = dropTrials(exper, anal, data.log.hitOrMiss, quality.excludedTrials);
+data.log.nDistractors.easy = ...
+    dropTrials(exper, anal, data.log.nDistractors.easy, quality.excludedTrials);
+data.log.nDistractors.difficult = ...
+    dropTrials(exper, anal, data.log.nDistractors.difficult, quality.excludedTrials);
+
 %% Get screen coordiantes of stimuli
 data.stimulusCoordinates = getStimCoord(exper, anal, logCol, data.log.files);
 
