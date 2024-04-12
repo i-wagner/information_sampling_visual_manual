@@ -85,6 +85,19 @@ data.time.lostTime = ...
 data.choice = getChoices(exper, anal, logCol, data.log, data.gaze, ...
                          data.fixations, quality.excludedTrials);
 
+%% Calculate target discrimination performance
+data.performance.proportionCorrect.easy = ...
+    getPerceptualPerf(exper, anal, ...
+                      data.log.hitOrMiss, ...
+                      data.choice.target, ...
+                      exper.stimulus.id.target.EASY, ...
+                      data.log.nDistractors.easy);
+data.performance.proportionCorrect.difficult = ...
+    getPerceptualPerf(exper, anal, ...
+                      data.log.hitOrMiss, ...
+                      data.choice.target, ...
+                      exper.stimulus.id.target.DIFFICULT, ...
+                      data.log.nDistractors.difficult);
 
 %% DEBUG: check whether results from new match old pipeline
 % Check which version of old pipeline data to load
@@ -107,33 +120,6 @@ compareVariableOfInterest(data.time.lostTime, ...
                           "timeLostExcldTrials", oldDataVersion);
 compareVariableOfInterest(data.fixations.propTrialOneAoiFix, ...
                           "aoiFix", oldDataVersion);
-
-%% Proportion correct
-perf.hitrates             = NaN(exper.num.subNo, exper.num.condNo, 3);
-perf.hitrates_withDecTime = NaN(3, 2, exper.num.subNo, exper.num.condNo);
-for c = 1:exper.num.condNo % Condition
-
-    % Proportion correct for individual subjects
-    for s = 1:exper.num.subNo % Subject
-
-        thisSubject         = exper.num.subs(s);
-        inp_chosenTarget = stim.chosenTarget{thisSubject, c};
-        inp_hitMiss      = perf.hitMiss{thisSubject, c};
-        inp_decisionTime = sacc.time.decision{thisSubject, c};
-        inp_noDis        = [stim.no_easyDis{s, c} stim.no_hardDis{s, c}];
-
-        if ~isempty(inp_chosenTarget)
-
-            [~, perf.hitrates(thisSubject, c, 1:3), perf.hitrates_withDecTime(:, :, s, c)] = ...
-                infSampling_propCorrect(inp_hitMiss, inp_chosenTarget, inp_decisionTime, inp_noDis, c);
-
-        end
-        clear thisSubject inp_chosenTarget inp_hitMiss inp_decisionTime inp_noDis
-
-    end
-    clear s
-
-end
 
 
 %% Proportion choices easy target
