@@ -37,6 +37,9 @@ function logs = getLogFiles(exper, logCol)
     logs.files = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
     logs.nCompletedTrials = NaN(exper.n.SUBJECTS, exper.n.CONDITIONS);
     logs.error.fixation.online = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+    logs.hitOrMiss = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+    logs.nDistractors.easy = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+    logs.nDistractors.difficult = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
     for c = 1:exper.n.CONDITIONS % Condition
         thisCondition = exper.num.CONDITIONS(c);
         for s = 1:exper.n.SUBJECTS % Subject
@@ -114,6 +117,12 @@ function logs = getLogFiles(exper, logCol)
                 max(thisSubject.logFile(:,logCol.TRIAL_NO));
             logs.error.fixation.online{thisSubject.number,c} = ...
                 thisSubject.logFile(:,logCol.IS_FIXATION_ERROR);
+            logs.hitOrMiss{thisSubject.number,c} = ...
+                thisSubject.logFile(:,logCol.HIT_OR_MISS);
+            logs.nDistractors.easy{thisSubject.number,c} = ...
+                thisSubject.logFile(:,logCol.N_DISTRACTOR_EASY);
+            logs.nDistractors.difficult{thisSubject.number,c} = ...
+                thisSubject.logFile(:,logCol.N_DISTRACTOR_DIFFICULT);
             clear thisSubject
         end
     end
