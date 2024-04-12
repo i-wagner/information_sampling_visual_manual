@@ -37,6 +37,10 @@ function compareVariableOfInterest(newPipeline, variableOfInterest, suffix)
             thisVariable = thisData.exper.timeLostExcldTrials;
         elseif strcmp(variableOfInterest, "aoiFix")
             thisVariable = thisData.sacc.propGs.aoiFix_mean;
+        elseif strcmp(variableOfInterest, "propCorrectEasy")
+            thisVariable = thisData.perf.hitrates(:,:,2);
+        elseif strcmp(variableOfInterest, "propCorrectDifficult")
+            thisVariable = thisData.perf.hitrates(:,:,3);
         end
         oldPipeline = [oldPipeline, thisVariable];
     end
