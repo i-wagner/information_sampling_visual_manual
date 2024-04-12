@@ -11,10 +11,10 @@ addpath(exper.path.ANALYSIS);
 cd(exper.path.ROOT);
 
 %% Extract data from files
-data.ss.log = getLogFiles(exper, anal, logCol);
+data.ss.log = getLogFiles(exper, logCol);
 data.ss.gaze = getDatFiles(exper, screen, anal, data.ss.log.nCompletedTrials);
 data.ss.badTrials = ...
-    getBadTrials(exper, anal, data.ss.log.nCompletedTrials, exper.path.DATA);
+    getBadTrials(exper, data.ss.log.nCompletedTrials, exper.path.DATA);
 
 %% Asses data quality
 quality.excludedTrials = ...
