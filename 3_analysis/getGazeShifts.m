@@ -32,6 +32,9 @@ function gazeShifts = getGazeShifts(exper, anal, gaze, nTrials, excludedTrials)
     % nTrials:
     % matrix; number of trials that participants completed in conditions
     %
+    % excludedTrials:
+    % matrix; numbers of trials that where excluded from analysis
+    %
     % Output
     % gazeShifts:
     % structure; gaze shifts of participants in conditions
