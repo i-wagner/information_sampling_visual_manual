@@ -46,7 +46,8 @@ function compareVariableOfInterest(newPipeline, variableOfInterest, suffix)
     end
     
     %% Compare pipelines
-    pipelineResultyMatch = isequaln(newPipeline, oldPipeline);
+    % Round to decimals to avoid false-alarms when comparing pipelines
+    pipelineResultyMatch = isequaln(round(newPipeline, 14), round(oldPipeline, 14));
     if ~pipelineResultyMatch
         warning("Results from old and new pipeleine do not match!");
         keyboard
