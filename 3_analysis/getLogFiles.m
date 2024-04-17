@@ -40,6 +40,7 @@ function logs = getLogFiles(exper, logCol)
     logs.hitOrMiss = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
     logs.nDistractors.easy = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
     logs.nDistractors.difficult = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+    logs.scores = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
     for c = 1:exper.n.CONDITIONS % Condition
         thisCondition = exper.num.CONDITIONS(c);
         for s = 1:exper.n.SUBJECTS % Subject
@@ -123,6 +124,8 @@ function logs = getLogFiles(exper, logCol)
                 thisSubject.logFile(:,logCol.N_DISTRACTOR_EASY);
             logs.nDistractors.difficult{thisSubject.number,c} = ...
                 thisSubject.logFile(:,logCol.N_DISTRACTOR_DIFFICULT);
+            logs.scores{thisSubject.number,c} = ...
+                thisSubject.logFile(:,logCol.SCORE);
             clear thisSubject
         end
     end
