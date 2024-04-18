@@ -134,6 +134,9 @@ data.performance.proportionCorrect.difficult = ...
 % Final score at the end of conditions
 data.performance.finalScores = getFinalScore(exper, anal, data.log.scores);
 
+%% Store data
+save(strcat(exper.path.DATA, "data_newPipeline.mat"));
+
 %% DEBUG: check whether results from new match old pipeline
 % Check which version of old pipeline data to load
 oldDataVersion = "_allExclusions";
