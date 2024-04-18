@@ -42,10 +42,6 @@ function badTrials = getBadTrials(exper, nTrials, pathToData)
      
         for s = 1:exper.n.SUBJECTS % Subject
             thisSubject.number = exper.num.SUBJECTS(s);
-%             if ismember(thisSubject.number, anal.excludedSubjects)
-%                 continue
-%             end
-
             thisSubject.nTrials = nTrials(thisSubject.number,c);
             if isnan(thisSubject.nTrials)
                 continue;
