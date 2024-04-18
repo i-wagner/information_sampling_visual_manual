@@ -44,10 +44,10 @@ function time = getTimes(exper, anal, nTrials, gaze, fixations, excludedTrials)
     % structure; time-variables across participants and conditions
 
     %% Analyse fixations
-    time.inspection = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
-    time.dwell = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
-    time.planning = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
-    time.response = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+    time.inspection.trialwise = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+    time.dwell.trialwise = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+    time.planning.trialwise = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+    time.response.trialwise = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
     for c = 1:exper.n.CONDITIONS % Condition
         for s = 1:exper.n.SUBJECTS % Subject
             thisSubject.number = exper.num.SUBJECTS(s);
@@ -142,10 +142,10 @@ function time = getTimes(exper, anal, nTrials, gaze, fixations, excludedTrials)
             end
 
             % Store data
-            time.inspection{thisSubject.number,c} = thisSubject.inspectionTime;
-            time.dwell{thisSubject.number,c} = thisSubject.dwellTimes;
-            time.planning{thisSubject.number,c} = thisSubject.planningTime;
-            time.response{thisSubject.number,c} = thisSubject.responseTime;
+            time.inspection.trialwise{thisSubject.number,c} = thisSubject.inspectionTime;
+            time.dwell.trialwise{thisSubject.number,c} = thisSubject.dwellTimes;
+            time.planning.trialwise{thisSubject.number,c} = thisSubject.planningTime;
+            time.response.trialwise{thisSubject.number,c} = thisSubject.responseTime;
             clear thisSubject
         end
     end
