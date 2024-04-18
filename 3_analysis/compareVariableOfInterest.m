@@ -41,14 +41,26 @@ function compareVariableOfInterest(newPipeline, variableOfInterest, suffix)
             thisVariable = thisData.perf.hitrates(:,:,2);
         elseif strcmp(variableOfInterest, "propCorrectDifficult")
             thisVariable = thisData.perf.hitrates(:,:,3);
+        elseif strcmp(variableOfInterest, "planningTimeEasy")
+            thisVariable = thisData.sacc.time.mean.planning(:,:,2);
+        elseif strcmp(variableOfInterest, "planningTimeDifficult")
+            thisVariable = thisData.sacc.time.mean.planning(:,:,3);
+        elseif strcmp(variableOfInterest, "inspectionTimeEasy")
+            thisVariable = thisData.sacc.time.mean.inspection(:,:,2);
+        elseif strcmp(variableOfInterest, "inspectionTimeDifficult")
+            thisVariable = thisData.sacc.time.mean.inspection(:,:,3);
+        elseif strcmp(variableOfInterest, "responseTimeEasy")
+            thisVariable = thisData.sacc.time.mean.decision(:,:,2);
+        elseif strcmp(variableOfInterest, "responseTimeDifficult")
+            thisVariable = thisData.sacc.time.mean.decision(:,:,3);
         end
         oldPipeline = [oldPipeline, thisVariable];
     end
     
     %% Compare pipelines
     % Round to decimals to avoid false-alarms when comparing pipelines
-    pipelineResultyMatch = isequaln(round(newPipeline, 14), round(oldPipeline, 14));
-    if ~pipelineResultyMatch
+    pipelineResultsMatch = isequaln(round(newPipeline, 14), round(oldPipeline, 14));
+    if ~pipelineResultsMatch
         warning("Results from old and new pipeleine do not match!");
         keyboard
     end
