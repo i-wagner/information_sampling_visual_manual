@@ -1,13 +1,18 @@
-function proportionCorrect = getPerceptualPerf(exper, anal, hitOrMiss, chosenTarget, targetId, nDistractors)
+function variableAvg = getAvg(exper, anal, variable, chosenTarget, targetId, nDistractors)
 
-    % Calculates perceptual performance for target discriminations
+    % Calculates the average across some variable of interest
     %
-    % NOTE:
-    % Perceptual performance is calculated by, first, calculating the
-    % proportion correct trials for each set-size (i.e., numbers of
-    % distractors from the set of the chosen target) seperately, and
-    % second, averaging over the resulting vector. We are doing this to be
-    % in line with the way handle variables in the modelling module.
+    % NOTE 1:
+    % Average is calculated by, first, calculating the average of the
+    % variable of interest for each set-size (i.e., numbers of distractors 
+    % from the easy/difficultgiven set) seperately, and second, averaging 
+    % over the resulting vector. We are doing this to be in line with the 
+    % way averages are calculated in the modelling module
+    %
+    % NOTE 2:
+    % The function assumes that invalid trials are already excluded from
+    % the variable of interest (i.e., they are set to NaN), when
+    % calculating the mean
     %
     % Input
     % exper:
@@ -18,8 +23,8 @@ function proportionCorrect = getPerceptualPerf(exper, anal, hitOrMiss, chosenTar
     % structure; vairous analysis settings, as returned by the
     % "settings_analysis" script
     % 
-    % hitOrMiss:
-    % matrix; Boolean whether trial was hit or miss
+    % variable:
+    % matrix; variable of interest over which to average
     % 
     % chosenTarget:
     % matrix; ID of chosen target in trial
@@ -33,37 +38,35 @@ function proportionCorrect = getPerceptualPerf(exper, anal, hitOrMiss, chosenTar
     % we are calculating discrimination performance
     %
     % Output
-    % proportionCorrect:
-    % matrix; proportion trials in which target was correctly
-    % discriminated, across participants and conditions
+    % variableAvg:
+    % matrix; average of variable of interest across conditions and
+    % participants
 
     %% Calculate discrimination performance of target
-    proportionCorrect = NaN(exper.n.SUBJECTS,exper.n.CONDITIONS);
+    variableAvg = NaN(exper.n.SUBJECTS,exper.n.CONDITIONS);
     for c = 1:exper.n.CONDITIONS % Condition
         for s = 1:exper.n.SUBJECTS % Subject
             thisSubject.number = exper.num.SUBJECTS(s);
             if ismember(thisSubject.number, anal.excludedSubjects)
                 continue
             end
-            thisSubject.isHit = hitOrMiss{thisSubject.number,c};
+            thisSubject.variable = variable{thisSubject.number,c};
             thisSubject.chosenTarget = chosenTarget{thisSubject.number,c};
             thisSubject.nDistractors = nDistractors{thisSubject.number,c};
             thisSubject.setSize.level = ...
                 unique(thisSubject.nDistractors(~isnan(thisSubject.nDistractors)));
             thisSubject.setSize.n = numel(thisSubject.setSize.level);
+            thisSubject.isExcludedTrial = isnan(thisSubject.variable);
 
-            thisSubject.proportionCorrect = NaN(thisSubject.setSize.n, 1);
+            thisSubject.set = NaN(thisSubject.setSize.n, 1);
             for n = 1:thisSubject.setSize.n % Set size
                 isSetSize = thisSubject.nDistractors == thisSubject.setSize.level(n);
                 isTarget = thisSubject.chosenTarget == targetId;
-                hits = thisSubject.isHit & isSetSize & isTarget;
+                isTrial = isSetSize & isTarget & ~thisSubject.isExcludedTrial;
 
-                nTrials = sum(isTarget & isSetSize);
-                nHits = sum(hits);
-                thisSubject.proportionCorrect(n) = nHits / nTrials;
+                thisSubject.set(n) = mean(thisSubject.variable(isTrial), 1, 'omitnan');
             end
-            proportionCorrect(thisSubject.number,c) = ...
-                mean(thisSubject.proportionCorrect, 'omitnan');
+            variableAvg(thisSubject.number,c) = mean(thisSubject.set, 'omitnan');
             clear thisSubject
         end
     end
