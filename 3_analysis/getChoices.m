@@ -46,7 +46,9 @@ function choice = getChoices(exper, anal, logCol, logFiles, gaze, fixations, exc
     targetIds = [exper.stimulus.id.target.EASY, ...
                  exper.stimulus.id.target.DIFFICULT];
 
-    choice.target = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+    choice.target.id = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+    choice.target.easy = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+    choice.target.difficult = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
     choice.congruency = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
     choice.nDistractorsChosenSet = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
     for c = 1:exper.n.CONDITIONS % Condition
@@ -63,7 +65,9 @@ function choice = getChoices(exper, anal, logCol, logFiles, gaze, fixations, exc
                 continue
             end
 
-            thisSubject.chosenTarget = NaN(thisSubject.nTrials, 1);
+            thisSubject.chosenTarget.id = NaN(thisSubject.nTrials, 1);
+            thisSubject.chosenTarget.easy = NaN(thisSubject.nTrials, 1);
+            thisSubject.chosenTarget.difficult = NaN(thisSubject.nTrials, 1);
             thisSubject.responseCongruency = NaN(thisSubject.nTrials, 1);
             thisSubject.nDistractorsChosenSet = NaN(thisSubject.nTrials, 1);
             for t = 1:thisSubject.nTrials % Trial
@@ -107,14 +111,18 @@ function choice = getChoices(exper, anal, logCol, logFiles, gaze, fixations, exc
                                             targetIds);
 
                 % Store data
-                thisSubject.chosenTarget(t) = thisTrial.chosenTarget.response;
+                thisSubject.chosenTarget.id(t) = thisTrial.chosenTarget.response;
+                thisSubject.chosenTarget.easy(t) = thisTrial.chosenTarget.response == exper.stimulus.id.target.EASY;
+                thisSubject.chosenTarget.difficult(t) = thisTrial.chosenTarget.response == exper.stimulus.id.target.DIFFICULT;
                 thisSubject.responseCongruency(t) = thisTrial.responseCongruency;
                 thisSubject.nDistractorsChosenSet(t) = thisTrial.nDistractorsChosenSet;
                 clear thisTrial
             end
 
             % Store data
-            choice.target{thisSubject.number,c} = thisSubject.chosenTarget;
+            choice.target.id{thisSubject.number,c} = thisSubject.chosenTarget.id;
+            choice.target.easy{thisSubject.number,c} = thisSubject.chosenTarget.easy;
+            choice.target.difficult{thisSubject.number,c} = thisSubject.chosenTarget.difficult;
             choice.congruency{thisSubject.number,c} = thisSubject.responseCongruency;
             choice.nDistractorsChosenSet{thisSubject.number,c} = thisSubject.nDistractorsChosenSet;
             clear thisSubject
