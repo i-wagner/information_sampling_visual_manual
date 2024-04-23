@@ -21,6 +21,14 @@ function compareVariableOfInterest(newPipeline, variableOfInterest, suffix)
     % Output
     % --
 
+    %% Reshape input
+    % Bring it in a shape so it can be easily compared to the data from the
+    % old pipeline
+    if strcmp(variableOfInterest, "proportionEasyChoices") | ...
+       strcmp(variableOfInterest, "regression")
+        newPipeline = [newPipeline(:,:,1), newPipeline(:,:,2)];
+    end
+
     %% Get variable of interest from old pipeline
     conditionLabels = ["oldGs_visual", "oldGs_manual"];
     oldPipeline = [];
@@ -53,6 +61,8 @@ function compareVariableOfInterest(newPipeline, variableOfInterest, suffix)
             thisVariable = thisData.sacc.time.mean.decision(:,:,2);
         elseif strcmp(variableOfInterest, "responseTimeDifficult")
             thisVariable = thisData.sacc.time.mean.decision(:,:,3);
+        elseif strcmp(variableOfInterest, "proportionEasyChoices")
+            thisVariable = thisData.stim.propChoice.easy(:,:,2)';
         end
         oldPipeline = [oldPipeline, thisVariable];
     end
