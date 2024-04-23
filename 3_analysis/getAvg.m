@@ -61,7 +61,10 @@ function variableAvg = getAvg(exper, anal, variable, chosenTarget, targetId, nDi
             thisSubject.set = NaN(thisSubject.setSize.n, 1);
             for n = 1:thisSubject.setSize.n % Set size
                 isSetSize = thisSubject.nDistractors == thisSubject.setSize.level(n);
-                isTarget = thisSubject.chosenTarget == targetId;
+                isTarget = true(numel(thisSubject.nDistractors), 1);
+                if ~isempty(targetId)
+                    isTarget = thisSubject.chosenTarget == targetId;
+                end
                 isTrial = isSetSize & isTarget & ~thisSubject.isExcludedTrial;
 
                 thisSubject.set(n) = mean(thisSubject.variable(isTrial), 1, 'omitnan');
