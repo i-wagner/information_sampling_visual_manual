@@ -63,6 +63,8 @@ function compareVariableOfInterest(newPipeline, variableOfInterest, suffix)
             thisVariable = thisData.sacc.time.mean.decision(:,:,3);
         elseif strcmp(variableOfInterest, "proportionEasyChoices")
             thisVariable = thisData.stim.propChoice.easy(:,:,2)';
+        elseif strcmp(variableOfInterest, "regression")
+            thisVariable = thisData.model_io.reg.fit;
         end
         oldPipeline = [oldPipeline, thisVariable];
     end

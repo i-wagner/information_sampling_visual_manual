@@ -69,6 +69,12 @@ data.choice = getChoices(exper, anal, logCol, data.log, data.gaze, ...
            [], ...
            data.log.nDistractors.easy);
 
+% Test influence of difficult and set size on choices
+% Do this by fitting a linear regression, and inspecting slope (set size)
+% and intercepts (difficult)
+data.choice.regressionFit = ...
+    fitRegression(exper, anal, data.choice.target.proportionEasy, ...
+                  data.log.nDistractors.easy);
 
 %% Get time-related variables
 % Planning, inspection, and response times
@@ -286,6 +292,8 @@ for c = 2:exper.num.condNo % Condition
 end
 clear c thisCondition
 
+compareVariableOfInterest(data.choice.regressionFit(:,:,[2,4]), ...
+                          "regression", oldDataVersion);
 
 %% Timecourse proportion gaze shifts on stimulus in trial
 sacc.propGs.onChosen_trialBegin  = cell(exper.num.subNo, exper.num.condNo);
