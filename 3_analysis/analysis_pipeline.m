@@ -190,39 +190,6 @@ compareVariableOfInterest(data.time.response.mean.difficult, ...
 compareVariableOfInterest(data.choice.target.proportionEasy(:,:,[2,4]), ...
                           "proportionEasyChoices", oldDataVersion);
 
-%% Proportion choices easy target
-stim.propChoice.easy = NaN(9, exper.num.subNo, exper.num.condNo);
-for c = 2:exper.num.condNo % Condition
-
-    for s = 1:exper.num.subNo % Subject
-
-        % Get data of subject
-        thisSubject       = exper.num.subs(s);
-        dat_sub_choice = stim.chosenTarget{thisSubject, c};
-        dat_sub_ed     = stim.no_easyDis{thisSubject, c};
-
-        % For each set-size, determine proportion choices easy target
-        ind_ss = unique(dat_sub_ed(~isnan(dat_sub_ed)));
-        no_ss  = numel(ind_ss);
-        for ss = 1:no_ss
-
-            no_trials_val  = sum(dat_sub_ed == ind_ss(ss));
-            no_trials_easy = sum(dat_sub_choice == stim.identifier(1, 1) & ...
-                                 dat_sub_ed == ind_ss(ss));
-
-            stim.propChoice.easy(ss, thisSubject, c) = no_trials_easy / no_trials_val;
-            clear no_trials_val no_trials_easy
-
-        end
-        clear thisSubject dat_sub_choice dat_sub_ed ind_ss no_ss ss
-
-    end
-    clear s
-
-end
-clear c
-
-
 %% Proportion gaze shifts on easy set as a function of set-size
 sacc.propGs.onEasy_noLock_indSs = NaN(9, exper.num.subNo, exper.num.condNo);
 for c = 2:exper.num.condNo % Condition
@@ -746,7 +713,6 @@ model_io.containerDat = container_dat_mod; % Get data from .xls files
 model_io = get_params(model_io);
 model_io = read_data(model_io);
 model_io = fit_model(model_io); % Fit model and plot results
-model_io = fit_regression(model_io); % Fit regression and plot results
 clear container_dat_mod
 
 
