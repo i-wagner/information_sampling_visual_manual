@@ -48,7 +48,8 @@ function [variableAvg, variableSetSizes] = getAvg(exper, anal, variable, chosenT
     for c = 1:exper.n.CONDITIONS % Condition
         for s = 1:exper.n.SUBJECTS % Subject
             thisSubject.number = exper.num.SUBJECTS(s);
-            if ismember(thisSubject.number, anal.excludedSubjects)
+            if ismember(thisSubject.number, anal.excludedSubjects) | ...
+               isempty(variable{thisSubject.number,c})
                 continue
             end
             thisSubject.variable = variable{thisSubject.number,c};
