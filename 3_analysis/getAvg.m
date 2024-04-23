@@ -1,4 +1,4 @@
-function variableAvg = getAvg(exper, anal, variable, chosenTarget, targetId, nDistractors)
+function [variableAvg, variableSetSizes] = getAvg(exper, anal, variable, chosenTarget, targetId, nDistractors)
 
     % Calculates the average across some variable of interest
     %
@@ -43,6 +43,7 @@ function variableAvg = getAvg(exper, anal, variable, chosenTarget, targetId, nDi
     % participants
 
     %% Calculate discrimination performance of target
+    variableSetSizes = [];
     variableAvg = NaN(exper.n.SUBJECTS,exper.n.CONDITIONS);
     for c = 1:exper.n.CONDITIONS % Condition
         for s = 1:exper.n.SUBJECTS % Subject
@@ -69,9 +70,10 @@ function variableAvg = getAvg(exper, anal, variable, chosenTarget, targetId, nDi
 
                 thisSubject.set(n) = mean(thisSubject.variable(isTrial), 1, 'omitnan');
             end
+            variableSetSizes(thisSubject.number,:,c) = thisSubject.set';
             variableAvg(thisSubject.number,c) = mean(thisSubject.set, 'omitnan');
             clear thisSubject
         end
+        variableSetSizes(all(variableSetSizes(:,:,c) == 0, 2),:,c) = NaN;
     end
-
 end
