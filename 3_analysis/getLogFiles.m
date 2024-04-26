@@ -38,8 +38,8 @@ function logs = getLogFiles(exper, logCol)
     logs.nCompletedTrials = NaN(exper.n.SUBJECTS, exper.n.CONDITIONS);
     logs.error.fixation.online = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
     logs.hitOrMiss = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
-    logs.nDistractors.easy = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
-    logs.nDistractors.difficult = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+    logs.nDistractors.easy.trialwise = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+    logs.nDistractors.difficult.trialwise = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
     logs.scores = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
     for c = 1:exper.n.CONDITIONS % Condition
         thisCondition = exper.num.CONDITIONS(c);
@@ -120,9 +120,9 @@ function logs = getLogFiles(exper, logCol)
                 thisSubject.logFile(:,logCol.IS_FIXATION_ERROR);
             logs.hitOrMiss{thisSubject.number,c} = ...
                 thisSubject.logFile(:,logCol.HIT_OR_MISS);
-            logs.nDistractors.easy{thisSubject.number,c} = ...
+            logs.nDistractors.easy.trialwise{thisSubject.number,c} = ...
                 thisSubject.logFile(:,logCol.N_DISTRACTOR_EASY);
-            logs.nDistractors.difficult{thisSubject.number,c} = ...
+            logs.nDistractors.difficult.trialwise{thisSubject.number,c} = ...
                 thisSubject.logFile(:,logCol.N_DISTRACTOR_DIFFICULT);
             logs.scores{thisSubject.number,c} = ...
                 thisSubject.logFile(:,logCol.SCORE);
