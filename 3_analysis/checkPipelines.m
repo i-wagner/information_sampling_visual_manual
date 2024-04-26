@@ -1,4 +1,4 @@
-function checkPipelines(exper, logCol, logFiles, gaze, fixations, time, choice, badTrials, excludedTrials, suffix)
+function checkPipelines(exper, anal, logCol, logFiles, gaze, fixations, time, choice, badTrials, excludedTrials, suffix)
 
     % Wrapper function
     % Compares results from old to results from new pipeleine. 
@@ -58,7 +58,8 @@ function checkPipelines(exper, logCol, logFiles, gaze, fixations, time, choice, 
             thisSubject.nTrials = logFiles.nCompletedTrials(thisSubject.number,c);
             thisSubject.excludedTrials = excludedTrials{thisSubject.number,c};
             thisSubject.badTrials = find(badTrials{thisSubject.number,c});
-            if isempty(thisSubject.logFile)
+            if ismember(thisSubject.number, anal.excludedSubjects) | ...
+               isempty(thisSubject.logFile)
                 continue
             end
             for t = 1:thisSubject.nTrials % Trial
