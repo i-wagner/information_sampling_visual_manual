@@ -56,7 +56,7 @@ function comparePipelines(thisSubject, thisTrial, exper, logCol, s, c, t, suffix
             thisTrial.gazeShifts.wentToClosest(thisTrial.gazeShifts.subset), ... Gaze shift to closest stimulus?
             (zeros(nGs, 1) + thisSubject.logFile(t,logCol.N_DISTRACTOR_EASY)), ... n easy distractors
             (zeros(nGs, 1) + thisTrial.chosenTarget.response), ... Chosen target
-            NaN(nGs, 1), ... Timelock relative to trial start
+            thisTrial.fixatedAois.timelock.trialStart(thisTrial.gazeShifts.subset), ... Timelock relative to trial start
             NaN(nGs, 1), ... Timelock relative to trial end
             (zeros(nGs, 1) + t), ... Trial number
             thisTrial.gazeShifts.distanceCurrent(thisTrial.gazeShifts.subset), ... Distance to currently fixated stimulus
@@ -66,7 +66,6 @@ function comparePipelines(thisSubject, thisTrial, exper, logCol, s, c, t, suffix
         % Add timelock, while ignoring fixations on distractors
         idxNonBgGs = newPipeline(:,18) ~= exper.stimulus.id.BACKGROUND;
         nNonBgGs = sum(idxNonBgGs);
-        newPipeline(idxNonBgGs,24) = (1:nNonBgGs)';
         newPipeline(idxNonBgGs,25) = ((nNonBgGs-1):-1:0)';
     end
 
@@ -252,7 +251,7 @@ function comparePipelines(thisSubject, thisTrial, exper, logCol, s, c, t, suffix
        ~(c == 3 & s == 13 & t == 11) & ...
        ~(c == 3 & s == 19 & t == 92) & ...
        ~(c == 4 & s == 7 & any(t == [34:35, 37:39, 151:153]))
-        warning("Difference in results detects, please check pipelines!");
+        warning("Difference in results detected, please check pipelines!");
         keyboard
     end
 
