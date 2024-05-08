@@ -586,24 +586,6 @@ clear filename
 
 
 %% Statistics for paper 
-% Figure 3
-temp = squeeze(mean(sacc.propGs.onAOI_ss(:, :, :, 1), 2, 'omitnan'));
-clc; disp([round(mean(temp, 1, 'omitnan'), 2); ...                                                                                 3A: Proportion gaze shifts on AOIs
-           round(mean(temp, 1, 'omitnan')-ci_mean(temp), 2); ...
-           round(mean(temp, 1, 'omitnan')+ci_mean(temp), 2)])
-clear temp
-clc; disp([round(mean(sacc.time.search_reg_coeff(:, :, 1), 'omitnan')); ...                                                     3B: Search time over set sizes
-           round(mean(sacc.time.search_reg_coeff(:, :, 1), 'omitnan')-ci_mean(sacc.time.search_reg_coeff(:, :, 1))); ... 
-           round(mean(sacc.time.search_reg_coeff(:, :, 1), 'omitnan')+ci_mean(sacc.time.search_reg_coeff(:, :, 1)))])
-clc; matlab_oneSampleTtest(sacc.time.search_reg_coeff(:, 2, 1), 0);
-clc; disp([round(mean(sacc.time.mean.inspection(:, 1, 1), 'omitnan')); ...
-           round(mean(sacc.time.mean.inspection(:, 1, 1), 'omitnan')-ci_mean(sacc.time.mean.inspection(:, 1, 1))); ... 
-           round(mean(sacc.time.mean.inspection(:, 1, 1), 'omitnan')+ci_mean(sacc.time.mean.inspection(:, 1, 1)))])
-clc; matlab_pairedTtest(perf.hitrates(:, 1, 2),             perf.hitrates(:, 1, 3), 2)                                              % 3C: Discrimination difficulty
-clc; matlab_pairedTtest(sacc.time.mean.planning(:, 1, 2),   sacc.time.mean.planning(:, 1, 3), 0);                                   % 3D: Planning time
-clc; matlab_pairedTtest(sacc.time.mean.inspection(:, 1, 2), sacc.time.mean.inspection(:, 1, 3), 0);                                 % 3E: Inspection time
-clc; matlab_pairedTtest(sacc.time.mean.decision(:, 1, 2),   sacc.time.mean.decision(:, 1, 3), 0);                                   % 3F: Decision time
-
 % Figure 4
 % Intercepts and slopes of regression fit
 clc; matlab_oneSampleTtest(model_io.reg.fit(:, 1), 2); % Intercepts
@@ -651,17 +633,6 @@ clc; disp(round([r(1, 2), rl(1, 2), ru(1, 2), p(1, 2)], 2));
 
 
 %% Create plots for paper
-% Figure 5
-% Proportion gaze shifts on different stimuli over the course of trials
-inp_minSub = exper.avg.minSub;
-inp_dat    = [sacc.propGs.onChosen_trialBegin(:, 2) ...
-              sacc.propGs.onEasy_trialBegin(:, 2) ...
-              sacc.propGs.onSmaller_trialBegin(:, 2) ...
-              sacc.propGs.onCloser_trialBegin(:, 2)];
-inp_single = squeeze(mean(infSampling_avgPropSacc(inp_dat, inp_minSub), 3, 'omitnan'));
-infSampling_plt_fig5(inp_single, plt)
-clear inp_mean inp_single
-
 % Figure 6
 % Results of model fitting
 inp_emp_propChoicesEasy = stim.propChoice.easy(:, :, 2)';
