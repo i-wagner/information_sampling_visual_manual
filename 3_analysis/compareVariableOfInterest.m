@@ -25,8 +25,22 @@ function compareVariableOfInterest(newPipeline, variableOfInterest, suffix)
     % Bring it in a shape so it can be easily compared to the data from the
     % old pipeline
     if strcmp(variableOfInterest, "proportionEasyChoices") | ...
-       strcmp(variableOfInterest, "regression")
+       strcmp(variableOfInterest, "regression") | ...
+       strcmp(variableOfInterest, "propGsOnChosen") | ...
+       strcmp(variableOfInterest, "propGsOnSmaller")
         newPipeline = [newPipeline(:,:,1), newPipeline(:,:,2)];
+    elseif strcmp(variableOfInterest, "propGsOnClosest")
+        newPipeline = [newPipeline(:,:,1), newPipeline(:,:,2), ...
+                       newPipeline(:,:,3), newPipeline(:,:,4)];
+    end
+
+    % Some measures in the old pipeline had no entries for excluded
+    % participants. To account for this, we drop those for the new
+    % pipeleine as well
+    if strcmp(variableOfInterest, "propGsOnChosen") | ...
+       strcmp(variableOfInterest, "propGsOnSmaller") | ...
+       strcmp(variableOfInterest, "propGsOnClosest")
+        newPipeline = newPipeline(all(~isnan(newPipeline), 2),:);
     end
 
     %% Get variable of interest from old pipeline
@@ -65,6 +79,13 @@ function compareVariableOfInterest(newPipeline, variableOfInterest, suffix)
             thisVariable = thisData.stim.propChoice.easy(:,:,2)';
         elseif strcmp(variableOfInterest, "regression")
             thisVariable = thisData.model_io.reg.fit;
+        elseif strcmp(variableOfInterest, "propGsOnChosen")
+           thisVariable = thisData.sacc.propGs.onChosen_avg(:,:,2);
+        elseif strcmp(variableOfInterest, "propGsOnSmaller")
+            thisVariable = thisData.sacc.propGs.onSmaller_avg(:,:,2);
+        elseif strcmp(variableOfInterest, "propGsOnClosest")
+            thisVariable = [thisData.sacc.propGs.onCloser_avg(:,:,1), ...
+                            thisData.sacc.propGs.onCloser_avg(:,:,2)];
         end
         oldPipeline = [oldPipeline, thisVariable];
     end
