@@ -10,8 +10,6 @@ function fixations = getFixatedAois(exper, screen, anal, gaze, stimCoords, nTria
     % - Check for blinks during AOI vists, and calculate information loss
     %   during blinks
     % - Check whether at least one gaze shift was made to any AOI
-    % - Check whether gaze shifts went to closest AOI, relative to the
-    %   current fixation location
     % - Check the distance between gaze and the currently viewed AOI
     %
     % NOTE 1:
@@ -80,8 +78,6 @@ function fixations = getFixatedAois(exper, screen, anal, gaze, stimCoords, nTria
     fixations.subset = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
     fixations.informationLoss = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
     fixations.atLeastOneFixatedAoi = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
-    fixations.wentToClosest = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
-    fixations.propToClosest = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
     fixations.distanceCurrent = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
     for c = 1:exper.n.CONDITIONS % Condition
         for s = 1:exper.n.SUBJECTS % Subject
@@ -193,24 +189,6 @@ function fixations = getFixatedAois(exper, screen, anal, gaze, stimCoords, nTria
                     checkOneAoiGazeShift(thisTrial.fixatedAois.uniqueIds(thisTrial.fixationSubset), ...
                                          exper.stimulus.id.BACKGROUND);
     
-                % Check if gaze shifts went to closest stimulus.
-                % We are using gaze shift onset as reference here, because we
-                % want to know which stimulus was closest immediately before
-                % people made the gaze shift. We are currently only calculating
-                % the mean gaze position between two gaze shifts, so we cannot
-                % use this as the reference (since it describes the position
-                % AFTER the gaze shift was already made)
-                thisTrial.wentToClosest = ...
-                    getDistanceToClosestStim(thisTrial.fixatedAois.uniqueIds, ...
-                                             thisTrial.stimulusCoordinates(:,1), ...
-                                             thisTrial.stimulusCoordinates(:,2), ...
-                                             thisTrial.gazeShifts.onsets(:,2), ...
-                                             thisTrial.gazeShifts.onsets(:,3), ...
-                                             exper.stimulus.id.BACKGROUND, ...
-                                             true);
-                thisTrial.propToClosest = ...
-                    mean(thisTrial.wentToClosest(thisTrial.fixationSubset), 'omitnan');
-
                 % Check distance between gaze and the currently fixated stimulus.
                 % We are using the mean gaze position between gaze shifts as
                 % reference, because we want to know how closely gaze stayed to
@@ -239,9 +217,6 @@ function fixations = getFixatedAois(exper, screen, anal, gaze, stimCoords, nTria
                 thisSubject.informationLoss(thisTrial.storeIdx) = ...
                     thisTrial.informationLoss;
                 thisSubject.atLeastOneFixatedAoi(t) = thisTrial.atLeastOneFixatedAoi;
-                thisSubject.wentToClosest(thisTrial.storeIdx) = ...
-                    thisTrial.wentToClosest;
-                thisSubject.propToClosest(t) = thisTrial.propToClosest;
                 thisSubject.distanceCurrent(thisTrial.storeIdx) = ... 
                     thisTrial.distanceCurrent;
                 clear thisTrial
@@ -258,10 +233,6 @@ function fixations = getFixatedAois(exper, screen, anal, gaze, stimCoords, nTria
                 thisSubject.informationLoss;
             fixations.atLeastOneFixatedAoi{thisSubject.number,c} = ...
                 thisSubject.atLeastOneFixatedAoi;
-            fixations.wentToClosest{thisSubject.number,c} = ...
-                thisSubject.wentToClosest;
-            fixations.propToClosest{thisSubject.number,c} = ...
-                thisSubject.propToClosest;
             fixations.distanceCurrent{thisSubject.number,c} = ...
                 thisSubject.distanceCurrent;
             clear thisSubject
