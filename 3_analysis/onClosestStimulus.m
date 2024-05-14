@@ -85,8 +85,6 @@ function fixationOnCloserStim = onClosestStimulus(anal, exper, nTrials, trialMap
                                              true);
                 thisSubject.wentToClosest = [thisSubject.wentToClosest; ...
                                              thisTrial.wentToClosest];
-% thisTrial.propToClosest = ...
-%     mean(thisTrial.wentToClosest(thisTrial.fixationSubset), 'omitnan');
                 clear thisTrial
             end
 
