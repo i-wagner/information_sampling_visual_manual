@@ -4,7 +4,7 @@ clear all; close all; clc
 % Set folder
 folder.root = '/Users/ilja/Dropbox/12_work/mr_informationSamplingVisualManual/';
 folder.data = strcat(folder.root, '2_data/');
-folder.fig = strcat(folder.root, "5_outreach/manuscript/figures/fig3");
+folder.fig = strcat(folder.root, "5_outreach/manuscript/figures/fig4");
 
 data = load(strcat(folder.data, 'data_newPipeline.mat'));
 
