@@ -20,9 +20,9 @@ plotDat = cat(3, ...
 
 % Define visuals
 opt_visuals;
-yLabels = repmat(["Prop. movements [chosen set]", ...
-                  "Prop. movements [smaller set]", ...
-                  "Prop. movements [cloests stim.]"], 1, 2);
+yLabels = repmat(["Prop. mov. [chosen set]", ...
+                  "Prop. mov. [smaller set]", ...
+                  "Prop. mov. [closest stim.]"], 1, 2);
 axLimits = [0, 3, 0, 1];
 lineCoordsY = repmat([[0.50, 0.50]; [0.25, 0.25]; [1/10, 1/10]], 2, 1);
 
@@ -64,7 +64,7 @@ for p = 1:size(plotDat, 3) % Panel
             'HandleVisibility', 'off');
     hold off
     axis(axLimits, 'square');
-    xlabel("# movement after trial start");
+    xlabel("# mov. after trial start");
     ylabel(yLabels(p));
     xticks(xSubjects);
     yticks(0:0.25:1);
