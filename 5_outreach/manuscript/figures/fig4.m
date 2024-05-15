@@ -70,8 +70,8 @@ for p = 1:size(plotDat, 3) % Panel
     yticks(0:0.25:1);
     box off
 end
-sublabel([], -60, -45);
-opt.size = [55, 25];
+sublabel([], -30, -40);
+opt.size = [45, 30];
 opt.imgname = folder.fig;
 opt.save = true;
 prepareFigure(hFig, opt);
