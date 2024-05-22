@@ -1,8 +1,8 @@
 function time = getTimes(exper, anal, nTrials, gaze, fixations, excludedTrials)
 
     % Wrapper function
-    % Extracts planning, dwell, inspection, and response time for each 
-    % subject in conditions
+    % Extracts trialwise planning, dwell, inspection, response, and
+    % non-search time for each subject in conditions
     %
     % NOTE 1:
     % This wrapper function uses the SUBSET of fixation, as determined in
@@ -20,6 +20,12 @@ function time = getTimes(exper, anal, nTrials, gaze, fixations, excludedTrials)
     % calculate them (since leaving times are calculated based on the
     % specific sequence of inspected AOIs, which naturally diffres
     % depending on which fixations are used to calculate them)
+    %
+    % NOTE 3:
+    % non-search time is defined as the trialwise sum of the respective
+    % response and planning time. It is used to quantify the overall time
+    % in a trial that participants did not spend searching for a target
+    % (i.e., fixating stimuli)
     %
     % Input
     % exper:
@@ -48,6 +54,7 @@ function time = getTimes(exper, anal, nTrials, gaze, fixations, excludedTrials)
     time.dwell.trialwise = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
     time.planning.trialwise = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
     time.response.trialwise = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+    time.nonSearch.trialwise = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
     for c = 1:exper.n.CONDITIONS % Condition
         for s = 1:exper.n.SUBJECTS % Subject
             thisSubject.number = exper.num.SUBJECTS(s);
@@ -66,6 +73,7 @@ function time = getTimes(exper, anal, nTrials, gaze, fixations, excludedTrials)
             thisSubject.dwellTimes = NaN(thisSubject.nGazeShifts,1);
             thisSubject.planningTime = NaN(thisSubject.nTrials, 1);
             thisSubject.responseTime = NaN(thisSubject.nTrials, 1);
+            thisSubject.nonSearchTime = NaN(thisSubject.nTrials, 1);
             thisSubject.gazeShiftCounter = 0;
             for t = 1:thisSubject.nTrials % Trial
                 % Check whether to skip excluded trial
@@ -128,6 +136,10 @@ function time = getTimes(exper, anal, nTrials, gaze, fixations, excludedTrials)
                                     [exper.stimulus.id.target.EASY, exper.stimulus.id.target.DIFFICULT], ...
                                     exper.stimulus.id.BACKGROUND);
 
+                % Get non-search time
+                thisTrial.nonSearchTime = ...
+                    thisTrial.planningTime + thisTrial.responseTime;
+
                 % Store data
                 thisTrial.storeIdx = ...
                     (thisSubject.gazeShiftCounter + 1):(thisSubject.gazeShiftCounter + thisTrial.nGazeShifts);
@@ -138,6 +150,7 @@ function time = getTimes(exper, anal, nTrials, gaze, fixations, excludedTrials)
                 thisSubject.dwellTimes(thisTrial.storeIdx) = thisTrial.dwellTimes;
                 thisSubject.planningTime(t) = thisTrial.planningTime;
                 thisSubject.responseTime(t) = thisTrial.responseTime;
+                thisSubject.nonSearchTime(t) = thisTrial.nonSearchTime;
                 clear thisTrial
             end
 
@@ -146,6 +159,7 @@ function time = getTimes(exper, anal, nTrials, gaze, fixations, excludedTrials)
             time.dwell.trialwise{thisSubject.number,c} = thisSubject.dwellTimes;
             time.planning.trialwise{thisSubject.number,c} = thisSubject.planningTime;
             time.response.trialwise{thisSubject.number,c} = thisSubject.responseTime;
+            time.nonSearch.trialwise{thisSubject.number,c} = thisSubject.nonSearchTime;
             clear thisSubject
         end
     end
