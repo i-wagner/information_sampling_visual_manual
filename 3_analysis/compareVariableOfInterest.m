@@ -32,6 +32,9 @@ function compareVariableOfInterest(newPipeline, variableOfInterest, suffix)
     elseif strcmp(variableOfInterest, "propGsOnClosest")
         newPipeline = [newPipeline(:,:,1), newPipeline(:,:,2), ...
                        newPipeline(:,:,3), newPipeline(:,:,4)];
+    elseif strcmp(variableOfInterest, "gainAbsolut")
+        newPipeline = [newPipeline(:,:,1,1), newPipeline(:,:,2,1), ...
+                       newPipeline(:,:,1,3), newPipeline(:,:,2,3)];
     elseif strcmp(variableOfInterest, "propGsOnChosenModel")
         newPipeline = [newPipeline(:,:,2), newPipeline(:,:,4)];
     end
@@ -94,6 +97,9 @@ function compareVariableOfInterest(newPipeline, variableOfInterest, suffix)
             thisVariable = thisData.sacc.time.mean.non_search(:,:,2);
         elseif strcmp(variableOfInterest, "nonSearchTimeDifficult")
             thisVariable = thisData.sacc.time.mean.non_search(:,:,3);
+        elseif strcmp(variableOfInterest, "gainAbsolut")
+            thisVariable = thisData.model_io.model.gain(:,:,:,3);
+            thisVariable = [thisVariable(:,:,1), thisVariable(:,:,2)];
         end
         oldPipeline = [oldPipeline, thisVariable];
     end
@@ -102,7 +108,7 @@ function compareVariableOfInterest(newPipeline, variableOfInterest, suffix)
     % Round to decimals to avoid false-alarms when comparing pipelines
     pipelineResultsMatch = isequaln(round(newPipeline, 14), round(oldPipeline, 14));
     if ~pipelineResultsMatch
-        warning("Results from old and new pipeleine do not match!");
+        warning("Results from old and new pipeline do not match!");
         keyboard
     end
 
