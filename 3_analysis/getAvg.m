@@ -1,4 +1,4 @@
-function [variableAvg, variableSetSizes] = getAvg(exper, anal, variable, chosenTarget, targetId, nDistractors)
+function [variableAvg, variableSetSizes] = getAvg(exper, anal, variable, chosenTarget, targetId, nDistractors, subset)
 
     % Calculates the average across some variable of interest
     %
@@ -37,12 +37,15 @@ function [variableAvg, variableSetSizes] = getAvg(exper, anal, variable, chosenT
     % matrix; number of distractors from the set of the target, for which
     % we are calculating discrimination performance
     %
+    % subset (OPTIONAL INPUT):
+    % matrix; subset of entries in "variable" to use for averaging
+    %
     % Output
     % variableAvg:
     % matrix; average of variable of interest across conditions and
     % participants
 
-    %% Calculate discrimination performance of target
+    %% Calculate average
     variableSetSizes = [];
     variableAvg = NaN(exper.n.SUBJECTS,exper.n.CONDITIONS);
     for c = 1:exper.n.CONDITIONS % Condition
@@ -59,6 +62,11 @@ function [variableAvg, variableSetSizes] = getAvg(exper, anal, variable, chosenT
                 unique(thisSubject.nDistractors(~isnan(thisSubject.nDistractors)));
             thisSubject.setSize.n = numel(thisSubject.setSize.level);
             thisSubject.isExcludedTrial = isnan(thisSubject.variable);
+            if ~isempty(subset)
+                thisSubject.variable = thisSubject.variable(subset{thisSubject.number,c});
+                thisSubject.nDistractors = thisSubject.nDistractors(subset{thisSubject.number,c});
+                thisSubject.isExcludedTrial = thisSubject.isExcludedTrial(subset{thisSubject.number,c});
+            end
 
             thisSubject.set = NaN(thisSubject.setSize.n, 1);
             for n = 1:thisSubject.setSize.n % Set size
