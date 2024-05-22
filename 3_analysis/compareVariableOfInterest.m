@@ -90,6 +90,10 @@ function compareVariableOfInterest(newPipeline, variableOfInterest, suffix)
                             thisData.sacc.propGs.onCloser_avg(:,:,2)];
         elseif strcmp(variableOfInterest, "propGsOnChosenModel")
             thisVariable = thisData.sacc.propGs.onAOI_modelComparision_chosenNot_ss(:,:,2);
+        elseif strcmp(variableOfInterest, "nonSearchTimeEasy")
+            thisVariable = thisData.sacc.time.mean.non_search(:,:,2);
+        elseif strcmp(variableOfInterest, "nonSearchTimeDifficult")
+            thisVariable = thisData.sacc.time.mean.non_search(:,:,3);
         end
         oldPipeline = [oldPipeline, thisVariable];
     end
