@@ -32,6 +32,8 @@ function compareVariableOfInterest(newPipeline, variableOfInterest, suffix)
     elseif strcmp(variableOfInterest, "propGsOnClosest")
         newPipeline = [newPipeline(:,:,1), newPipeline(:,:,2), ...
                        newPipeline(:,:,3), newPipeline(:,:,4)];
+    elseif strcmp(variableOfInterest, "propGsOnChosenModel")
+        newPipeline = [newPipeline(:,:,2), newPipeline(:,:,4)];
     end
 
     % Some measures in the old pipeline had no entries for excluded
@@ -86,6 +88,8 @@ function compareVariableOfInterest(newPipeline, variableOfInterest, suffix)
         elseif strcmp(variableOfInterest, "propGsOnClosest")
             thisVariable = [thisData.sacc.propGs.onCloser_avg(:,:,1), ...
                             thisData.sacc.propGs.onCloser_avg(:,:,2)];
+        elseif strcmp(variableOfInterest, "propGsOnChosenModel")
+            thisVariable = thisData.sacc.propGs.onAOI_modelComparision_chosenNot_ss(:,:,2);
         end
         oldPipeline = [oldPipeline, thisVariable];
     end
