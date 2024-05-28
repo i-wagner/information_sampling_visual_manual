@@ -60,6 +60,6 @@ function [inspectionTime, dwellTimes] = getInspectionTime(fixatedAoi, targetIds,
     dwellTimes(useFixation) = leavingTimes(useFixation) - ...
                               timestampOffset(useFixation) - ...
                               adjustmentAmount(useFixation);
-    inspectionTime = mean(dwellTimes, 'omitnan');
+    inspectionTime = median(dwellTimes, 'omitnan');
 
 end
