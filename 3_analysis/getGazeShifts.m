@@ -51,6 +51,7 @@ function gazeShifts = getGazeShifts(exper, anal, gaze, nTrials, excludedTrials)
     gazeShifts.offsets = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
     gazeShifts.duration = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
     gazeShifts.latency = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+    gazeShifts.amplitudes = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
     gazeShifts.meanGazePos = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
     gazeShifts.trialMap = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
     for c = 1:exper.n.CONDITIONS % Condition
@@ -75,6 +76,7 @@ function gazeShifts = getGazeShifts(exper, anal, gaze, nTrials, excludedTrials)
             thisSubject.gazeShifts.offsets = [];
             thisSubject.gazeShifts.duration = [];
             thisSubject.gazeShifts.latency = [];
+            thisSubject.gazeShifts.amplitude = [];
             thisSubject.gazeShifts.meanGazePos = [];
             thisSubject.gazeShifts.trialMap = [];
             for t = 1:thisSubject.nTrials % Trial
@@ -89,7 +91,8 @@ function gazeShifts = getGazeShifts(exper, anal, gaze, nTrials, excludedTrials)
     
                     % Calculate gaze shift metrics
                     [thisTrial.gazeShifts.onsets, thisTrial.gazeShifts.offsets, ...
-                     thisTrial.gazeShifts.duration, ~, thisTrial.gazeShifts.latency] = ...
+                     thisTrial.gazeShifts.duration, thisTrial.gazeShifts.amplitudes, ...
+                     thisTrial.gazeShifts.latency] = ...
                         getGazeShiftMetrics(thisSubject.gazeTrace{t}, ...
                                             thisTrial.gazeShifts.idx, ...
                                             thisSubject.events(t,4));
@@ -137,6 +140,8 @@ function gazeShifts = getGazeShifts(exper, anal, gaze, nTrials, excludedTrials)
                     [thisSubject.gazeShifts.duration; thisTrial.gazeShifts.duration];
                 thisSubject.gazeShifts.latency = ...
                     [thisSubject.gazeShifts.latency; thisTrial.gazeShifts.latency];
+                thisSubject.gazeShifts.amplitude = ...
+                    [thisSubject.gazeShifts.amplitude; thisTrial.gazeShifts.amplitudes];
                 thisSubject.gazeShifts.meanGazePos = ...
                     [thisSubject.gazeShifts.meanGazePos; thisTrial.gazeShifts.meanGazePos];
                 thisSubject.gazeShifts.trialMap = ...
@@ -151,6 +156,7 @@ function gazeShifts = getGazeShifts(exper, anal, gaze, nTrials, excludedTrials)
             gazeShifts.offsets{thisSubject.number,c} = thisSubject.gazeShifts.offsets;
             gazeShifts.duration{thisSubject.number,c} = thisSubject.gazeShifts.duration;
             gazeShifts.latency{thisSubject.number,c} = thisSubject.gazeShifts.latency;
+            gazeShifts.amplitudes{thisSubject.number,c} = thisSubject.gazeShifts.amplitude;
             gazeShifts.meanGazePos{thisSubject.number,c} = thisSubject.gazeShifts.meanGazePos;
             gazeShifts.trialMap{thisSubject.number,c} =  thisSubject.gazeShifts.trialMap;
             clear thisSubject

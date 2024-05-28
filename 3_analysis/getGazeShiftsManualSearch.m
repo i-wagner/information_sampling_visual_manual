@@ -64,6 +64,7 @@ function metrics = getGazeShiftsManualSearch(thisSubject, thisCondition, thisTri
     metrics.offsets = gazeShifts(:,7:9);
     metrics.duration = gazeShifts(:,10);
     metrics.latency = gazeShifts(:,11);
+    metrics.amplitudes = NaN(numel(metrics.duration), 1); % Not stored in Jan's data
     metrics.idx = [NaN(nGazeShifts, 2), gazeShifts(:,12)];
     metrics.meanGazePos = gazeShifts(:,13:16);
 
