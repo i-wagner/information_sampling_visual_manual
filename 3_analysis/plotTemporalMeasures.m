@@ -1,8 +1,8 @@
 function plotTemporalMeasures(exper, anal, fixationSubset, planningTime, inspectionTime, dwellTime, responseTime, blinkFlag, nTrials)
 
-    % Plots saccade metrics for individual subjects.
+    % Plots temporal measures for individual subjects
     %
-    % The following metrics are plotted:
+    % The following measures are plotted:
     % - planning times (trialwise)
     % - inspection times (trialwise)
     % - dwell times (gaze shift wise)
