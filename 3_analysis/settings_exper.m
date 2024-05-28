@@ -16,6 +16,9 @@ if exper.n.CONDITIONS < 2 | diff(exper.num.CONDITIONS) ~= 1
            'together, please ensure that condition numbers are consecutive']); 
 end
 
+exper.availableTime = 6.50; % Minutes; read: six and a half minutes
+exper.payoff = [2, -2]; % Eurocents
+
 %% Stimuli
 % Each stimulus on the screen gets an AOI, which is centered at the
 % stimulus location and which has a fixed diameter
