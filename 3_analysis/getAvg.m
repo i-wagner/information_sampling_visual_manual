@@ -1,4 +1,4 @@
-function [variableAvg, variableSetSizes] = getAvg(exper, anal, variable, chosenTarget, targetId, nDistractors, subset)
+function [variableAvg, variableSetSizes] = getAvg(exper, anal, variable, chosenTarget, targetId, nDistractors, subset, avgSetSize, avg)
 
     % Calculates the average across some variable of interest
     %
@@ -40,10 +40,23 @@ function [variableAvg, variableSetSizes] = getAvg(exper, anal, variable, chosenT
     % subset (OPTIONAL INPUT):
     % matrix; subset of entries in "variable" to use for averaging
     %
+    % avgSetSize:
+    % string; averaging function to use to calculate average, when 
+    % calcuting avearges for differen set sie conditions. Can be "mean" or 
+    % "median"
+    %
+    % avg:
+    % string; averaging function to use to calculate average over different
+    % set size conditions. Can be "mean" or "median"
+    %
     % Output
     % variableAvg:
     % matrix; average of variable of interest across conditions and
     % participants
+
+    %% Check input
+    assert(ismember(avgSetSize, {'mean', 'median'}));
+    assert(ismember(avg, {'mean', 'median'}));
 
     %% Calculate average
     variableSetSizes = [];
@@ -77,10 +90,18 @@ function [variableAvg, variableSetSizes] = getAvg(exper, anal, variable, chosenT
                 end
                 isTrial = isSetSize & isTarget & ~thisSubject.isExcludedTrial;
 
-                thisSubject.set(n) = mean(thisSubject.variable(isTrial), 1, 'omitnan');
+                if strcmp(avgSetSize, 'mean')
+                    thisSubject.set(n) = mean(thisSubject.variable(isTrial), 1, 'omitnan');
+                elseif strcmp(avgSetSize, 'median')
+                    thisSubject.set(n) = median(thisSubject.variable(isTrial), 1, 'omitnan');
+                end
             end
             variableSetSizes(thisSubject.number,:,c) = thisSubject.set';
-            variableAvg(thisSubject.number,c) = mean(thisSubject.set, 'omitnan');
+            if strcmp(avg, 'mean')
+                variableAvg(thisSubject.number,c) = mean(thisSubject.set, 'omitnan');
+            elseif strcmp(avg, 'median')
+                variableAvg(thisSubject.number,c) = median(thisSubject.set, 'omitnan');
+            end
             clear thisSubject
         end
         variableSetSizes(all(variableSetSizes(:,:,c) == 0, 2),:,c) = NaN;
