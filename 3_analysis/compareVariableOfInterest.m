@@ -37,6 +37,8 @@ function compareVariableOfInterest(newPipeline, variableOfInterest, suffix)
                        newPipeline(:,:,1,3), newPipeline(:,:,2,3)];
     elseif strcmp(variableOfInterest, "predPropChoicesEasy")
         newPipeline = [newPipeline(:,:,1), newPipeline(:,:,3)];
+    elseif strcmp(variableOfInterest, "predPerformance")
+        newPipeline = [newPipeline(:,1), newPipeline(:,3)];
     elseif strcmp(variableOfInterest, "propGsOnChosenModel")
         newPipeline = [newPipeline(:,:,2), newPipeline(:,:,4)];
     end
@@ -104,6 +106,11 @@ function compareVariableOfInterest(newPipeline, variableOfInterest, suffix)
             thisVariable = [thisVariable(:,:,1), thisVariable(:,:,2)];
         elseif strcmp(variableOfInterest, "predPropChoicesEasy")
             thisVariable = thisData.model_io.model.choices_perfect(:,:,3);
+        elseif strcmp(variableOfInterest, "empGainPerTime")
+            thisVariable = [thisData.model_io.data.single.perf, ...
+                            thisData.model_io.data.double.perf];
+        elseif strcmp(variableOfInterest, "predPerformance")
+            thisVariable = thisData.model_io.model.perf_perfect(:,3);
         end
         oldPipeline = [oldPipeline, thisVariable];
     end
