@@ -12,6 +12,7 @@ function proportionOnAoiOfInterest = getFixationTimeCourse(exper, anal, timelock
     % vector
     % 
     % Input
+    % exper:
     % structure; general experiment settings, as returned by the
     % "settings_exper" script
     %
