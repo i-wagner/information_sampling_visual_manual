@@ -1,4 +1,4 @@
-function [gain, relativeGain, propChoicesEasy] = getIdealObserverPredictions(exper, idealObserver)
+function [gain, relativeGain, propChoicesEasy, performance] = getIdealObserverPredictions(exper, idealObserver)
 
     % Generates ideal obsver predictions, based on empirical data
     %
@@ -25,6 +25,10 @@ function [gain, relativeGain, propChoicesEasy] = getIdealObserverPredictions(exp
     % propChoicesEasy:
     % matrix; predicted proportion choices for the easy target across
     % subjects, conditions, and set sizes
+    %
+    % performance:
+    % matrix; predicted average monetary gain per unit of time across
+    % subjects and conditions
 
     %% Unpack input
     % Easy target
@@ -51,6 +55,7 @@ function [gain, relativeGain, propChoicesEasy] = getIdealObserverPredictions(exp
     gain = NaN(exper.n.SUBJECTS, nSets, 2, exper.n.CONDITIONS);
     relativeGain = NaN(exper.n.SUBJECTS, nSets, exper.n.CONDITIONS);
     propChoicesEasy = NaN(exper.n.SUBJECTS, nSets, exper.n.CONDITIONS);
+    performance = NaN(exper.n.SUBJECTS, exper.n.CONDITIONS);
     for c = 1:exper.n.CONDITIONS % Condition
         for s = 1:exper.n.SUBJECTS % Subject
             gain(s,:,1,c) = getGain(accuracy.easy(s,c), ...
@@ -64,9 +69,11 @@ function [gain, relativeGain, propChoicesEasy] = getIdealObserverPredictions(exp
                                     fixations.difficult, ...
                                     payoff);
             relativeGain(s,:,c) = gain(s,:,2,c) - gain(s,:,1,c);
-
             propChoicesEasy(s,:,c) = ...
                 predictChoices(relativeGain(s,:,c), noise.sd, noise.nSamples);
+            performance(s,c) = ...
+                mean(propChoicesEasy(s,:,c) .* gain(s,:,1,c) + ...
+                     (1 - propChoicesEasy(s,:,c)) .* gain(s,:,2,c));
         end
     end
 end
