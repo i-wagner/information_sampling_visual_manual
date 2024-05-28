@@ -38,7 +38,7 @@ function proportionOnAoiOfInterest = getFixationTimeCourse(exper, anal, timelock
     % matrix; proportion of gaze shifts in timelock that target AOI of
     % interest
 
-    %% Calcualte proportions of gaze to AOI
+    %% Calcualte proportions of gaze shifts to AOI
     nLocks = numel(timelockOfInterest);
 
     proportionOnAoiOfInterest = NaN(exper.n.SUBJECTS, nLocks, exper.n.CONDITIONS);
@@ -55,7 +55,7 @@ function proportionOnAoiOfInterest = getFixationTimeCourse(exper, anal, timelock
                 continue
             end
 
-            thisSubject.test = NaN(thisSubject.nDistractorLvl, nLocks);
+            thisSubject.propToAoi = NaN(thisSubject.nDistractorLvl, nLocks);
             for l = 1:nLocks % Timelocks
                 for d = 1:thisSubject.nDistractorLvl % Number of distractors
                     thisLock.isTimelockGazeShift = ...
@@ -76,14 +76,14 @@ function proportionOnAoiOfInterest = getFixationTimeCourse(exper, anal, timelock
                         thisLock.nTrials = NaN;
                     end
     
-                    thisSubject.test(d,l) = thisLock.nOnAoiOfInterest / thisLock.nTrials;
+                    thisSubject.propToAoi(d,l) = thisLock.nOnAoiOfInterest / thisLock.nTrials;
                 end
                 clear thisLock
             end
 
             % Store data
             proportionOnAoiOfInterest(thisSubject.number,:,c) = ...
-                mean(thisSubject.test, 1, 'omitnan');
+                mean(thisSubject.propToAoi, 1, 'omitnan');
             clear thisSubject
         end
     end
