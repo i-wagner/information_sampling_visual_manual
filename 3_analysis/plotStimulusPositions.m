@@ -113,7 +113,7 @@ function plotStimulusPositions(horEndpoints, vertEndpoints, horStimCenter, vertS
     text(horEndpoints + 0.30, vertEndpoints + 0.30, ...
          num2str((1:numel(horEndpoints))'));
     hold off
-    axis([-24.5129, 24.5129, -13.7834, FIX_LOC(2) + 10.50]);
+    axis([-24.5129, 24.5129, -13.7834, 13.7834]);
     daspect([1, 1, 1]);
     disp("Please press a button to continue!");
     waitforbuttonpress
