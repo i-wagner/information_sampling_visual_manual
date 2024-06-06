@@ -30,7 +30,7 @@ lineCoordsY = repmat([[0.50, 0.50]; [0.25, 0.25]; [1/10, 1/10]], 2, 1);
 hFig = figure;
 tiledlayout(2, 3);
 for p = 1:size(plotDat, 3) % Panel
-    if any(p == 1:2)
+    if any(p == 1:3)
         plt.color.condition = plt.color.green;
     else
         plt.color.condition = plt.color.purple;
