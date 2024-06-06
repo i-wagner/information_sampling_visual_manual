@@ -7,6 +7,16 @@ function [onsets, offsets, duration, amplitude, latency] = getGazeShiftMetrics(g
     % - Gaze shift durations
     % - Gaze shift amplitudes
     % - Gaze shift latencies
+    %   If gaze shifts happened before or right at stimulus onset, calculate
+    %   latency based on the stimulus onset timestamp. This way we can can
+    %   easily identify gaze shifts that happened before onset, since they
+    %   will have a negative latency. For gaze shifts with onset right at
+    %   stimulus onset the assumption is that they were likely programmed
+    %   before stimulus onset
+    %
+    %   For the first gaze shift after stimulus onset, calculate the latency
+    %   based on the timestamp of stimulus onset. For all subsequent gaze
+    %   shifts, use the timetamps of the preceding gaze shift
     %
     % Input
     % gazeTrace:
@@ -50,8 +60,22 @@ function [onsets, offsets, duration, amplitude, latency] = getGazeShiftMetrics(g
                  sqrt(amplitude(:,1).^2 + amplitude(:,2).^2)];
 
     %% Gaze shift latency
-    tsNextGazeShift = [gazeTrace(idxStimOn,1); offsets(1:(end-1),1)];
-
-    latency = onsets(:,1) - tsNextGazeShift;
+    tsStimOnset = gazeTrace(idxStimOn,1);
+    nGazeShifts = numel(onsets(:,1));
+    
+    isAfterStimOnset = false;
+    latency = NaN(nGazeShifts, 1);
+    for g = 1:nGazeShifts % Gaze shift
+        thisOnset = onsets(g,1);
+        if (thisOnset <= tsStimOnset)
+            comparisonSample = tsStimOnset;
+        elseif (thisOnset > tsStimOnset) & ~isAfterStimOnset
+            comparisonSample = tsStimOnset;
+            isAfterStimOnset = true;
+        elseif (thisOnset > tsStimOnset) & isAfterStimOnset
+            comparisonSample = offsets(g-1,1);
+        end
+        latency(g) = thisOnset - comparisonSample;
+    end
 
 end
