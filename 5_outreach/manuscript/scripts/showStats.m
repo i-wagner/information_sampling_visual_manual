@@ -32,7 +32,7 @@ function showStats(stats, metric, exp, cond, nDecimals)
     disp(['M = ', num2str(round(stats.mean, nDecimals))]);
     disp(['STD = ', num2str(round(stats.std, nDecimals))]);
     disp(['Range = [', num2str(round(stats.range(1), nDecimals)), ...
-          ', ', round(num2str(stats.range(2), nDecimals)), ']']);
+          ', ', num2str(round(stats.range(2), nDecimals)), ']']);
     disp(['CI = [', num2str(round(stats.mean - stats.ci, nDecimals)), ...
           ', ', num2str(round(stats.mean + stats.ci, nDecimals)), ']']);
 
