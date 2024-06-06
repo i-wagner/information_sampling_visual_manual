@@ -9,7 +9,7 @@ folder.fig = strcat(folder.root, "5_outreach/manuscript/figures/fig3");
 data = load(strcat(folder.data, 'data_newPipeline.mat'));
 
 % Number of participants to use as representative participants
-subjectOfInterest = [4, 4];
+subjectOfInterest = [9, 9];
 conditionsOfInterest = [2, 4]; % Only double-target
 
 % Define visuals
