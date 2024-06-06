@@ -67,10 +67,8 @@ function [subset, passedQualityCheck] = ...
                          ~outOfBoundsVert & ~offsetAfterResponse;
 
     %% Second, select fixations based of inclusion criteria
-    % Only get unique fixations after stimulus onset. This bit of code is
-    % not directly necessary. It was only included to replicate the results
-    % from the old pipeline (i.e., for sanity checks)
-    subset = (tsGsOnset >= tsStimOnset) & passedQualityCheck;
+    % Only get unique fixations after stimulus onset
+    subset = (tsGsOnset > tsStimOnset) & passedQualityCheck;
 
     % Get unique AOI fixations 
     subset(subset) = getUniqueFix(fixatedAois(subset));
