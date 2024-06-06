@@ -327,6 +327,10 @@ oldDataVersion = "_allExclusions";
 % For check of individual variables: needs to run without bad trials
 % exclusion, because this was not taken into account in the old pipeline,
 % and thus, the data from there does not match
+% 
+% For latency timecourse:
+% due to a bug in the old pipeline, the results of the two pipelines will
+% always differ (bug was fixed in new pipeline)
 checkPipelines(exper, anal, logCol, data.log, data.gaze, ...
                data.fixations, data.time, data.choice, ...
                data.badTrials, quality.excludedTrials, oldDataVersion);
@@ -378,6 +382,8 @@ compareVariableOfInterest(data.performance.gainPerTime, ...
                           "empGainPerTime", oldDataVersion);
 compareVariableOfInterest(idealObserver.performance, ...
                           "predPerformance", oldDataVersion);
+compareVariableOfInterest(data.fixations.latenciesFirstGazeShift, ...
+                          "latencyTimecourse", oldDataVersion);
 
 %% How much time participants spent searching for targets
 sacc.time.search_reg_coeff = NaN(exper.num.subNo, 2, exper.num.condNo);

@@ -111,6 +111,8 @@ function compareVariableOfInterest(newPipeline, variableOfInterest, suffix)
                             thisData.model_io.data.double.perf];
         elseif strcmp(variableOfInterest, "predPerformance")
             thisVariable = thisData.model_io.model.perf_perfect(:,3);
+        elseif strcmp(variableOfInterest, "latencyTimecourse")
+            thisVariable = squeeze(thisData.sacc.latency.firstGs(:,1,:));
         end
         oldPipeline = [oldPipeline, thisVariable];
     end
