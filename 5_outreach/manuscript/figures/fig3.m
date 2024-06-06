@@ -72,6 +72,11 @@ for c = 1:numel(conditionsOfInterest)
     xlabel('# easy distractors');
     ylabel('Prop. choices [easy target]');
     box off
+    if c == 1
+        legend({'Ideal obs.', 'Data', 'Regression'}, ...
+                'Location', 'Southwest');
+        legend box off
+    end
 end
 
 %% Panel 2: regression parameter all participants
