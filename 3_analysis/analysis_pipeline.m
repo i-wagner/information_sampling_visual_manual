@@ -458,41 +458,7 @@ elseif exper.num.conds(1) == 4
     end
 end
 
-
-%% Write data to drive
-if exper.num.conds(1) == 2
-    filename = 'dataEye';
-elseif exper.num.conds(1) == 4
-    filename = 'dataTablet';
-end
-save([exper.name.data, '/', filename], ...
-     'exper', 'model', 'model_io', 'perf', 'plt', 'sacc', 'screen', 'stim');
-clear filename
-
-
 %% Statistics for paper 
-% Figure 4
-% Intercepts and slopes of regression fit
-clc; matlab_oneSampleTtest(model_io.reg.fit(:, 1), 2); % Intercepts
-clc; matlab_oneSampleTtest(model_io.reg.fit(:, 2), 2); % Slopes
-
-% Figure 5
-% Proportion gaze shifts on different stimuli over the course of trials
-inp_minSub = exper.avg.minSub;
-inp_dat    = [sacc.propGs.onChosen_trialBegin(:, 2) ...
-              sacc.propGs.onEasy_trialBegin(:, 2) ...
-              sacc.propGs.onSmaller_trialBegin(:, 2) ...
-              sacc.propGs.onCloser_trialBegin(:, 2)];
-% single_subjects = infSampling_avgPropSacc(inp_dat, inp_minSub);
-single_subjects = squeeze(mean(infSampling_avgPropSacc(inp_dat, inp_minSub), 3, 'omitnan'));
-clear inp_minSub
-
-clc; matlab_pairedTtest(single_subjects(:, 1, 1), single_subjects(:, 2, 1), 2) % 5A: Proportions to chosen/not-chosen sets for first two gaze shifts
-clc; matlab_pairedTtest(single_subjects(:, 1, 2), single_subjects(:, 2, 2), 2) % 5B: Proportions to easy/difficult sets for first two gaze shifts
-clc; matlab_pairedTtest(single_subjects(:, 1, 3), single_subjects(:, 2, 3), 2) % 5C: Proportion to smaller/larger sets for first two gaze shifts
-clc; matlab_pairedTtest(single_subjects(:, 1, 4), single_subjects(:, 2, 4), 2) % 5D: Proportions to closet/more distant sets for first two gaze shifts
-clear single_subjects
-
 % Figure 6
 % Model results
 clc; matlab_pairedTtest(model_io.data.double.perf, model_io.model.perf_perfect(:, 3), 2)              % 6A: Empirical vs. maximum gain
@@ -508,14 +474,6 @@ clc; matlab_pairedTtest(mean(sacc.propGs.onAOI_modelComparision_chosenNot_ss(:, 
 [r, p, rl, ru] = corrcoef(mean(sacc.propGs.onAOI_modelComparision_chosenNot_ss(:, :, 2), 2), ...
                           mean(model.propFixChosen(:, :, 2), 2), 'Rows', 'complete');
 clc; disp(round([r(1, 2), rl(1, 2), ru(1, 2), p(1, 2)], 2));
-
-% % Figure S4
-% % Latencies of first gaze shifts to different stimuli
-% clc; matlab_pairedTtest(sacc.lat.firstGs_chosenSet(:, 1, 2),   sacc.lat.firstGs_chosenSet(:, 2, 2))   % S4A: Latencies to chosen/not-chosen set
-% clc; matlab_pairedTtest(sacc.lat.firstGs_easySet(:, 1, 2),     sacc.lat.firstGs_easySet(:, 2, 2))     % S4A: Latencies to easy/difficult set
-% clc; matlab_pairedTtest(sacc.lat.firstGs_smallerSet(:, 1, 2),  sacc.lat.firstGs_smallerSet(:, 2, 2))  % S4A: Latencies to smaller/larger set
-% clc; matlab_pairedTtest(sacc.lat.firstGs_closestStim(:, 1, 2), sacc.lat.firstGs_closestStim(:, 2, 2)) % S4A: Latencies to closest/more distant stimulus
-
 
 %% Create plots for paper
 % Figure 6
@@ -560,14 +518,3 @@ propFix_emp  = sacc.propGs.onAOI_modelComparision_chosenNot_ss(:, :, 2);
 
 infSampling_plt_figSupp3(propFix_pred, propFix_emp, plt)
 clear propFix_pred propFix_emp
-
-% % Supplementary figure X
-% % Latencies of first gaze shifts to different stimuli
-% inp_dat = cat(3, ...
-%               sacc.lat.firstGs_chosenSet(:, :, 2), ...
-%               sacc.lat.firstGs_easySet(:, :, 2), ...
-%               sacc.lat.firstGs_smallerSet(:, :, 2), ...
-%               sacc.lat.firstGs_closestStim(:, :, 2));
-% 
-% infSampling_plt_figSuppThree(inp_dat, plt)
-% clear inp_dat
