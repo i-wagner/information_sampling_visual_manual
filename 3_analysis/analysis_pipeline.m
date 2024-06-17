@@ -8,6 +8,7 @@ settings_screen;
 settings_log;
 
 addpath(exper.path.ANALYSIS);
+addpath(strcat(exper.path.ANALYSIS, "model"));
 cd(exper.path.ROOT);
 
 %% Extract data from files
