@@ -1,4 +1,4 @@
-function time = getTimes(exper, anal, nTrials, gaze, fixations, excludedTrials)
+function time = getTimes(exper, anal, nTrials, gaze, fixations, excludedTrials, dropOutliers)
 
     % Wrapper function
     % Extracts trialwise planning, dwell, inspection, response, and
@@ -45,6 +45,9 @@ function time = getTimes(exper, anal, nTrials, gaze, fixations, excludedTrials)
     % fixations:
     % structure; fixated AOIs across participants and conditions
     %
+    % dropOutliers:
+    % Boolean; drop outliers from trialwise data or not
+    %
     % Output
     % time:
     % structure; time-variables across participants and conditions
@@ -73,7 +76,6 @@ function time = getTimes(exper, anal, nTrials, gaze, fixations, excludedTrials)
             thisSubject.dwellTimes = NaN(thisSubject.nGazeShifts,1);
             thisSubject.planningTime = NaN(thisSubject.nTrials, 1);
             thisSubject.responseTime = NaN(thisSubject.nTrials, 1);
-            thisSubject.nonSearchTime = NaN(thisSubject.nTrials, 1);
             thisSubject.gazeShiftCounter = 0;
             for t = 1:thisSubject.nTrials % Trial
                 % Check whether to skip excluded trial
@@ -136,10 +138,6 @@ function time = getTimes(exper, anal, nTrials, gaze, fixations, excludedTrials)
                                     [exper.stimulus.id.target.EASY, exper.stimulus.id.target.DIFFICULT], ...
                                     exper.stimulus.id.BACKGROUND);
 
-                % Get non-search time
-                thisTrial.nonSearchTime = ...
-                    thisTrial.planningTime + thisTrial.responseTime;
-
                 % Store data
                 thisTrial.storeIdx = ...
                     (thisSubject.gazeShiftCounter + 1):(thisSubject.gazeShiftCounter + thisTrial.nGazeShifts);
@@ -150,8 +148,20 @@ function time = getTimes(exper, anal, nTrials, gaze, fixations, excludedTrials)
                 thisSubject.dwellTimes(thisTrial.storeIdx) = thisTrial.dwellTimes;
                 thisSubject.planningTime(t) = thisTrial.planningTime;
                 thisSubject.responseTime(t) = thisTrial.responseTime;
-                thisSubject.nonSearchTime(t) = thisTrial.nonSearchTime;
                 clear thisTrial
+            end
+
+            % Drop outliers
+            if dropOutliers
+                idx = isoutlier(thisSubject.planningTime);
+                thisSubject.planningTime(idx) = NaN;
+
+                idx = isoutlier(thisSubject.inspectionTime);
+                thisSubject.inspectionTime(idx) = NaN;
+
+                idx = isoutlier(thisSubject.responseTime);
+                thisSubject.responseTime(idx) = NaN;
+                clear idx
             end
 
             % Store data
@@ -159,7 +169,8 @@ function time = getTimes(exper, anal, nTrials, gaze, fixations, excludedTrials)
             time.dwell.trialwise{thisSubject.number,c} = thisSubject.dwellTimes;
             time.planning.trialwise{thisSubject.number,c} = thisSubject.planningTime;
             time.response.trialwise{thisSubject.number,c} = thisSubject.responseTime;
-            time.nonSearch.trialwise{thisSubject.number,c} = thisSubject.nonSearchTime;
+            time.nonSearch.trialwise{thisSubject.number,c} = ...
+                thisSubject.planningTime + thisSubject.responseTime;
             clear thisSubject
         end
     end
