@@ -20,9 +20,10 @@ plotDat = cat(3, ...
 
 % Define visuals
 opt_visuals;
-yLabels = repmat(["Prop. mov. [chosen set]", ...
-                  "Prop. mov. [smaller set]", ...
-                  "Prop. mov. [closest stim.]"], 1, 2);
+yLabels = repmat(["Prop. mov. chosen", ...
+                  "Prop. mov. smaller", ...
+                  "Prop. mov. closest"], 1, 2);
+figLabel = [repmat("visual", 1, 3), repmat("manual", 1, 3)];
 axLimits = [0, 3, 0, 1];
 lineCoordsY = repmat([[0.50, 0.50]; [0.25, 0.25]; [1/10, 1/10]], 2, 1);
 
@@ -65,7 +66,7 @@ for p = 1:size(plotDat, 3) % Panel
     hold off
     axis(axLimits, 'square');
     xlabel("# mov. after trial start");
-    ylabel(yLabels(p));
+    ylabel(strcat(yLabels(p), " [", figLabel{p}, "]"));
     xticks(xSubjects);
     yticks(0:0.25:1);
     box off
