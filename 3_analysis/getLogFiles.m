@@ -1,4 +1,4 @@
-function logs = getLogFiles(exper, logCol)
+function logs = getLogFiles(exper, anal, logCol)
 
     % Wrapper function
     % Performs various steps to load and process log files of participants
@@ -23,6 +23,10 @@ function logs = getLogFiles(exper, logCol)
     % exper:
     % structure; general experiment settings, as returned by the
     % "settings_exper" script
+    %
+    % anal:
+    % structure; vairous analysis settings, as returned by the
+    % "settings_analysis" script
     %
     % logCol:
     % structure; column indices for log files, as returned by the
@@ -49,7 +53,8 @@ function logs = getLogFiles(exper, logCol)
             % Load log file
             [thisSubject.logFile, thisSubject.isMissing] = ...
                 loadLog(thisSubject.number, thisCondition, exper.path.DATA);
-            if thisSubject.isMissing
+            if thisSubject.isMissing | ...
+                ismember(thisSubject.number, anal.excludedSubjects)
                 continue
             end
 

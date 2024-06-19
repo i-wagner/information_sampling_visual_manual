@@ -12,7 +12,7 @@ addpath(strcat(exper.path.ANALYSIS, "model"));
 cd(exper.path.ROOT);
 
 %% Extract data from files
-data.log = getLogFiles(exper, logCol);
+data.log = getLogFiles(exper, anal, logCol);
 data.gaze = getDatFiles(exper, screen, anal, data.log.nCompletedTrials);
 data.badTrials = ...
     getBadTrials(exper, data.log.nCompletedTrials, exper.path.DATA);
