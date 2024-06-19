@@ -27,6 +27,10 @@ function time = getTimes(exper, anal, nTrials, gaze, fixations, excludedTrials, 
     % in a trial that participants did not spend searching for a target
     % (i.e., fixating stimuli)
     %
+    % NOTE 4:
+    % proportion of trials where the response is missing are calculated
+    % BEFORE dropping outlier trials
+    %
     % Input
     % exper:
     % structure; general experiment settings, as returned by the
@@ -58,17 +62,15 @@ function time = getTimes(exper, anal, nTrials, gaze, fixations, excludedTrials, 
     time.planning.trialwise = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
     time.response.trialwise = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
     time.nonSearch.trialwise = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+    time.propTrialsWithResp = NaN(exper.n.SUBJECTS, exper.n.CONDITIONS);
     for c = 1:exper.n.CONDITIONS % Condition
         for s = 1:exper.n.SUBJECTS % Subject
             thisSubject.number = exper.num.SUBJECTS(s);
-            if ismember(thisSubject.number, anal.excludedSubjects)
-                continue
-            end
-
             thisSubject.nTrials = nTrials(thisSubject.number,c);
             thisSubject.excludedTrials = excludedTrials{thisSubject.number,c};
             thisSubject.nGazeShifts = numel(gaze.gazeShifts.trialMap{thisSubject.number,c});
-            if isnan(thisSubject.nTrials)
+            if ismember(thisSubject.number, anal.excludedSubjects) | ...
+               isnan(thisSubject.nTrials)
                 continue
             end
 
@@ -151,6 +153,12 @@ function time = getTimes(exper, anal, nTrials, gaze, fixations, excludedTrials, 
                 clear thisTrial
             end
 
+            % Get number of trials without response times
+            % Response time is either missing due to the trial being
+            % excluded or because the last gaze shift landed on anything
+            % but a target, so no response time could be calculated
+            thisSubject.nTrialsNoRespTime = sum(isnan(thisSubject.responseTime));
+
             % Drop outliers
             if dropOutliers
                 idx = isoutlier(thisSubject.planningTime);
@@ -171,6 +179,8 @@ function time = getTimes(exper, anal, nTrials, gaze, fixations, excludedTrials, 
             time.response.trialwise{thisSubject.number,c} = thisSubject.responseTime;
             time.nonSearch.trialwise{thisSubject.number,c} = ...
                 thisSubject.planningTime + thisSubject.responseTime;
+            time.propTrialsWithResp(thisSubject.number,c) = ...
+                1 - (thisSubject.nTrialsNoRespTime / thisSubject.nTrials);
             clear thisSubject
         end
     end
