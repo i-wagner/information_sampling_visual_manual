@@ -42,7 +42,8 @@ function gaze = getDatFiles(exper, screen, anal, nTrials)
         for s = 1:exper.n.SUBJECTS % Subject
             thisSubject.number = exper.num.SUBJECTS(s);
             thisSubject.nTrials = nTrials(thisSubject.number,c);
-            if isnan(thisSubject.nTrials)
+            if isnan(thisSubject.nTrials) | ...
+               ismember(thisSubject.number, anal.excludedSubjects)
                 continue
             end
 
