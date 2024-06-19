@@ -46,7 +46,11 @@ function dvTransformed = transformDv(exper, anal, dv, transformation)
     for c = 1:nConditions % Condition
         for s = 1:exper.n.SUBJECTS % Subject
             thisSubject.number = exper.num.SUBJECTS(s);
-            thisSubject.dv = dv{thisSubject.number,c};
+            if strcmp(class(dv), "cell")
+                thisSubject.dv = dv{thisSubject.number,c};
+            elseif strcmp(class(dv), "double")
+                thisSubject.dv = dv(thisSubject.number,c);
+            end
             if ismember(thisSubject.number, anal.excludedSubjects) | ...
                isempty(dv) | ...
                all(isnan(thisSubject.dv))
