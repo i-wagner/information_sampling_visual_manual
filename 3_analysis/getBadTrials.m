@@ -1,4 +1,4 @@
-function badTrials = getBadTrials(exper, nTrials, pathToData)
+function [badTrials, nBadTrials, propBadTrials] = getBadTrials(exper, nTrials, pathToData)
 
     % Checks for "bad trials" in conditions of the manual search
     % experiment
@@ -24,12 +24,20 @@ function badTrials = getBadTrials(exper, nTrials, pathToData)
     %
     % Ouput
     % badTrials:
-    % matrix; numbers of trials that are flagged for exclusion
+    % matrix; idx of bad trials
+    %
+    % nBadTrials:
+    % matrix; number of bad trials
+    %
+    % propBadTrials:
+    % matrix; proportion of bad trials
 
     %% Checker whether current trial is in Jan's BadTrial file
     badTrialfile = readtable(strcat(pathToData, "BadTrials.csv"));
 
     badTrials = cell(exper.n.SUBJECTS, exper.n.CONDITIONS);
+    nBadTrials = NaN(exper.n.SUBJECTS, exper.n.CONDITIONS);
+    propBadTrials = NaN(exper.n.SUBJECTS, exper.n.CONDITIONS);
     for c = 1:exper.n.CONDITIONS % Condition
         % BadTrials are only available for the manual search experiment
         if ismember(c, [1, 2])
@@ -59,6 +67,9 @@ function badTrials = getBadTrials(exper, nTrials, pathToData)
                 end
             end
             badTrials{thisSubject.number,c} = thisSubject.badTrials;
+            nBadTrials(thisSubject.number,c) = sum(thisSubject.badTrials);
+            propBadTrials(thisSubject.number,c) = ...
+                nBadTrials(thisSubject.number,c) / thisSubject.nTrials;
         end
     end
 end
