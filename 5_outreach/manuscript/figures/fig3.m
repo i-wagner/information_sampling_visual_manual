@@ -1,40 +1,44 @@
 clear all; close all; clc
 
-%% Get data
-% Set folder
-folder.root = '/Users/ilja/Dropbox/12_work/mr_informationSamplingVisualManual/';
-folder.data = strcat(folder.root, '2_data/');
+%% Init
+initFig;
 folder.fig = strcat(folder.root, "5_outreach/manuscript/figures/fig3");
 
-data = load(strcat(folder.data, 'data_newPipeline.mat'));
-
+%% Panels A&B: choice curves of representative participants
 % Number of participants to use as representative participants
 subjectOfInterest = [9, 9];
-conditionsOfInterest = [2, 4]; % Only double-target
+conditionsOfInterest = [2, 4]; % Only double-target conditions
 
-% Define visuals
-opt_visuals;
+idx.intercept = 1;
+idx.slope = 2;
+chancePerformance = 0.50;
+nDistractorsBalanced = 4;
 
-%% Panel A&B: choice curves of representative participants
 axisLimits = [[-1, 9]; [0, 1.15]];
+lineLimitsHorizontal = [axisLimits(1,:)', [4; 4]];
+lineLimitsVertical = [[0.50; 0.50], [0; axisLimits(2,2)]];
 yLabels = {'Prop. choices easy [visual]', 'Prop. choices easy [manual]'};
 
 hFig = figure;
 tiledlayout(1, 3);
-for c = 1:numel(conditionsOfInterest)
-    intercept = data.data.choice.regressionFit(subjectOfInterest(c),1,conditionsOfInterest(c));
-    slope = data.data.choice.regressionFit(subjectOfInterest(c),2,conditionsOfInterest(c));
+for c = 1:numel(conditionsOfInterest) % Condition
+    % For yPredicted:
+    % subtract the number of distractors at which both sets have an equal
+    % size for generating model predictions, because this was also done
+    % when estimating regression parameters. At the end, addd chance
+    % performance to the predicted values, again, because chance
+    % performance was initially subtracted when estimating regression 
+    % parameters. For an explanation why this was done, see the manuscript
+    % or the function, where parameters are fitted ("fitRegression")
+    intercept = data.choice.regressionFit(subjectOfInterest(c),idx.intercept,conditionsOfInterest(c));
+    slope = data.choice.regressionFit(subjectOfInterest(c),idx.slope,conditionsOfInterest(c));
     x = (0:1:8)';
-    yIdealObserver = data.idealObserver.proChoices.easy(subjectOfInterest(c),:,conditionsOfInterest(c));
-    yPredicted = (intercept + slope .* (x-4)) + 0.50;
     yEmpirical = ...
-        data.data.choice.target.proportionEasy(subjectOfInterest(c),:,conditionsOfInterest(c));
-    regressionEquation = ...
-        ['y = ', num2str(round(intercept, 2)), ' + x * ', ...
-         num2str(round(slope, 2))];
-    lineLimitsHorizontal = [axisLimits(1,:)', [4; 4]];
-    lineLimitsVertical = [[0.50; 0.50], [0; axisLimits(2,2)]];
-    if c == 1
+        data.choice.target.proportionEasy(subjectOfInterest(c),:,conditionsOfInterest(c));
+    yIdealObserver = idealObserver.proChoices.easy(subjectOfInterest(c),:,conditionsOfInterest(c));
+    yPredicted = (intercept + slope .* (x - nDistractorsBalanced)) + chancePerformance;
+
+    if any(conditionsOfInterest(c) == 1:4) % Visual search experiment
         thisColor = plt.color.green(2,:);
     elseif c == 2
         thisColor = plt.color.purple(2,:);
@@ -42,29 +46,29 @@ for c = 1:numel(conditionsOfInterest)
 
     nexttile;
     line(lineLimitsHorizontal, lineLimitsVertical, ...
-        'LineStyle', '-', ...
-        'LineWidth', plt.line.widthThin, ...
-        'Color', plt.color.black, ...
-        'HandleVisibility', 'off');
+         'LineStyle', '-', ...
+         'LineWidth', plt.line.widthThin, ...
+         'Color', plt.color.black, ...
+         'HandleVisibility', 'off');
     hold on
     plot(x, yIdealObserver, ...
-        'd-', ...
-        'MarkerSize', plt.marker.sizeSmall, ...
-        'MarkerFaceColor', thisColor, ...
-        'MarkerEdgeColor', plt.color.white, ...
-        'LineWidth', plt.line.widthThin, ...
-        'Color', thisColor)
+         ':', ...
+         'MarkerSize', plt.marker.sizeSmall, ...
+         'MarkerFaceColor', thisColor, ...
+         'MarkerEdgeColor', plt.color.white, ...
+         'LineWidth', plt.line.widthThin, ...
+         'Color', thisColor)
     plot(x, yEmpirical, ...
-        'o-', ...
-        'MarkerSize', plt.marker.sizeSmall, ...
-        'MarkerFaceColor', thisColor, ...
-        'MarkerEdgeColor', plt.color.white, ...
-        'LineWidth', plt.line.widthThin, ...
-        'Color', thisColor)
+         'o-', ...
+         'MarkerSize', plt.marker.sizeSmall, ...
+         'MarkerFaceColor', thisColor, ...
+         'MarkerEdgeColor', plt.color.white, ...
+         'LineWidth', plt.line.widthThin, ...
+         'Color', thisColor)
     plot(x, yPredicted, ...
-        '-', ...
-        'LineWidth', plt.line.widthThick, ...
-        'Color', plt.color.gray(3,:));
+         '-', ...
+         'LineWidth', plt.line.widthThick, ...
+         'Color', plt.color.gray(3,:));
     hold off
     axis([axisLimits(1,:), axisLimits(2,:)], 'square')
     xticks((axisLimits(1,1)+1):2:(axisLimits(1,2)-1))
@@ -79,24 +83,25 @@ for c = 1:numel(conditionsOfInterest)
     end
 end
 
-%% Panel 2: regression parameter all participants
-intercepts = squeeze(data.data.choice.regressionFit(:,1,conditionsOfInterest));
-slopes = squeeze(data.data.choice.regressionFit(:,2,conditionsOfInterest));
+%% Panel C: regression parameter all participants
+intercepts = squeeze(data.choice.regressionFit(:,idx.intercept,conditionsOfInterest));
+slopes = squeeze(data.choice.regressionFit(:,idx.slope,conditionsOfInterest));
 regPar = cat(3, intercepts, slopes);
+nParameter = size(regPar, 3);
 
 axisLimits = [min(regPar(:)), max(regPar(:))];
-plotMarker = {'^', 's'};
-lineHorizontal = [[axisLimits'], [axisLimits'], [0; 0]];
-lineVertical = [[axisLimits'], [0; 0], axisLimits'];
+plotMarker = {'o', 's'};
+lineHorizontal = [axisLimits', axisLimits', [0; 0]];
+lineVertical = [axisLimits', [0; 0], axisLimits'];
 
-axisHandle = nexttile;
+nexttile;
 line(lineHorizontal, lineVertical, ...
      'LineStyle', '-', ...
      'LineWidth', plt.line.widthThin, ...
      'Color', plt.color.black, ...
      'HandleVisibility', 'off');
 hold on
-for p = 1:size(regPar, 3) % Parameter
+for p = 1:nParameter % Parameter
     plot(regPar(:,1,p), regPar(:,2,p), ...
          'Marker', plotMarker{p}, ...
          'MarkerSize', plt.marker.sizeSmall, ...
