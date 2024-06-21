@@ -38,7 +38,7 @@ for c = 1:numel(conditionsOfInterest) % Condition
     yIdealObserver = idealObserver.proChoices.easy(subjectOfInterest(c),:,conditionsOfInterest(c));
     yPredicted = (intercept + slope .* (x - nDistractorsBalanced)) + chancePerformance;
 
-    if any(conditionsOfInterest(c) == 1:4) % Visual search experiment
+    if c == 1 % Visual search experiment
         thisColor = plt.color.green(2,:);
     elseif c == 2
         thisColor = plt.color.purple(2,:);
