@@ -45,7 +45,7 @@ function linRegFit = fitRegression(exper, anal, proportionEasyChoices, nEasyDist
                 unique(thisSubject.nEasyDistractors(~isnan(thisSubject.nEasyDistractors)));
             thisSubject.proportionEasyChoices = proportionEasyChoices(thisSubject.number,:,c)';
 
-            % x: subtract half thre number of easy distractors to center
+            % x: subtract half the number of easy distractors to center
             %    curve along x-axis
             % y: subtract chance performance to center curve along y-axis
             thisSubject.nHalfDistractors = max(thisSubject.setSize.level) / 2;
