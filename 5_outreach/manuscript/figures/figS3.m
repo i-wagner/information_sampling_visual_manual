@@ -4,7 +4,8 @@ clear all; close all; clc
 % Set folder
 folder.root = '/Users/ilja/Dropbox/12_work/mr_informationSamplingVisualManual/';
 folder.data = strcat(folder.root, '2_data/');
-folder.fig = strcat(folder.root, "5_outreach/manuscript/figures/figSupp2");
+folder.fig = [strcat(folder.root, "5_outreach/manuscript/figures/figSupp3"), ...
+              strcat(folder.root, "5_outreach/manuscript/figures/figSupp4")];
 
 data = load(strcat(folder.data, 'data_newPipeline.mat'));
 
@@ -16,12 +17,11 @@ xLabels = ["Emp. prop. mov. chosen [visual]", ...
            "Emp. prop. mov. chosen [manual]"];
 yLabels = ["Pred. prop. mov. chosen [visual]", ...
            "Pred. prop. mov. chosen [manual]"];
-figLabel = ["visual", "manual"];
 plotDataEmp = cat(3, ...
                   data.data.fixations.propFixOnChosenModelEval(:,:,2), ...
-                  data.probabilisticModel.pred.visual.propFixChosen);
+                  data.data.fixations.propFixOnChosenModelEval(:,:,4));
 plotDataPred = cat(3, ...
-                  data.data.fixations.propFixOnChosenModelEval(:,:,4), ...
+                  data.probabilisticModel.pred.visual.propFixChosen, ...
                   data.probabilisticModel.pred.manual.propFixChosen);
 nSetSizes = size(plotDataEmp, 2);
 nFigures = size(plotDataEmp, 3);
@@ -35,12 +35,16 @@ for f = 1:nFigures % Figure
         else
             plt.color.condition = plt.color.purple;
         end
+        axLim = floor(min([plotDataEmp(:,p,f); plotDataPred(:,p,f)]) * 100) / 100;
+        axLim = [axLim - (axLim * 0.10), 1.10, ...
+                 axLim - (axLim * 0.20), 1.10];
+
         r = corrcoef(plotDataEmp(:,p,f), plotDataPred(:,p,f), ...
                      "Rows", "Complete");
         rSquared = round(r(1,2)^2, 2);
     
         nexttile;
-        line([0, 1], [0, 1], ...
+        line([0, 5], [0, 5], ...
             'LineStyle', '-', ...
             'LineWidth', plt.line.widthThin, ...
             'Color', plt.color.black, ...
@@ -69,20 +73,20 @@ for f = 1:nFigures % Figure
                 'HandleVisibility', 'off')
         [~, ~, h] = plotMean(plotDataEmp(:,p,f), plotDataPred(:,p,f), plt.color.black);
         set(h(4), 'LineWidth', plt.line.widthThin);
-        text(0.50, 0.10, ...
+        text(axLim(2)-0.25, axLim(3)+0.05, ...
              ['{\itr^{2}}', ' = ', num2str(rSquared)]);
         title(strcat(num2str(p-1), " easy distractors"));
         hold off
-        axis([0, 1, 0, 1], 'square');
-        xticks(0:0.50:1);
-        yticks(0:0.50:1);
+        axis(axLim, 'square');
+        xticks(0:0.25:1);
+        yticks(0:0.25:1);
         box off
     end
     xlabel(hTile, xLabels(f), "FontSize", opt.fontSize);
     ylabel(hTile, yLabels(f), "FontSize", opt.fontSize);
     sublabel([], -15, -50);
     opt.size = [35, 35];
-    opt.imgname = strcat(folder.fig, figLabel(f));
+    opt.imgname = folder.fig(f);
     opt.save = true;
     prepareFigure(hFig, opt);
     close;
