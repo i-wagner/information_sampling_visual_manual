@@ -98,7 +98,6 @@ function fixations = getFixatedAois(exper, screen, anal, gaze, stimCoords, nTria
             thisSubject.fixationSubset = false(thisSubject.nGazeShifts,1);
             thisSubject.informationLoss = NaN(thisSubject.nGazeShifts,1);
             thisSubject.atLeastOneFixatedAoi = NaN(thisSubject.nTrials, 1);
-            thisSubject.wentToClosest = NaN(thisSubject.nGazeShifts,1);
             thisSubject.propToClosest = NaN(thisSubject.nTrials, 1);
             thisSubject.distanceCurrent = NaN(thisSubject.nGazeShifts,1);
             thisSubject.gazeShiftCounter = 0;
