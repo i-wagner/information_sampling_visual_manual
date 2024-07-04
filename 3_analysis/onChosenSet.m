@@ -4,13 +4,13 @@ function fixationOnChosenSet = onChosenSet(anal, exper, nTrials, trialMap, exclu
     % given trial
     %
     % Input
-    % exper:
-    % structure; general experiment settings, as returned by the
-    % "settings_exper" script
-    %
     % anal:
     % structure; various analysis settings, as returned by the
     % "settings_analysis" script
+    %
+    % exper:
+    % structure; general experiment settings, as returned by the
+    % "settings_exper" script
     %
     % nTrials:
     % matrix; number of trials that participants completed in conditions
