@@ -289,6 +289,9 @@ idealObserver.opt = ...
  idealObserver.proChoices.easy, idealObserver.performance] = ...
     getIdealObserverPredictions(exper, idealObserver.opt);
 
+%% Fit generative probabilistic model
+probabilisticModel = initProbabilisticModel(exper);
+
 %% Export data for stats
 % Completed trials
 exportShort(data.log.nCompletedTrials, ...
