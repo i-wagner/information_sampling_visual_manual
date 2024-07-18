@@ -30,8 +30,8 @@ function [propChoiceEasy, nFix, propFix] = getModelPred(setSizes, relativeGain, 
     % sizes
     %
     % nFix:
-    % matrix; predicted number of fixations required to find the chosen
-    % target
+    % matrix; predicted overall number of fixations required to find the
+    % chosen target
     % 
     % propFix:
     % matrix; predicted probability to fixate an chosen element during
@@ -111,6 +111,6 @@ function [propChoiceEasy, nFix, propFix] = getModelPred(setSizes, relativeGain, 
     end
     propFix = nFix(:,1) ./ nFix(:, 3); % Fixations on chosen/not-chosen / over all fixations
     propChoiceEasy = propChoiceEasy(:,1); % Drop difficult
-    nFix = nFix(:,1);
+    nFix = nFix(:,3);
 
 end
