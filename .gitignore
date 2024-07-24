@@ -10,3 +10,4 @@
 *.tiff
 *.jasp
 .Rhistory
+.RData
