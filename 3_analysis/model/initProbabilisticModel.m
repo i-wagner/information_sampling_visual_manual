@@ -36,7 +36,7 @@ function probabilisticModel = initProbabilisticModel(exper)
                                               'TolX', 1e-12);
     probabilisticModel.fit.init = [0.10, 0.10];
     probabilisticModel.fit.min = [0, 0];
-    probabilisticModel.fit.max = [2, 2];
+    probabilisticModel.fit.max = [2.50, 2.50];
     
     %% Lookup table
     switch probabilisticModel.BIAS_FIRST_FIX
