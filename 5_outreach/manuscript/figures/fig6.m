@@ -179,7 +179,7 @@ for p = 1:2 % Panel
     [~, ~, h] = plotMean(emp, pred, plt.color.black);
     set(h(4), 'LineWidth', plt.line.widthThin);
     hold off
-    axis([0.50, 1, 0.50, 1], 'square');
+    axis([0, 1, 0, 1], 'square');
     xlabel(xLabels(p));
     ylabel(yLabels(p));
     xticks(0:0.25:1);

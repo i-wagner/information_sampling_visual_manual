@@ -24,7 +24,7 @@ plotDataPred = cat(3, ...
 % axLim = floor(min([plotDataEmp(:); plotDataPred(:)]) * 100) / 100;
 % axLim = [axLim - (axLim * axScalingFactor), 1.10, ...
 %          axLim - (axLim * axScalingFactor), 1.10];
-axLim = [0.25, 1, 0.25, 1];
+axLim = [0, 1, 0, 1];
 locText = [(axLim(2) - textLocOffset(1)), ...
            (axLim(3) + textLocOffset(2))];
 nSetSizes = size(plotDataEmp, 2);
@@ -72,8 +72,8 @@ for f = 1:nFigures % Figure
         axis(axLim, 'square');
         % Weird workaround: cannot use xticks/yticks, because Matlab, for
         % some reason, re-orders axis labels during saving of the figure
-        set(gca, 'xtick', 0:0.25:1, 'xticklabel', 0:0.25:1); 
-        set(gca, 'ytick', 0:0.25:1, 'yticklabel', 0:0.25:1);
+        set(gca, 'xtick', 0:0.50:1, 'xticklabel', 0:0.50:1); 
+        set(gca, 'ytick', 0:0.50:1, 'yticklabel', 0:0.50:1);
         text(locText(1), locText(2), ...
              ['{\itr^{2}}', ' = ', num2str(rSquared)]);
         title(strcat(num2str(p-1), " easy distractors"));
@@ -82,7 +82,7 @@ for f = 1:nFigures % Figure
     xlabel(hTile, xLabels(f), "FontSize", opt.fontSize);
     ylabel(hTile, yLabels(f), "FontSize", opt.fontSize);
 
-    sublabel([], -15, -60);
+    sublabel([], -10, -50);
     opt.size = [35, 35];
     opt.imgname = folder.fig(f);
     opt.save = true;
