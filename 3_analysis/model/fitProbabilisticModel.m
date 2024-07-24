@@ -81,7 +81,7 @@ function [predPropChoiceEasy, predPropFix, predNFix, freeParameter] = ...
 
     %% Fit model parameter
     freeParameter = NaN(exper.n.SUBJECTS, nParameter);
-    for s = 1:exper.n.SUBJECTS % Subject
+    parfor s = 1:exper.n.SUBJECTS % Subject
         if ismember(s, excludedSubs) | all(isnan(relativeGain(s,:)))
             continue
         end
