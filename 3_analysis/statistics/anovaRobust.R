@@ -58,6 +58,15 @@ wwtrim(N_GROUPS_FACTOR_ONE, N_GROUPS_FACTOR_TWO, data_formated)
 wwtrimbt(N_GROUPS_FACTOR_ONE, N_GROUPS_FACTOR_TWO, data_formated, nboot=N_BOOTSAMPLES)
 
 
+##### Gaze shifts on easy set
+file_path <- paste(PATH_TO_FILES, "propOnEasy_long.csv", sep="")
+data <- read_csv(file_path)
+data_formated = fac2list(data["Dv"], data[c("Exp", "Targ")])
+
+wwtrim(N_GROUPS_FACTOR_ONE, N_GROUPS_FACTOR_TWO, data_formated)
+wwtrimbt(N_GROUPS_FACTOR_ONE, N_GROUPS_FACTOR_TWO, data_formated, nboot=N_BOOTSAMPLES)
+
+
 ##### Gaze shifts on smaller set
 file_path <- paste(PATH_TO_FILES, "propOnSmaller_long.csv", sep="")
 data <- read_csv(file_path)
@@ -69,6 +78,15 @@ wwtrimbt(N_GROUPS_FACTOR_ONE, N_GROUPS_FACTOR_TWO, data_formated, nboot=N_BOOTSA
 
 ##### Gaze shifts on closest element
 file_path <- paste(PATH_TO_FILES, "propOnClosest_long.csv", sep="")
+data <- read_csv(file_path)
+data_formated = fac2list(data["Dv"], data[c("Exp", "Targ")])
+
+wwtrim(N_GROUPS_FACTOR_ONE, N_GROUPS_FACTOR_TWO, data_formated)
+wwtrimbt(N_GROUPS_FACTOR_ONE, N_GROUPS_FACTOR_TWO, data_formated, nboot=N_BOOTSAMPLES)
+
+
+##### Gaze shift latencies
+file_path <- paste(PATH_TO_FILES, "latencies_long.csv", sep="")
 data <- read_csv(file_path)
 data_formated = fac2list(data["Dv"], data[c("Exp", "Targ")])
 
