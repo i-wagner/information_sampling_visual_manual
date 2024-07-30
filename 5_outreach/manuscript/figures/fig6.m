@@ -116,10 +116,10 @@ for p = 1:2 % Panel
          'MarkerFaceColor', plt.color.condition(2,:), ...
          'MarkerEdgeColor', 'None')
     hold off
-    axis([(x(1) - 1), (x(end) + 1), 0, 1], 'square');
+    axis([(x(1) - 1), (x(end) + 1), 0, 1]);
     xlabel("# easy distractors");
     ylabel(yLabels(p));
-    xticks(x(1):2:x(end));
+    xticks(x(1):1:x(end));
     yticks(0:0.25:1);
     legend({"Empirical", "Model"}, 'Location', 'SouthWest');
     legend box off
