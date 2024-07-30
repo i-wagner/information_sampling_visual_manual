@@ -87,6 +87,10 @@ for p = 1:nPanels % Panel
     xticks(axTicks{p});
     yticks(axTicks{p});
     box off
+
+    if checkAxLim([axLimits(p,:), axLimits(p,:)], plotDat(:,:,p))
+        error("Current axis limits result in values being cut-off!");
+    end
 end
 sublabel([], -10, -85);
 opt.size = [25, 55];

@@ -124,6 +124,10 @@ for p = 1:2 % Panel
     legend({"Empirical", "Model"}, 'Location', 'SouthWest');
     legend box off
     box off
+
+    if checkAxLim([0, 1], [emp_mean, pred_mean])
+        error("Current axis limits result in values being cut-off!");
+    end
 end
 
 %% Panels C&D: predicted vs. empirical avg. proportion fixations on chosen set
@@ -175,6 +179,10 @@ for p = 1:2 % Panel
     xticks(0:0.25:1);
     yticks(0:0.25:1);
     box off
+
+    if checkAxLim([0, 1], [emp, pred])
+        error("Current axis limits result in values being cut-off!");
+    end
 end
 
 sublabel([], -20, -40);

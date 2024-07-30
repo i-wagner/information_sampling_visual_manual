@@ -75,6 +75,11 @@ for f = 1:nFigures % Figure
              ['{\itr^{2}}', ' = ', num2str(rSquared)]);
         title(strcat(num2str(p-1), " easy distractors"));
         box off
+
+        if checkAxLim(axLim, ...
+                      [plotDataEmp(:,p,f), plotDataPred(:,p,f)])
+            error("Current axis limits result in values being cut-off!");
+        end
     end
     xlabel(hTile, xLabels(f), "FontSize", opt.fontSize);
     ylabel(hTile, yLabels(f), "FontSize", opt.fontSize);

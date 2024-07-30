@@ -81,6 +81,11 @@ for c = 1:numel(conditionsOfInterest) % Condition
                 'Location', 'Southwest');
         legend box off
     end
+
+    if checkAxLim(axisLimits(1,:), x) | ...
+       checkAxLim(axisLimits(2,:), [yIdealObserver(:); yEmpirical(:); yPredicted(:)])
+        error("Current axis limits result in values being cut-off!");
+    end
 end
 
 %% Panel C: regression parameter all participants
@@ -131,6 +136,10 @@ legend({'Intercept [diff.]'; 'Slope [costs]'}, ...
         'Position', [0.61, 0.19, 0.50, 0.14]);
 legend box off
 box off
+
+if checkAxLim(axisLimits, regPar(:))
+    error("Current axis limits result in values being cut-off!");
+end
 
 sublabel([], -130, -30);
 opt.size = [50, 15];

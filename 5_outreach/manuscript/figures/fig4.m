@@ -99,6 +99,10 @@ for p = 1:nPanels % Panel
     xticks(xSingleSubjects);
     yticks(thisTicksY);
     box off
+
+    if checkAxLim(thisLimits(3:4), plotDat(:,:,p))
+        error("Current axis limits result in values being cut-off!");
+    end
 end
 opt.size = [63, 27];
 opt.imgname = folder.fig;

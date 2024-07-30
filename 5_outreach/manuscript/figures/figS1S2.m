@@ -77,6 +77,11 @@ for c = 1:nConditions % Conditions
         xticks((axisLimits(1,1)+1):4:(axisLimits(1,2)-1))
         yticks(axisLimits(2,1):0.50:axisLimits(2,2))
         box off
+
+        if checkAxLim(axisLimits(2,:), ...
+                      [yIdealObserver(:), yEmpirical(:), yPredicted(:)])
+            error("Current axis limits result in values being cut-off!");
+        end
     end
     xlabel(hTile, '# easy distractors', "FontSize", opt.fontSize);
     ylabel(hTile, yLabels(c), "FontSize", opt.fontSize);
