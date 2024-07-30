@@ -62,30 +62,17 @@ for p = 1:2 % Panel
 
         emp = data.choice.target.proportionEasy(:,:,idx.doubleVisual);
         pred = probabilisticModel.pred.visual.propChoicesEasy;
-
-        emp_mean = mean(emp, 1, 'omitnan');
-        emp_cis = ci_mean(emp);
-        pred_mean = mean(pred, 1, 'omitnan');
-        pred_cis = ci_mean(pred);
     else
         plt.color.condition = plt.color.purple;
 
         emp = data.choice.target.proportionEasy(:,:,idx.doubleManual);
         pred = probabilisticModel.pred.manual.propChoicesEasy;
-
-        % Arcsine transformation to avoid CIs greater than one
-        [emp_mean, emp_cis] = ciForProportion(emp);
-        [pred_mean, pred_cis] = ciForProportion(pred);
-        % emp_arcsine = asin(sqrt(emp));
-        % emp_mean_arcsine = mean(emp_arcsine, 1, 'omitnan');
-        % emp_cis_arcsine = ci_mean(emp_arcsine);
-        % emp_cis_arcsine = [emp_mean_arcsine - emp_cis_arcsine; ...
-        %                     emp_mean_arcsine + emp_cis_arcsine];
-        % emp_mean = sin(emp_mean_arcsine).^2;
-        % emp_cis = sin(emp_cis_arcsine).^2;
     end
 
-    nexttile;
+    % Arcsine transformation to avoid CIs greater than one
+    [emp_mean, emp_cis] = ciForProportion(emp);
+    [pred_mean, pred_cis] = ciForProportion(pred);
+
     line([[(x(1) - 1); (x(end) + 1)], ...
           [nDistractorsEqualSetSize; nDistractorsEqualSetSize]], ...
          [[chancePerformance; chancePerformance], ...
@@ -158,8 +145,7 @@ for p = 1:2 % Panel
          'Color', plt.color.black, ...
          'HandleVisibility', 'off');
     hold on
-    plot(emp, pred, ...
-         'o', ...
+    plot(emp, pred, ...         'o', ...
          'MarkerSize', plt.marker.sizeSmall, ...
          'MarkerFaceColor', plt.color.gray(2,:), ...
          'MarkerEdgeColor', plt.color.white, ...
