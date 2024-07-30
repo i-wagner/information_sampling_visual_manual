@@ -9,36 +9,55 @@ idx.doubleTargetVisual = 2;
 idx.doubleTargetManual = 4;
 plotDat = cat(3, ...
               data.fixations.timecourse.onChosen(:,:,idx.doubleTargetVisual), ...
+              data.fixations.timecourse.onEasy(:,:,idx.doubleTargetVisual), ...
               data.fixations.timecourse.onSmaller(:,:,idx.doubleTargetVisual), ...
               data.fixations.timecourse.onClosest(:,:,idx.doubleTargetVisual), ...
+              data.fixations.latenciesFirstGazeShift(:,:,idx.doubleTargetVisual), ...
               data.fixations.timecourse.onChosen(:,:,idx.doubleTargetManual), ...
+              data.fixations.timecourse.onEasy(:,:,idx.doubleTargetManual), ...
               data.fixations.timecourse.onSmaller(:,:,idx.doubleTargetManual), ...
-              data.fixations.timecourse.onClosest(:,:,idx.doubleTargetManual));
+              data.fixations.timecourse.onClosest(:,:,idx.doubleTargetManual), ...
+              data.fixations.latenciesFirstGazeShift(:,:,idx.doubleTargetManual));
+nPanels = size(plotDat, 3);
+nPanelsPerCond = nPanels / 2;
 
-yLabels = repmat(["Prop. mov. chosen", ...
-                  "Prop. mov. smaller", ...
-                  "Prop. mov. closest"], 1, 2);
-figLabel = [repmat("[visual]", 1, 3), repmat("[manual]", 1, 3)];
-axLimits = [0, (size(plotDat, 2) + 1), ...
-            0, 1];
+yLabels = repmat(["Prop. mov. chosen ", ...
+                  "Prop. mov. easy ", ...
+                  "Prop. mov. smaller ", ...
+                  "Prop. mov. closest ", ...
+                  "Mov. latency [ms] "], 1, 2);
+figLabel = [repmat("[visual]", 1, nPanelsPerCond), ...
+            repmat("[manual]", 1, nPanelsPerCond)];
+axLimits = [0, (size(plotDat, 2) + 1), 0, 1];
 meansOffset = 0.25;
 
 % Proportion on chosen: 
 % chance performance = 1/2, element from chosen/non-chosen set
 % 
+% Proportion on smaller:
+% chance performance = 1/2, element from easy/difficult set
+% 
 % Proportion on smaller: 
 % chance performance = 1/4, target/distractor from easy/difficult set
 % 
-% Proportion on closest: chance performance = 1/10, element on the screen
-lineCoordsY = repmat([[0.50, 0.50]; [0.25, 0.25]; [1/10, 1/10]], 2, 1);
+% Proportion on closest: 
+% % chance performance = 1/10, element on the screen
+lineCoordsY = repmat([[0.50, 0.50]; [0.50, 0.50]; ...
+                      [0.25, 0.25]; [1/10, 1/10]; [NaN, NaN]], 2, 1);
 
 %% Plot
-nPanels = size(plotDat, 3);
-
 hFig = figure;
-tiledlayout(2, 3);
+tiledlayout(2, nPanelsPerCond);
 for p = 1:nPanels % Panel
-    if any(p == 1:3) % Visual search experiment
+    if any(any(plotDat(:,:,p) > 1))
+        thisLimits = axLimits;
+        thisLimits(3:4) = [90, 550];
+        thisTicksY = 100:150:600;
+    else
+        thisLimits = axLimits;
+        thisTicksY = 0:0.25:1;
+    end
+    if any(p == 1:nPanelsPerCond) % Visual search experiment
         plt.color.condition = plt.color.green;
     else
         plt.color.condition = plt.color.purple;
@@ -49,7 +68,7 @@ for p = 1:nPanels % Panel
                       numel(xSingleSubjects));
 
     nexttile;
-    line(axLimits(1:2), lineCoordsY(p,:), ...
+    line(thisLimits(1:2), lineCoordsY(p,:), ...
          'LineStyle', '-', ...
          'LineWidth', plt.line.widthThin, ...
          'Color', plt.color.black, ...
@@ -74,15 +93,14 @@ for p = 1:nPanels % Panel
              'Color', plt.color.condition(1,:), ...
              'HandleVisibility', 'off');
     hold off
-    axis(axLimits, 'square');
+    axis(thisLimits, 'square');
     xlabel("# mov. after trial start");
     ylabel(strcat(yLabels(p), figLabel{p}));
     xticks(xSingleSubjects);
-    yticks(0:0.25:1);
+    yticks(thisTicksY);
     box off
 end
-sublabel([], -30, -40);
-opt.size = [45, 30];
+opt.size = [63, 27];
 opt.imgname = folder.fig;
 opt.save = true;
 prepareFigure(hFig, opt);
