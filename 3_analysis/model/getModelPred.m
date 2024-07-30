@@ -37,6 +37,15 @@ function [propChoiceEasy, nFix, propFix] = getModelPred(setSizes, relativeGain, 
     % matrix; predicted probability to fixate an chosen element during
     % search for the chosen target
 
+    %% Use fixed seed
+    % This way we get the same noise samples for each participant and each
+    % iteration of the solver. This helps stabilizing the fits, and getting
+    % the same model parameter each time we run the fitting routine.
+    %
+    % I tested 100 random seeds and compared the model parameter to the
+    % parameter with this seed: the differences where mostly very small.
+    rng(1, "twister");
+
     %% Add decision noise to relative gain
     % Assumption:
     % participants don't act like an ideal observer, but deviate from it's
