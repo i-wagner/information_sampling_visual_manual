@@ -1,4 +1,4 @@
-function meanGazePosition = calcMeanGazePos(gazeTrace, idxGazeShifts)
+function meanGazePosition = calcMeanGazePos(gazeTrace, idxGazeShifts, sampleOffset)
 
     % Calculates the mean x and y gaze position inbetween consecutive gaze
     % shifts
@@ -41,6 +41,23 @@ function meanGazePosition = calcMeanGazePos(gazeTrace, idxGazeShifts)
         % STANDARD DEVIATION OF ZERO CAN OCCUR IF GAZE SHIFT ENDED CLOSE 
         % TO RESPONSE AND THERE NOT MANY DATAPOINTS UNTIL THE RESPONSE
         if all(~isnan(boundaries(g,:)))
+            % Check whether the upper boundary of the interval, we use
+            % to calculate the mean gaze position, lies AFTER stimulus 
+            % offset. It it does, clamp it to stimulus offset. Since no
+            % stimuli are shown after their offset (duh) any gaze
+            % position after offset is not informative.
+            %
+            % The correction has to happen here (and not at lines 31:32), 
+            % because it is not guaranteed that the last gaze shift in a 
+            % trial actually occured before stimulus offset.
+            %
+            % Only apply correction of the onset of the saccade occured
+            % before stimulus offset, otherwise we might get gaze shifts
+            % where offset occured before onset
+            if (boundaries(g,1) <= sampleOffset) & ...
+               (boundaries(g,2) > sampleOffset)
+                boundaries(g,2) = sampleOffset;
+            end
             idx = boundaries(g,1):boundaries(g,2);
 
             meanGazePosition(g,:) = ...
