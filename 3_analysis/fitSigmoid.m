@@ -26,11 +26,12 @@ function par = fitSigmoid(exper, proportionChoicesEasy)
     parMin = [-2, -inf]; % [Mean, SD]
     parMax = [10, inf];
     parStart = [mean(x), std(x)];
+    fixedMean = 0;
     
     %% Fit
     close all;
     
-    par = NaN(exper.n.SUBJECTS,2,exper.n.CONDITIONS);
+    par = NaN(exper.n.SUBJECTS, 3, exper.n.CONDITIONS);
     for c = 1:exper.n.CONDITIONS % Condition
         if DO_PLOT
             figure;
@@ -55,6 +56,16 @@ function par = fitSigmoid(exper, proportionChoicesEasy)
                               thisSubject.proportionChoicesEasy);
             par(thisSubject.number,1,c) = thisPar(1); % Mean
             par(thisSubject.number,2,c) = thisPar(2); % Std
+
+            % Get slopes
+            % With unconstrained SDs we might get values that are extremely
+            % large. To get around this, we use the fitted SDs and a fixed
+            % mean to estimate the Gaussian PDF, and then get the PDF value
+            % at 0; this is then used as the slope of the CDF.
+            thisSubject.pdf = pdf("Normal", x, fixedMean, thisPar(2)) .* -1;
+            thisSubject.idxSlope = (x == fixedMean);
+            par(thisSubject.number,3,c) = ...
+                thisSubject.pdf(thisSubject.idxSlope);
     
             if DO_PLOT
                 parRaw = strcat("Mean: ", num2str(round(thisPar(1), 2)), ...
