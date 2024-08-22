@@ -22,11 +22,10 @@ function par = fitSigmoid(exper, proportionChoicesEasy)
                    'MaxIter', 100000, ...
                    'TolFun', 1e-12, ...
                    'TolX', 1e-12);
-
     x = (0:8)';
-    parMin = [min(x), 0];
-    parMax = [max(x), 4];
-    parStart = [parMax(1)/2, parMax(2)/2];
+    parMin = [-2, -inf]; % [Mean, SD]
+    parMax = [10, inf];
+    parStart = [mean(x), std(x)];
     
     %% Fit
     close all;
