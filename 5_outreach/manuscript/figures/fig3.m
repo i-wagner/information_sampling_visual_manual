@@ -9,8 +9,9 @@ folder.fig = strcat(folder.root, "5_outreach/manuscript/figures/fig3");
 subjectOfInterest = [9, 9];
 conditionsOfInterest = [2, 4]; % Only double-target conditions
 
-idx.intercept = 1;
-idx.slope = 2;
+idx.mean = 1;
+idx.sd = 2;
+idx.slope = 3;
 chancePerformance = 0.50;
 nDistractorsBalanced = 4;
 
@@ -30,8 +31,8 @@ for c = 1:numel(conditionsOfInterest) % Condition
     % performance was initially subtracted when estimating regression 
     % parameters. For an explanation why this was done, see the manuscript
     % or the function, where parameters are fitted ("fitRegression")
-    intercept = data.choice.regressionFit(subjectOfInterest(c),idx.intercept,conditionsOfInterest(c));
-    slope = data.choice.regressionFit(subjectOfInterest(c),idx.slope,conditionsOfInterest(c));
+    meanSigmoid = data.choice.sigmoidFit(subjectOfInterest(c),idx.mean,conditionsOfInterest(c));
+    sdSigmoid = data.choice.sigmoidFit(subjectOfInterest(c),idx.sd,conditionsOfInterest(c));
     x = (0:1:8)';
     yEmpirical = ...
         data.choice.target.proportionEasy(subjectOfInterest(c),:,conditionsOfInterest(c));
@@ -89,10 +90,10 @@ for c = 1:numel(conditionsOfInterest) % Condition
 end
 
 %% Panel C: regression parameter all participants
-intercepts = squeeze(data.choice.regressionFit(:,idx.intercept,conditionsOfInterest));
-slopes = squeeze(data.choice.regressionFit(:,idx.slope,conditionsOfInterest));
-regPar = cat(3, intercepts, slopes);
-nParameter = size(regPar, 3);
+means = squeeze(data.choice.sigmoidFit(:,idx.mean,conditionsOfInterest));
+slopes = squeeze(data.choice.sigmoidFit(:,idx.slope,conditionsOfInterest));
+parameter = cat(3, means, slopes);
+nParameter = size(parameter, 3);
 
 axisLimits = [min(regPar(:)), max(regPar(:))];
 plotMarker = {'o', 's'};
@@ -115,7 +116,7 @@ for p = 1:nParameter % Parameter
          'LineStyle', 'none', ...
          'LineWidth', plt.line.widthThin, ...
          'HandleVisibility', 'off');
-    [~, ~, meanHandle] = plotMean(regPar(:,1,p), regPar(:,2,p), plt.color.black);
+    [~, ~, meanHandle] = plotMean(parameter(:,1,p), parameter(:,2,p), plt.color.black);
     set(meanHandle, ...
         'MarkerSize', plt.marker.sizeLarge, ...
         'MarkerFaceColor', plt.color.black, ...
