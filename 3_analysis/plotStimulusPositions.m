@@ -90,6 +90,7 @@ function plotStimulusPositions(horEndpoints, vertEndpoints, horStimCenter, vertS
     horCoordFixTol = cos(unitCircle) .* FIX_TOL_RADIUS + FIX_LOC(1);
     vertCoordFixTol = sin(unitCircle) .* FIX_TOL_RADIUS + FIX_LOC(2);
 
+    figure("Visible", "on");
     clf
     [f, v] = poly2fv(horCoordStimulusArea, vertCoordStimulusArea);
     patch('Faces', f, ...
@@ -115,7 +116,5 @@ function plotStimulusPositions(horEndpoints, vertEndpoints, horStimCenter, vertS
     hold off
     axis([-24.5129, 24.5129, -13.7834, 13.7834]);
     daspect([1, 1, 1]);
-    disp("Please press a button to continue!");
-    waitforbuttonpress
 
 end
