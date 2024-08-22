@@ -21,7 +21,7 @@ lineLimitsVertical = [[0.50; 0.50], [0; axisLimits(2,2)]];
 yLabels = {'Prop. choices easy [visual]', 'Prop. choices easy [manual]'};
 
 hFig = figure;
-tiledlayout(1, 3);
+tiledlayout(2, 2);
 for c = 1:numel(conditionsOfInterest) % Condition
     % For yPredicted:
     % subtract the number of distractors at which both sets have an equal
@@ -73,7 +73,7 @@ for c = 1:numel(conditionsOfInterest) % Condition
     plot(x, yPredicted, ...
          '-', ...
          'LineWidth', plt.line.widthThick, ...
-         'Color', plt.color.gray(3,:));
+         'Color', plt.color.gray(2,:));
     hold off
     axis([axisLimits(1,:), axisLimits(2,:)], 'square')
     xticks((axisLimits(1,1)+1):2:(axisLimits(1,2)-1))
@@ -82,7 +82,7 @@ for c = 1:numel(conditionsOfInterest) % Condition
     ylabel(yLabels(c));
     box off
     if c == 1
-        legend({'Ideal obs.', 'Data', 'Regression'}, ...
+        legend({'Ideal obs.', 'Data', 'Sigmoid'}, ...
                 'Location', 'Southwest');
         legend box off
     end
@@ -93,26 +93,26 @@ for c = 1:numel(conditionsOfInterest) % Condition
     end
 end
 
-%% Panel C: regression parameter all participants
+%% Panel C: sigmoid parameter all participants
 means = squeeze(data.choice.sigmoidFit(:,idx.mean,conditionsOfInterest));
 slopes = squeeze(data.choice.sigmoidFit(:,idx.slope,conditionsOfInterest));
 parameter = cat(3, means, slopes);
 nParameter = size(parameter, 3);
 
-axisLimits = [min(regPar(:)), max(regPar(:))];
 plotMarker = {'o', 's'};
-lineHorizontal = [axisLimits', axisLimits', [0; 0]];
-lineVertical = [axisLimits', [0; 0], axisLimits'];
-
-nexttile;
-line(lineHorizontal, lineVertical, ...
-     'LineStyle', '-', ...
-     'LineWidth', plt.line.widthThin, ...
-     'Color', plt.color.black, ...
-     'HandleVisibility', 'off');
-hold on
 for p = 1:nParameter % Parameter
-    plot(regPar(:,1,p), regPar(:,2,p), ...
+    axisLimits = [min(min(parameter(:,:,p))), max(max(parameter(:,:,p)))];
+    lineHorizontal = [axisLimits', axisLimits', [0; 0]];
+    lineVertical = [axisLimits', [0; 0], axisLimits'];
+
+    nexttile;
+    line(lineHorizontal, lineVertical, ...
+         'LineStyle', '-', ...
+         'LineWidth', plt.line.widthThin, ...
+         'Color', plt.color.black, ...
+         'HandleVisibility', 'off');
+    hold on
+    plot(parameter(:,1,p), parameter(:,2,p), ...
          'Marker', plotMarker{p}, ...
          'MarkerSize', plt.marker.sizeSmall, ...
          'MarkerFaceColor', plt.color.gray(2,:), ...
@@ -130,24 +130,32 @@ for p = 1:nParameter % Parameter
         'Marker', plotMarker{p});
     set(meanHandle(2:end), ...
         'HandleVisibility', 'off')
+    hold off
+    axis([axisLimits, axisLimits], 'square')
+    if p == 1
+        xticks(2:2:100);
+        yticks(2:2:100);
+        xticklabels(2:2:100);
+        yticklabels(2:2:100);
+
+        xlabel('Mean [visual search]')
+        ylabel('Mean [manual search]')
+    else
+        xticks(-100:0.07:100);
+        yticks(-100:0.07:100);
+        xticklabels(-100:0.07:100);
+        yticklabels(-100:0.07:100);
+
+        xlabel('Slope [visual search]')
+        ylabel('Slope [manual search]')
+    end
+    if checkAxLim(axisLimits, parameter(:,:,p))
+        error("Current axis limits result in values being cut-off!");
+    end
 end
-hold off
-axis([axisLimits, axisLimits], 'square')
-xticks(-0.10:0.10:0.50);
-yticks(-0.10:0.10:0.50);
-xlabel('Visual search')
-ylabel('Manual search')
-legend({'Intercept [diff.]'; 'Slope [costs]'}, ...
-        'Position', [0.61, 0.19, 0.50, 0.14]);
-legend box off
 box off
 
-if checkAxLim(axisLimits, regPar(:))
-    error("Current axis limits result in values being cut-off!");
-end
-
-sublabel([], -130, -30);
-opt.size = [50, 15];
+opt.size = [45, 45];
 opt.imgname = folder.fig;
 opt.save = true;
 prepareFigure(hFig, opt);
