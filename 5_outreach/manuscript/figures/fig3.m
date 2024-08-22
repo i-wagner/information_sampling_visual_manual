@@ -155,7 +155,8 @@ for p = 1:nParameter % Parameter
 end
 box off
 
-opt.size = [45, 45];
+sublabel([], -10, -60);
+opt.size = [40, 35];
 opt.imgname = folder.fig;
 opt.save = true;
 prepareFigure(hFig, opt);
