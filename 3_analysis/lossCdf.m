@@ -24,7 +24,11 @@ function dev = lossCdf(par, empX, empY)
     % double; loss for parameter combination
 
     %% Get loss
-    pred = 1 - cdf('Normal', empX, par(1), par(2));
+    if sign(par(2)) == -1
+        pred = cdf('Normal', empX, par(1), abs(par(2)));
+    else
+        pred = 1 - cdf('Normal', empX, par(1), par(2));
+    end
     dev = sum((empY - pred).^2, 'omitnan');
 
 end
