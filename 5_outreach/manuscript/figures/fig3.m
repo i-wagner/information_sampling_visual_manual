@@ -37,7 +37,11 @@ for c = 1:numel(conditionsOfInterest) % Condition
     yEmpirical = ...
         data.choice.target.proportionEasy(subjectOfInterest(c),:,conditionsOfInterest(c));
     yIdealObserver = idealObserver.proChoices.easy(subjectOfInterest(c),:,conditionsOfInterest(c));
-    yPredicted = (intercept + slope .* (x - nDistractorsBalanced)) + chancePerformance;
+    if sign(sdSigmoid) == -1
+        yPredicted = cdf('Normal', x, meanSigmoid, abs(sdSigmoid));
+    else
+        yPredicted = 1 - cdf('Normal', x, meanSigmoid, sdSigmoid);
+    end
 
     if c == 1 % Visual search experiment
         thisColor = plt.color.green(2,:);
