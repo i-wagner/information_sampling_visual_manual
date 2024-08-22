@@ -55,6 +55,19 @@ t.test(data$slopes_visual, data$slopes_manual, paired=T) # Non-robust
 yuend(data$slopes_visual, data$slopes_manual, tr = 0.2) # Robust
 
 
+##### Sigmoid parameter
+filepath = paste(PATH_TO_FILES, "sigmoidPar_short.csv", sep="")
+data <- read.csv(filepath)
+
+# Means visual vs. Means manual
+t.test(data$intercepts_visual, data$means_manual, paired=T) # Non-robust
+yuend(data$intercepts_visual, data$means_manual, tr = 0.2) # Robust
+
+# Slopes visual vs. Intercepts manual
+t.test(data$slopes_visual, data$slopes_manual, paired=T) # Non-robust
+yuend(data$slopes_visual, data$slopes_manual, tr = 0.2) # Robust
+
+
 ##### Gain per time
 filepath = paste(PATH_TO_FILES, "gainPerTime_short.csv", sep="")
 data <- read.csv(filepath)
