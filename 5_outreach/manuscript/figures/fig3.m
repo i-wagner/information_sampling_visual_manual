@@ -98,12 +98,12 @@ means = squeeze(data.choice.sigmoidFit(:,idx.mean,conditionsOfInterest));
 slopes = squeeze(data.choice.sigmoidFit(:,idx.slope,conditionsOfInterest));
 parameter = cat(3, means, slopes);
 nParameter = size(parameter, 3);
+axisLimits = [[-2, 10]; [-0.40, 0.10]];
 
 plotMarker = {'o', 's'};
 for p = 1:nParameter % Parameter
-    axisLimits = [min(min(parameter(:,:,p))), max(max(parameter(:,:,p)))];
-    lineHorizontal = [axisLimits', axisLimits', [0; 0]];
-    lineVertical = [axisLimits', [0; 0], axisLimits'];
+    lineHorizontal = [axisLimits(p,:)', axisLimits(p,:)', [0; 0]];
+    lineVertical = [axisLimits(p,:)', [0; 0], axisLimits(p,:)'];
 
     nexttile;
     line(lineHorizontal, lineVertical, ...
@@ -131,25 +131,25 @@ for p = 1:nParameter % Parameter
     set(meanHandle(2:end), ...
         'HandleVisibility', 'off')
     hold off
-    axis([axisLimits, axisLimits], 'square')
+    axis([axisLimits(p,:), axisLimits(p,:)], 'square')
     if p == 1
-        xticks(2:2:100);
-        yticks(2:2:100);
-        xticklabels(2:2:100);
-        yticklabels(2:2:100);
+        xticks(-100:2:100);
+        yticks(-100:2:100);
+        xticklabels(-100:2:100);
+        yticklabels(-100:2:100);
 
         xlabel('Mean [visual search]')
         ylabel('Mean [manual search]')
     else
-        xticks(-100:0.07:100);
-        yticks(-100:0.07:100);
-        xticklabels(-100:0.07:100);
-        yticklabels(-100:0.07:100);
+        xticks(-100:0.10:100);
+        yticks(-100:0.10:100);
+        xticklabels(-100:0.10:100);
+        yticklabels(-100:0.10:100);
 
         xlabel('Slope [visual search]')
         ylabel('Slope [manual search]')
     end
-    if checkAxLim(axisLimits, parameter(:,:,p))
+    if checkAxLim(axisLimits(p,:), parameter(:,:,p))
         error("Current axis limits result in values being cut-off!");
     end
 end
