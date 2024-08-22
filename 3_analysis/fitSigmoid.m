@@ -29,11 +29,10 @@ function par = fitSigmoid(exper, proportionChoicesEasy)
     fixedMean = 0;
     
     %% Fit
-    close all;
-    
     par = NaN(exper.n.SUBJECTS, 3, exper.n.CONDITIONS);
     for c = 1:exper.n.CONDITIONS % Condition
         if DO_PLOT
+            close all;
             figure;
             hTiles = tiledlayout(4,5);
         end
@@ -72,7 +71,17 @@ function par = fitSigmoid(exper, proportionChoicesEasy)
                                 "; Std: ", num2str(round(thisPar(2), 2)));
     
                 nexttile;
-                plot(x, 1-cdf('Normal', x, thisPar(1), thisPar(2)), '-b');
+                if sign(thisPar(2)) == -1
+                    % If SD is negative, plot a regular sigmoids that
+                    % increases towards right
+                    pred = cdf('Normal', x, thisPar(1), abs(thisPar(2)));
+                else
+                    % Plot sigmoids starting from left and decreasing
+                    % towards right. Need to "flip" regular CDF to achieve
+                    % this
+                    pred = 1 - cdf('Normal', x, thisPar(1), thisPar(2));
+                end
+                plot(x, pred, '-b');
                 hold on;
                 plot(x, thisSubject.proportionChoicesEasy, '-r');
                 hold off;
