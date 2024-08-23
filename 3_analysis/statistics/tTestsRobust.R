@@ -60,8 +60,8 @@ filepath = paste(PATH_TO_FILES, "sigmoidPar_short.csv", sep="")
 data <- read.csv(filepath)
 
 # Means visual vs. Means manual
-t.test(data$intercepts_visual, data$means_manual, paired=T) # Non-robust
-yuend(data$intercepts_visual, data$means_manual, tr = 0.2) # Robust
+t.test(data$means_visual, data$means_manual, paired=T) # Non-robust
+yuend(data$means_visual, data$means_manual, tr = 0.2) # Robust
 
 # Slopes visual vs. Intercepts manual
 t.test(data$slopes_visual, data$slopes_manual, paired=T) # Non-robust
@@ -89,7 +89,7 @@ t.test(data$double_visual, data$double_manual, paired=T) # Non-robust
 yuend(data$double_visual, data$double_manual, tr = 0.2) # Robust
 
 
-##### Fixation noise
+##### Sampling noise
 filepath = paste(PATH_TO_FILES, "fixationNoise_short.csv", sep="")
 data <- read.csv(filepath)
 
