@@ -6,13 +6,13 @@ folder.fig = [strcat(folder.root, "5_outreach/manuscript/figures/figSupp1"), ...
               strcat(folder.root, "5_outreach/manuscript/figures/figSupp2")];
 
 %% Plot
-subjectOfInterest = find(~isnan(data.choice.regressionFit(:,1)));
+subjectOfInterest = find(~isnan(data.choice.sigmoidFit(:,1,1)));
 conditionsOfInterest = [2, 4];
 nSubjects = numel(subjectOfInterest);
 nConditions = numel(conditionsOfInterest);
 
-idx.intercept = 1;
-idx.slope = 2;
+idx.means = 1;
+idx.sds = 2;
 chancePerformance = 0.50;
 nDistractorsBalanced = 4;
 
@@ -26,20 +26,16 @@ for c = 1:nConditions % Conditions
     hFig = figure;
     hTile = tiledlayout(5, 4);
     for s = 1:nSubjects % Subjects
-        % For yPredicted:
-        % subtract the number of distractors at which both sets have an equal
-        % size for generating model predictions, because this was also done
-        % when estimating regression parameters. At the end, addd chance
-        % performance to the predicted values, again, because chance
-        % performance was initially subtracted when estimating regression 
-        % parameters. For an explanation why this was done, see the manuscript
-        % or the function, where parameters are fitted ("fitRegression")
-        intercept = data.choice.regressionFit(subjectOfInterest(s),idx.intercept,conditionsOfInterest(c));
-        slope = data.choice.regressionFit(subjectOfInterest(s),idx.slope,conditionsOfInterest(c));
+        mean = data.choice.sigmoidFit(subjectOfInterest(s),idx.means,conditionsOfInterest(c));
+        std = data.choice.sigmoidFit(subjectOfInterest(s),idx.sds,conditionsOfInterest(c));
         yEmpirical = ...
             data.choice.target.proportionEasy(subjectOfInterest(s),:,conditionsOfInterest(c));
         yIdealObserver = idealObserver.proChoices.easy(subjectOfInterest(s),:,conditionsOfInterest(c));
-        yPredicted = (intercept + slope .* (x - nDistractorsBalanced)) + chancePerformance;
+        if sign(std) == -1
+            yPredicted = cdf('Normal', x, mean, abs(std));
+        else
+            yPredicted = 1 - cdf('Normal', x, mean, std);
+        end
 
         if c == 1
             thisColor = plt.color.green(2,:);
@@ -85,7 +81,7 @@ for c = 1:nConditions % Conditions
     end
     xlabel(hTile, '# easy distractors', "FontSize", opt.fontSize);
     ylabel(hTile, yLabels(c), "FontSize", opt.fontSize);
-    hLgd = legend({'Ideal obs.', 'Data', 'Regression'});
+    hLgd = legend({'Ideal obs.', 'Data', 'Sigmoid'});
     hLgd.Layout.Tile = 20;
     legend box off
 
