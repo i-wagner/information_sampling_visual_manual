@@ -39,6 +39,12 @@ anal.nExpectedEvents = 5;
 % manual search experiment for this one, i.e., trials where, presumably, 
 % pen-dragging occured
 % 
+% Subject 10
+% This one had a lot of fixations on the background, which happened
+% especially in the upper screen half. This indicates that this subject had
+% problems uncovering stimuli via gaze, so we are not sure whether we can
+% properly interpret it's data
+% 
 % Subject 19
 % This one peformed very poorly in the double-target condition of the
 % eye tracking experiment (having a negative final score), while also
@@ -48,4 +54,4 @@ anal.nExpectedEvents = 5;
 % Subject 20
 % This one had problems during eye tracking calibration (reported by HiWi), 
 % so we only have data for the manual search condition.
-anal.excludedSubjects = [7, 19:20];
+anal.excludedSubjects = [7, 10, 19:20];
