@@ -42,19 +42,6 @@ t.test(data$single_manual, data$double_manual, paired=T) # Non-robust
 yuend(data$single_manual, data$double_manual, tr = 0.2) # Robust
 
 
-##### Regression parameter
-filepath = paste(PATH_TO_FILES, "regressionPar_short.csv", sep="")
-data <- read.csv(filepath)
-
-# Intercepts visual vs. Intercepts manual
-t.test(data$intercepts_visual, data$intercepts_manual, paired=T) # Non-robust
-yuend(data$intercepts_visual, data$intercepts_manual, tr = 0.2) # Robust
-
-# Slopes visual vs. Intercepts manual
-t.test(data$slopes_visual, data$slopes_manual, paired=T) # Non-robust
-yuend(data$slopes_visual, data$slopes_manual, tr = 0.2) # Robust
-
-
 ##### Sigmoid parameter
 filepath = paste(PATH_TO_FILES, "sigmoidPar_short.csv", sep="")
 data <- read.csv(filepath)
