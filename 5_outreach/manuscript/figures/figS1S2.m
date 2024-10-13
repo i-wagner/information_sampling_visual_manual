@@ -21,7 +21,7 @@ axisLimits = [[(x(1) - 1), (x(end) + 1)]; ...
               [0, 1.15]];
 lineLimitsHorizontal = [axisLimits(1,:)', [4; 4]];
 lineLimitsVertical = [[0.50; 0.50], [0; axisLimits(2,2)]];
-yLabels = {'Prop. choices easy [visual]', 'Prop. choices easy [manual]'};
+yLabels = {'Prop. choices easy [oculomotor]', 'Prop. choices easy [manual]'};
 for c = 1:nConditions % Conditions
     hFig = figure;
     hTile = tiledlayout(5, 4);

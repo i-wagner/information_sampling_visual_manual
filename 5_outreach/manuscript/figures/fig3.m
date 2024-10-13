@@ -18,7 +18,7 @@ nDistractorsBalanced = 4;
 axisLimits = [[-1, 9]; [0, 1.15]];
 lineLimitsHorizontal = [axisLimits(1,:)', [4; 4]];
 lineLimitsVertical = [[0.50; 0.50], [0; axisLimits(2,2)]];
-yLabels = {'Prop. choices easy [visual]', 'Prop. choices easy [manual]'};
+yLabels = {'Prop. choices easy [oculomotor]', 'Prop. choices easy [manual]'};
 
 hFig = figure;
 tiledlayout(2, 2);
@@ -43,7 +43,7 @@ for c = 1:numel(conditionsOfInterest) % Condition
         yPredicted = 1 - cdf('Normal', x, meanSigmoid, sdSigmoid);
     end
 
-    if c == 1 % Visual search experiment
+    if c == 1 % Oculomotor search task
         thisColor = plt.color.green(2,:);
     elseif c == 2
         thisColor = plt.color.purple(2,:);
@@ -138,7 +138,7 @@ for p = 1:nParameter % Parameter
         xticklabels(-100:2:100);
         yticklabels(-100:2:100);
 
-        xlabel('Mean [visual search]')
+        xlabel('Mean [oculomotor search]')
         ylabel('Mean [manual search]')
     else
         xticks(-100:0.10:100);
@@ -146,7 +146,7 @@ for p = 1:nParameter % Parameter
         xticklabels(-100:0.10:100);
         yticklabels(-100:0.10:100);
 
-        xlabel('Slope [visual search]')
+        xlabel('Slope [oculomotor search]')
         ylabel('Slope [manual search]')
     end
     if checkAxLim(axisLimits(p,:), parameter(:,:,p))

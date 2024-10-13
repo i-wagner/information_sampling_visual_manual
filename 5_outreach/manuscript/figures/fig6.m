@@ -48,7 +48,7 @@ folder.fig = strcat(folder.root, "5_outreach/manuscript/figures/fig6");
 %% Panels A&B: predicted vs. empirical avg. proportion choices for easy target
 idx.doubleVisual = 2;
 idx.doubleManual = 4;
-yLabels = ["Prop. choices easy [visual]", ...
+yLabels = ["Prop. choices easy [oculomotor]", ...
            "Prop. choices easy [manual]"];
 x = 0:1:8;
 chancePerformance = 0.50;
@@ -131,9 +131,9 @@ for p = 1:2 % Panel
 end
 
 %% Panels C&D: predicted vs. empirical avg. proportion fixations on chosen set
-xLabels = ["Emp. prop. mov. chosen [visual]", ...
+xLabels = ["Emp. prop. mov. chosen [oculomotor]", ...
            "Emp. prop. mov. chosen [manual]"];
-yLabels = ["Pred. prop. mov. chosen [visual]", ...
+yLabels = ["Pred. prop. mov. chosen [oculomotor]", ...
            "Pred. prop. mov. chosen [manual]"];
 tiles = [2, 4];
 for p = 1:2 % Panel
