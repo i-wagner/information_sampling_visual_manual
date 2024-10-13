@@ -54,4 +54,4 @@ anal.nExpectedEvents = 5;
 % Subject 20
 % This one had problems during eye tracking calibration (reported by HiWi), 
 % so we only have data for the manual search condition.
-anal.excludedSubjects = [7, 10, 19:20];
+anal.excludedSubjects = [10, 19:20];
