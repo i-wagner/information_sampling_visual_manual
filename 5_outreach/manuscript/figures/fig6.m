@@ -131,10 +131,10 @@ for p = 1:2 % Panel
 end
 
 %% Panels C&D: predicted vs. empirical avg. proportion fixations on chosen set
-xLabels = ["Emp. prop. mov. chosen [oculomotor]", ...
-           "Emp. prop. mov. chosen [manual]"];
-yLabels = ["Pred. prop. mov. chosen [oculomotor]", ...
-           "Pred. prop. mov. chosen [manual]"];
+xLabels = ["Emp. prop. insp. chosen [oculomotor]", ...
+           "Emp. prop. insp. chosen [manual]"];
+yLabels = ["Pred. prop. insp. chosen [oculomotor]", ...
+           "Pred. prop. insp. chosen [manual]"];
 tiles = [2, 4];
 for p = 1:2 % Panel
     if p == 1 % Visual search experiment
