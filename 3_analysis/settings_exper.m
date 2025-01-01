@@ -45,7 +45,8 @@ exper.fixation.location.y.PX = 912;
 % For figures:
 % path has this weird format so we can ust the condition number to index to
 % the proper path for the right effector
-exper.path.ROOT = ['/Users/ilja/Dropbox/12_work/' ...
+exper.path.ROOT = ['/Users/ilja/Library/CloudStorage/' ...
+                   'GoogleDrive-ilja.wagner1307@gmail.com/My Drive/' ...
                    'mr_informationSamplingVisualManual/'];
 exper.path.DATA = strcat(exper.path.ROOT, '2_data/');
 exper.path.ANALYSIS = strcat(exper.path.ROOT, '3_analysis/');
