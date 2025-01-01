@@ -11,3 +11,4 @@
 *.jasp
 .Rhistory
 .RData
+*.pdf
