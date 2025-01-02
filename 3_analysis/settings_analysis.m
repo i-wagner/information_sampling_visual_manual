@@ -1,6 +1,13 @@
 %% General analysis
 anal.average.MIN_N = 10;
 
+% Exclude trials for split-half analysis. Variable can have the following
+% values:
+% "odd": exclude trials with odd trial numbers
+% "even": exclude trials with even trial numbers
+% "none": exclude neither trials with odd or even trial numbers
+anal.splitHalf = "none";
+
 %% Saccade detection
 anal.saccadeDetection.MIN_SACC_DUR = 5;
 

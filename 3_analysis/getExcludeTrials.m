@@ -1,4 +1,4 @@
-function excludedTrials = getExcludeTrials(exper, anal, isOnlineFixErr, isOfflineFixErr, isDataLoss, isMissingEvent, isPenDragging)
+function excludedTrials = getExcludeTrials(exper, anal, isOnlineFixErr, isOfflineFixErr, isDataLoss, isMissingEvent, isPenDragging, nTrials)
 
     % Determine which trials to exclude from subsequent analysis
     %
@@ -31,6 +31,9 @@ function excludedTrials = getExcludeTrials(exper, anal, isOnlineFixErr, isOfflin
     % matrix; Booleans indicating trials where pen dragging occured (only
     % defined for manual search conditions)
     %
+    % nTrials:
+    % matrix; number of trials that participants completed in conditions
+    %
     % Output
     % excludedTrials:
     % matrix; numbers of trials which are flagged for exclusion
@@ -40,6 +43,7 @@ function excludedTrials = getExcludeTrials(exper, anal, isOnlineFixErr, isOfflin
     for c = 1:exper.n.CONDITIONS % Condition
         for s = 1:exper.n.SUBJECTS % Subject
             thisSubject.number = exper.num.SUBJECTS(s);
+            thisSubject.nTrials = nTrials(thisSubject.number,c);
             if ismember(thisSubject.number, anal.excludedSubjects)
                 continue
             end
@@ -49,9 +53,16 @@ function excludedTrials = getExcludeTrials(exper, anal, isOnlineFixErr, isOfflin
             idx.dataLoss = find(isDataLoss{thisSubject.number,c});
             idx.eventMissing = find(isMissingEvent{thisSubject.number,c});
             idx.penDragging = find(isPenDragging{thisSubject.number,c});
+            idx.splitHalf = [];
+            if strcmp(anal.splitHalf, "even") & ~isnan(thisSubject.nTrials)
+                idx.splitHalf = (2:2:thisSubject.nTrials)';
+            elseif strcmp(anal.splitHalf, "odd") & ~isnan(thisSubject.nTrials)
+                idx.splitHalf = (1:2:thisSubject.nTrials)';
+            end
             idx.exclude = ...
                 unique([idx.fixErr.online; idx.fixErr.offline; ...
-                        idx.dataLoss; idx.eventMissing; idx.penDragging]);
+                        idx.dataLoss; idx.eventMissing; ...
+                        idx.penDragging; idx.splitHalf]);
 
             excludedTrials{thisSubject.number,c} = idx.exclude;
         end
