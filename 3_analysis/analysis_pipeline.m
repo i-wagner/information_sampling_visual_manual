@@ -568,7 +568,13 @@ exportShort([probabilisticModel.pred.visual.freeParameter(:,1), ...
             strcat(exper.path.ANALYSIS, "statistics/fixationNoise_short.csv"));
 
 %% Store data
-save(strcat(exper.path.DATA, "data_newPipeline.mat"));
+if anal.splitHalf == "odd"
+    save(strcat(exper.path.DATA, "data_newPipeline_oddTrialsExcluded.mat"));
+elseif anal.splitHalf == "even"
+    save(strcat(exper.path.DATA, "data_newPipeline_evenTrialsExcluded.mat"));
+elseif anal.splitHalf == "none"
+    save(strcat(exper.path.DATA, "data_newPipeline.mat"));
+end
 
 %% Create plots
 if fig.toggle.SAVE
