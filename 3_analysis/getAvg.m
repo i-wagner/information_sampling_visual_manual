@@ -71,8 +71,15 @@ function [variableAvg, variableSetSizes] = getAvg(exper, anal, variable, chosenT
             thisSubject.variable = variable{thisSubject.number,c};
             thisSubject.chosenTarget = chosenTarget{thisSubject.number,c};
             thisSubject.nDistractors = nDistractors{thisSubject.number,c};
+            % Hacky way to get set-size levels:
+            % when excluding even/odd trials, certain set-size levels might
+            % be missing if a participant has only very few trials to being
+            % with. To get around this we determine set-size level based on
+            % data of all participants, instead of the current participant
+            % only (which is the method used in other scripts/functions)
+            thisSubject.setSize.level = unique(vertcat(nDistractors{:}));
             thisSubject.setSize.level = ...
-                unique(thisSubject.nDistractors(~isnan(thisSubject.nDistractors)));
+                thisSubject.setSize.level(~isnan(thisSubject.setSize.level));
             thisSubject.setSize.n = numel(thisSubject.setSize.level);
             thisSubject.isExcludedTrial = isnan(thisSubject.variable);
             if ~isempty(subset)
