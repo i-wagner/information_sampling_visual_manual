@@ -12,3 +12,5 @@
 .Rhistory
 .RData
 *.pdf
+*.pptx
+*.eps
