@@ -4,6 +4,7 @@ Wagner, I., Tünnermann, J., Schubö, A., & Schütz, A. C. (2024). Trade-off bet
 The data is available in the Zenodo repository, under the DOI 10.5281/zenodo.15179979
 
 This folder follow the following structure:
+```bash
 /
 └── information_sampling_visual_manual
     ├── 1_code (code to ro run the experiment)
@@ -16,3 +17,4 @@ This folder follow the following structure:
     │   └── statistics (Scripts, .jasp files, and .csv exports to reproduce statistical analysis)
     │       ├── tTestsRobust.R (Entry point to run robust t-tests)
     │       └── *.jasp (JASP files for remaining statistical tests)
+```
