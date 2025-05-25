@@ -1,6 +1,8 @@
 
 .DS_Store
 /2_data
+/5_outreach
+/6_materials
 *.asv
 *.xlsx
 *.mat
